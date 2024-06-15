@@ -1,0 +1,70 @@
+body {
+    position: relative; /* Position the body relative to contain the pseudo-element */
+    background-color: #0d1117;
+    color: #c9d1d9;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    overflow: hidden; /* Prevents scrolling to show the entire pseudo-element */
+    text-align: center; /* Center-align text */
+}
+body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('../../images/staff/waves-683417.jpg');
+    background-size: cover; /* Cover the entire background */
+    background-position: center; /* Center the background image */
+    background-repeat: no-repeat; /* Do not repeat the background image */
+    filter: blur(8px) brightness(0.5); /* Apply blur and darken the image */
+    z-index: -1; /* Ensure the pseudo-element is behind the content */
+}
+form {
+    background-color: rgba(22, 27, 34, 0.9); /* Slightly transparent background for the form */
+    padding: 2rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    z-index: 1; /* Ensure the form is above the pseudo-element */
+}
+input[type="email"], input[type="password"] {
+    width: 100%;
+    padding: 0.75rem;
+    margin: 0.5rem 0;
+    border: 1px solid #30363d;
+    border-radius: 0.5rem;
+    background-color: #0d1117;
+    color: #c9d1d9;
+}
+input[type="email"]::placeholder, input[type="password"]::placeholder {
+    color: #8b949e;
+}
+button {
+    width: 100%;
+    padding: 0.75rem;
+    margin: 0.5rem 0;
+    border: none;
+    border-radius: 0.5rem;
+    background-color: #238636;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+button:hover {
+    background-color: #2ea043;
+}
+h1 {
+    font-size: 2.5rem; /* Increase font size */
+    color: #ffffff; /* Set color */
+    margin: 1rem 0; /* Add some margin */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Add a subtle shadow */
+    z-index: 1; /* Ensure the heading is above the pseudo-element */
+}

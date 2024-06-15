@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff list</title>
+</head>
+<body>  
+    <h1>All Staffs</h1>
+    <button><a href="{% url 'staff_create' %}">Create Staff</a></button>
+    <button><a href="{% url 'deleted_staff_list' %}">Deleted Staffs</a></button>
+    <ul>
+        {% for staff in staff %}
+        <li> <a href="{% url 'staff_detail' staff.pk %}">
+            {{ staff.firstname }} {{ staff.lastname }}</a>
+        </li>
+        {% endfor %}
+    </ul>
+    <form action="{% url 'staff_list' %}" method="GET" >
+        <input type="text" name="staff_name" placeholder="Staff name">
+        <button>Search</button>
+    </form>
+</body>
+</html>

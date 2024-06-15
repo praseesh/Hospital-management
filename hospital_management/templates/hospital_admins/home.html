@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Home</title>
+</head>
+<body>
+    <h1>Admin Page</h1>
+    <form action="{% url 'logout' %}" method="post">
+        {% csrf_token %}
+        <button>LogOut</button>
+    </form>
+
+    <ul>
+        {% for doctor in doctors %}
+            <li>{{ doctor.firstname }}</li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'doctor_list' %}"><h2>Doctors</h2></a>
+
+    <ul>
+        {% for staff in staff %}
+            <li>{{ staff.firstname }}</li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'staff_list' %}"><h2>Staff</h2></a>
+
+    <ul>
+        {% for patient in patient %}
+            <li>{{ patient.firstname }}</li>
+        {% endfor %}
+    </ul>    
+    <a  href="{% url 'patient_list' %}"><h2>Patient</h2></a>
+
+    
+</body>
+</html>

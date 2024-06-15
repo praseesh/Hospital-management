@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Details</title>
+</head>
+<body>
+    <h1> {{ patient.firstname }} {{ patient.lastname }} </h1>
+    <p>Firstname: {{ patient.firstname }}</p>
+    <p>Lastname: {{ patient.lastname }} </p>
+    <p>Mobile: {{ patient.mobile }}</p>
+    <p>Email: {{ patient.email }}</p>
+    <p>Date of Birth: {{ patient.dob }} </p>
+    <p>Gender: {{ patient.gender }} </p>
+    <p>Admission Date: {{ patient.admission_date }} </p>
+    <p>Checkout Date: {{ patient.checkout_date }} </p>
+
+    
+    {% comment %} <button><a href="{% url 'patient_edit' patient.id %}">Edit</a></button> {% endcomment %}
+    <button><a href="{% url 'patient_edit' patient.id %}">Edit</a></button>
+    {% comment %} <button><a href="{% url 'patient_delete' patient.id %}">Delete</a></button> {% endcomment %}
+</body>
+</html>

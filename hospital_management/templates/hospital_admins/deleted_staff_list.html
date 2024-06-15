@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deleted Staff List</title>
+</head>
+<body>
+    <h1>Deleted Staff Members</h1>
+    <ul>
+        {% for staff in deleted_staff %}
+            <li>{{ staff.firstname }} {{ staff.lastname }} - {{ staff.role }} - {{ staff.contact }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Doctor List</title>
+</head>
+<body>
+    <h1>All Doctors</h1>
+    <button> <a href="{% url 'doctor_create' %}">Create Doctor</a> </button>
+    <ul>
+        {% for doctor in doctors %}
+            <li><a href="{% url 'doctor_detail' doctor.pk %}">{{ doctor.firstname }} {{ doctor.lastname }}</a></li>
+        {% endfor %}
+    </ul>
+    <form method="GET" action="{% url 'doctor_list' %}">
+        <input type="search" name="doc_name" placeholder="Search for doctors" class="form-control form-control-borderless" />
+        <button class="btn btn-success" type="submit">Search</button>
+    </form>
+</body>
+</html> 

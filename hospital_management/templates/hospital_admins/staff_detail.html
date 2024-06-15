@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Details</title>
+</head>
+<body>
+    <h1> {{ staff.firstname }} {{ staff.lastname }} </h1>
+    <p>Role: {{ staff.role }}</p>
+    <p>Contact: {{ staff.contact }} </p>
+    <button> <a href="{% url 'staff_edit' staff.id %}"></a> </button>
+    <button> <a href="{% url 'staff_delete' staff.id %}"></a> </button>
+
+</body>
+</html>

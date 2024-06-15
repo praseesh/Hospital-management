@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Doctor Details</title>
+</head> 
+<body>
+
+    <h1>{{ doctor.firstname }} {{ doctor.lastname }}</h1>
+    <p>Firstname: {{ doctor.firstname }}</p>
+    <p>Lastname: {{ doctor.lastname }}</p>
+    <p>Specialty: {{ doctor.specialty }}</p>
+    <p>Email: {{ doctor.email }}</p>
+    <p>Availability: {{ doctor.availability }}</p>
+    <p>Contact: {{ doctor.contact }}</p>
+    
+    
+    <button><a href="{% url 'doctor_edit' doctor.id %}">Edit</a></button>
+    <button><a href="{% url 'doctor_delete' doctor.id %}">Delete</a></button>
+</body>
+</html>

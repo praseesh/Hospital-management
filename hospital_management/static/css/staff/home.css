@@ -1,0 +1,37 @@
+.card {
+    height: 100%;
+}
+body {
+
+    background-color: #111827; /* Light gray background */
+    color: #ffffff; /* Dark text color */
+    font-family:  Arial, sans-serif;; /* Use a common font */
+    background-image: url('../../images/staff/black-elegant-background-with-copy-space.jpg');
+    background-size: cover; /* Cover the entire background */
+    background-position: center; /* Center the background image */
+    background-repeat: no-repeat; /* Do not repeat the background image */
+}
+
+.card {
+    background-color: #ffffff; /* White background for cards */
+    border-radius: 10px; /* Rounded corners for cards */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Shadow for cards */
+    transition: transform 0.3s; /* Smooth card hover effect */
+}
+
+.card:hover {
+    transform: translateY(-5px); /* Move card up slightly on hover */
+}
+
+.card-title {
+    color: #d20000; /* Blue title color */
+}
+
+.card-text {
+    color: #343434; /* Dark gray text color */
+}
+
+h1 {
+    text-align: center; /* Center-align the heading */
+    margin-top: 20px; /* Add some top margin */
+}
