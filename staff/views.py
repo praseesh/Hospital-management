@@ -29,11 +29,9 @@ def staff(request):
             actions = StaffAction.objects.filter(id__lte=24)
         else:
             actions = StaffAction.objects.filter(role_id=staff.role_id)
-        
         if not actions.exists():
             actions = StaffAction.objects.all()
-        
-        print(actions, '@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+
         return render(request, 'staff/home.html', {'actions': actions})
     
     return render(request, 'staff/staff_login.html')
@@ -66,3 +64,9 @@ def staff_patient_list(request):
 
 def staff_invoice(request):
     return render(request,'staff/invoice.html')
+
+def staff_lab_report(request):
+    return render(request, 'staff/lab_report.html')
+
+def staff_prescription(request):
+    return render (request, 'staff/prescription.html')

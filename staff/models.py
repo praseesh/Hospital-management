@@ -1,4 +1,6 @@
 from django.db import models
+from doctor.models import Doctor
+from patient.models import Patient
 
 class StaffManager(models.Manager):
     def get_queryset(self):
@@ -11,7 +13,6 @@ class AllObjectsManager(models.Manager):
 class DeletedStaffManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(is_deleted=True)
-    
     
 class Roles(models.Model):
     name = models.CharField(max_length=50)
@@ -44,10 +45,6 @@ class Staff(models.Model):
     def delete(self):
         self.is_deleted = True
         self.save()
-        
-
-    
-
     
 class StaffAction(models.Model):
     name = models.CharField(max_length=100)
@@ -60,3 +57,25 @@ class StaffAction(models.Model):
 
     def __str__(self):
         return f"{self.name} {self.role} {self.description} {self.url_name}"
+    
+
+
+class Prescription(models.Model):
+    prescription_id = models.AutoField(primary_key=True)
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
+    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
+    medication = models.CharField(max_length=255)
+    dosage = models.CharField(max_length=50)
+    frequency = models.CharField(max_length=50)
+    duration = models.CharField(max_length=50)
+    instructions = models.TextField(blank=True)
+    date_issued = models.DateField()
+    created_by = models.IntegerField()
+    date_created = models.DateTimeField(auto_now_add=True)
+    last_modified_by = models.IntegerField()
+    date_last_modified = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'prescriptions'
+        
+    
