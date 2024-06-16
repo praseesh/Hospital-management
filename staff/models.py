@@ -51,12 +51,12 @@ class Staff(models.Model):
     
 class StaffAction(models.Model):
     name = models.CharField(max_length=100)
-    role = models.ForeignKey(Roles, on_delete=models.CASCADE,default=1)
+    role = models.ForeignKey(Roles, on_delete=models.CASCADE, default=1)
     description = models.CharField(max_length=255)
-    
+    url_name = models.CharField(max_length=100, default="")
+
     class Meta:
         db_table = 'staff_action'
-        
+
     def __str__(self):
-        return self.name
-    
+        return f"{self.name} {self.role} {self.description} {self.url_name}"

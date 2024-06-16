@@ -15,12 +15,15 @@
         <div class="row">
             {% for action in actions %}
                 <div class="col-md-3 mb-4">
+                 {% comment %} <button > {% endcomment %}
                     <div class="card h-100">
+                        <a href="{% url action.url_name %}" class="stretched-link"></a>
                         <div class="card-body d-flex flex-column">
                             <h5 class="card-title">{{ action.name }}</h5>
                             <p class="card-text">{{ action.description }}</p>
                         </div>
                     </div>
+                {% comment %} </button> {% endcomment %}
                 </div>
             {% endfor %}
         </div>
