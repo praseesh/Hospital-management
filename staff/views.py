@@ -70,3 +70,9 @@ def staff_lab_report(request):
 
 def staff_prescription(request):
     return render (request, 'staff/prescription.html')
+
+def staff_rooms(request):
+    return render (request,'rooms.html')
+
+def staff_discharge(request):
+    return render(request, 'discharge.html')
