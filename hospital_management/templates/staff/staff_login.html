@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width= , initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link href="{% static 'css/staff/login.css' %}" rel="stylesheet">
 </head>
@@ -15,6 +15,6 @@
         <input type="password" placeholder="Password" name="password" required>
         <button>Login</button>
     </form>
-    <button onclick="location.href='{% url 'home' %}'">Back to Home</button>
+    <button class="button1" onclick="location.href='{% url 'home' %}'">Back to Home</button>
 </body>
 </html>

@@ -23,7 +23,9 @@ def staff(request):
     if 'staff_id' in request.session:
         staff_id = request.session['staff_id']
         staff = Staff.objects.get(id=staff_id)
-        if staff.role_id == 13:
+        if staff.role_id ==2:
+            actions = StaffAction.objects.all()
+        elif staff.role_id == 13:
             actions = StaffAction.objects.filter(id__lte=24)
         else:
             actions = StaffAction.objects.filter(role_id=staff.role_id)
@@ -44,10 +46,9 @@ def staff_login(request):
             if staff is None or staff == '':
                 return render(request, 'staff/staff_login.html', {'msg': 'Invalid Email or Password'})
             else:
-                # Check password
                 if check_password(password, staff.password):
                     request.session['staff_id'] = staff.id
-                    return redirect('staff_home')  # Redirect to staff_home view
+                    return redirect('staff_home') 
                 else:
                     return render(request, 'staff/staff_login.html', {'msg': 'Invalid Email or Password'})
         except Staff.DoesNotExist:
@@ -56,11 +57,11 @@ def staff_login(request):
 
 
 def staff_doctor_list(request):
-    # Your logic for displaying the list of doctors
+
     return render(request, 'staff/doctor_list.html')
 
 def staff_patient_list(request):
-    # Your logic for displaying the list of patients
+
     return render(request, 'staff/patient_list.html')
 
 def staff_invoice(request):

@@ -68,3 +68,17 @@ h1 {
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Add a subtle shadow */
     z-index: 1; /* Ensure the heading is above the pseudo-element */
 }
+.button1 {
+    width: 21%; /* Adjust the width as needed */
+    padding: 1rem; /* Adjust the padding as needed */
+    margin: 0.5rem 0;
+    border: none;
+    border-radius: 0.5rem;
+    background-color: #b5b5b5;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+.button1:hover {
+    background-color: #2ea043;
+}
