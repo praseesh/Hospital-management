@@ -9,8 +9,8 @@
     <h1> {{ staff.firstname }} {{ staff.lastname }} </h1>
     <p>Role: {{ staff.role }}</p>
     <p>Contact: {{ staff.contact }} </p>
-    <button> <a href="{% url 'staff_edit' staff.id %}"></a> </button>
-    <button> <a href="{% url 'staff_delete' staff.id %}"></a> </button>
+    <button> <a href="{% url 'staff_edit' staff.id %}">Edit</a> </button>
+    <button> <a href="{% url 'staff_delete' staff.id %}">Delete</a> </button>
 
 </body>
 </html>

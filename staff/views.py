@@ -72,7 +72,10 @@ def staff_prescription(request):
     return render (request, 'staff/prescription.html')
 
 def staff_rooms(request):
-    return render (request,'rooms.html')
+    return render (request,'staff/rooms.html')
 
 def staff_discharge(request):
-    return render(request, 'discharge.html')
+    return render(request, 'staff/discharge.html')
+
+def staff_appointment(request):
+    return render(request, 'staff/appointment.html')
