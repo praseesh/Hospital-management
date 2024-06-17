@@ -24,9 +24,12 @@ class Roles(models.Model):
         return self.name
 
 class Staff(models.Model):
-    firstname = models.CharField(max_length=255, blank=False, null=False,default='')
+    firstname = models.CharField(max_length=255, blank=False, null=False, default='')
     lastname = models.CharField(max_length=255, blank=True, null=True)
     role = models.ForeignKey(Roles, on_delete=models.CASCADE, default=1)
+    city = models.CharField(max_length=50, default='')
+    joined = models.DateField(blank=True, null=True)
+    salary = models.IntegerField()
     contact = models.CharField(max_length=100, blank=True, null=True)
     email = models.CharField(max_length=255, blank=False, null=True, unique=True)
     password = models.CharField(max_length=255, blank=False, null=False, default=1234)
@@ -48,7 +51,7 @@ class Staff(models.Model):
     
 class StaffAction(models.Model):
     name = models.CharField(max_length=100)
-    role = models.ForeignKey(Roles, on_delete=models.CASCADE, default=1)
+    # role = models.ForeignKey(Roles, on_delete=models.CASCADE, default=1)
     description = models.CharField(max_length=255)
     url_name = models.CharField(max_length=100, default="")
 
@@ -58,6 +61,14 @@ class StaffAction(models.Model):
     def __str__(self):
         return f"{self.name} {self.role} {self.description} {self.url_name}"
     
+    
+class StaffActionRoles(models.Model):
+    action = models.ForeignKey(StaffAction, on_delete=models.CASCADE, default=1)
+    role = models.ForeignKey(Roles, on_delete=models.CASCADE, default=1)
+    
+    class Meta:
+        db_table = 'staff_action_roles'
+
 
 
 class Prescription(models.Model):
@@ -72,10 +83,21 @@ class Prescription(models.Model):
     date_issued = models.DateField()
     created_by = models.IntegerField()
     date_created = models.DateTimeField(auto_now_add=True)
-    last_modified_by = models.IntegerField()
     date_last_modified = models.DateTimeField(auto_now=True)
 
     class Meta:
         db_table = 'prescriptions'
         
+class LabReport(models.Model):
+    category = models.CharField(max_length=100)
+    patient = models.ForeignKey(Patient,on_delete=models.CASCADE)       
+    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
+    date = models.DateField()
+    amount = models.CharField(max_length=50, default='pending')
+    remarks = models.TextField(blank=True, null=True)
+    result = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     
+    class Meta:
+        db_table = 'lab_report'
