@@ -71,8 +71,7 @@ def staff_lab_report(request):
         form = LabReportCreation(request.POST)
         if form.is_valid():
             form.save()
-            # return redirect('staff_lab_report') 
-            return render(request, 'staff/lab_report.html',{'form':form})
+            return redirect('staff_home') 
     else:
         form = LabReportCreation()
     return render(request, 'staff/lab_report.html',{'form':form})
