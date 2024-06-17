@@ -24,7 +24,7 @@ class Roles(models.Model):
         return self.name
 
 class Staff(models.Model):
-    firstname = models.CharField(max_length=255, blank=False, null=False,default='first_name')
+    firstname = models.CharField(max_length=255, blank=False, null=False,default='')
     lastname = models.CharField(max_length=255, blank=True, null=True)
     role = models.ForeignKey(Roles, on_delete=models.CASCADE, default=1)
     contact = models.CharField(max_length=100, blank=True, null=True)
