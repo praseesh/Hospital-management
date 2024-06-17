@@ -7,5 +7,10 @@
 </head>
 <body>
     <h1>Lab report</h1>
+    <form action="url 'staff_lab_report'" method="post" >
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" >Submit</button>
+    </form>
 </body>
 </html>

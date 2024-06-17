@@ -144,16 +144,6 @@ def patient_list(request):
         patient = patient.filter(firstname__icontains = patient_name)
     return render (request, 'hospital_admins/patient.html', {'patient': patient})
 
-# def patient_edit(request, patient_id):
-#     patient = get_object_or_404(Patient, id=patient_id)
-#     if request.method == "POST":
-#         form = CustomPatientModification(request, instance=patient)
-#         if form.is_valid():
-#             form.save()
-#             return redirect('patient_details')
-#     else:
-#         form = CustomPatientModification()
-#     return render(request, 'hospital_admins/patient_edit.html', {'form':form})
 
 def patient_edit(request, patient_id):
     patient = get_object_or_404(Patient, id=patient_id)
@@ -170,12 +160,6 @@ def patient_details(request,patient_id):
     patient = get_object_or_404(Patient, id=patient_id)
     return render(request, 'hospital_admins/patient_details.html',{'patient':patient} )
 
-# def patient_details(request, patient_id):
-#     patient = Patient.objects.get(id=patient_id)
-#     context = {
-#         'patient': patient,
-#     }
-#     return render(request, 'hospital_admins/patient_details.html', context)
 
 def patient_create(request):
     if request.method =='POST':

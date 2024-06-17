@@ -1,24 +1,41 @@
 from django.shortcuts import render,redirect
-from .models import StaffAction, Staff
+from .models import StaffAction, Staff, StaffActionRoles
 from django.contrib.auth.hashers import check_password
+from .forms import LabReportCreation
 
 
+# def staff(request):
+#     if 'staff_id' in request.session:
+#         staff_id = request.session['staff_id']
+#         staff = Staff.objects.get(id=staff_id)
+#         if staff.role_id ==2:
+#             actions = StaffAction.objects.all()
+#         elif staff.role_id == 13:
+#             actions = StaffAction.objects.filter(id__lte=24)
+#         else:
+#             actions = StaffAction.objects.filter(role_id=staff.role_id)
+#         if not actions.exists():
+#             actions = StaffAction.objects.all()
+
+#         return render(request, 'staff/home.html', {'actions': actions})
+    
 def staff(request):
     if 'staff_id' in request.session:
         staff_id = request.session['staff_id']
         staff = Staff.objects.get(id=staff_id)
+        
         if staff.role_id ==2:
             actions = StaffAction.objects.all()
-        elif staff.role_id == 13:
-            actions = StaffAction.objects.filter(id__lte=24)
         else:
-            actions = StaffAction.objects.filter(role_id=staff.role_id)
+            action_ids = StaffActionRoles.objects.filter(role_id=staff.role_id).values_list('action_id', flat=True)
+            actions = StaffAction.objects.filter(id__in=action_ids)
         if not actions.exists():
             actions = StaffAction.objects.all()
-
         return render(request, 'staff/home.html', {'actions': actions})
     
     return render(request, 'staff/staff_login.html')
+
+
 def staff_login(request):
     if request.method =="POST":
         email = request.POST.get('email')
@@ -50,7 +67,15 @@ def staff_invoice(request):
     return render(request,'staff/invoice.html')
 
 def staff_lab_report(request):
-    return render(request, 'staff/lab_report.html')
+    if request.method == 'POST':
+        form = LabReportCreation(request.POST)
+        if form.is_valid():
+            form.save()
+            # return redirect('staff_lab_report') 
+            return render(request, 'staff/lab_report.html',{'form':form})
+    else:
+        form = LabReportCreation()
+    return render(request, 'staff/lab_report.html',{'form':form})
 
 def staff_prescription(request):
     return render (request, 'staff/prescription.html')
