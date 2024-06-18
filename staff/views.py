@@ -2,6 +2,8 @@ from django.shortcuts import render,redirect
 from .models import StaffAction, Staff, StaffActionRoles
 from django.contrib.auth.hashers import check_password
 from .forms import LabReportCreation
+from patient.forms import CustomPatientCreationForm,CustomPatientModification
+from patient.models import Patient
 
 
 # def staff(request):

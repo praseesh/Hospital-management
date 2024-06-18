@@ -18,7 +18,7 @@ class CustomStaffModification(forms.ModelForm):
         model = Staff
         fields = ['firstname', 'lastname','role', 'contact','email'] 
         
-class LabReportCreation(forms.Form):
+class LabReportCreation(forms.ModelForm):
     class Meta:
-        models = LabReport
-        fields = ['category','patient', 'doctor', 'date', 'amount', 'remarks', 'result', 'created_at', 'updated_at']
+        model = LabReport
+        fields = ['category','patient', 'doctor', 'date', 'amount', 'remarks', 'result']
