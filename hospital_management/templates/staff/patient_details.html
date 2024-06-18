@@ -16,10 +16,9 @@
     <p>Admission Date: {{ patient.admission_date }} </p>
     <p>Checkout Date: {{ patient.checkout_date }} </p>
 
-    <button><a href="{% url 'patient_edit' patient.id %}">Edit</a></button>
+    <button><a href="{% url 'staff_patient_edit' patient.id %}">Edit</a></button>
     <button>
-        <a href="{% url 'patient_delete' patient.id %}">DELETE</a>
+        <a href="{% url 'staff_patient_delete' patient.id %}">DELETE</a>
     </button>
-   
 </body>
 </html>

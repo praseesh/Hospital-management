@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient List</title>
+</head>
+<body>
+    <form action="{% url 'staff_patient_list' %}">
+        <input type="text" name="patient_name" placeholder="Patient Name">
+        <button>Search</button>
+    </form>
+<h1>All Patients</h1>
+<button>
+    <a href="{% url 'staff_patient_create' %}">Create</a></button>
+<ul>  
+{% for patient in patient %}
+    <li> <a href="{% url 'staff_patient_details' patient.pk %}"> {{ patient.firstname }} {{ patient.lastname }} </a> </li>
+{% endfor %}
+</ul> 
+</body>
+</html>

@@ -1,25 +1,10 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect, get_object_or_404
 from .models import StaffAction, Staff, StaffActionRoles
 from django.contrib.auth.hashers import check_password
 from .forms import LabReportCreation
 from patient.forms import CustomPatientCreationForm,CustomPatientModification
 from patient.models import Patient
 
-
-# def staff(request):
-#     if 'staff_id' in request.session:
-#         staff_id = request.session['staff_id']
-#         staff = Staff.objects.get(id=staff_id)
-#         if staff.role_id ==2:
-#             actions = StaffAction.objects.all()
-#         elif staff.role_id == 13:
-#             actions = StaffAction.objects.filter(id__lte=24)
-#         else:
-#             actions = StaffAction.objects.filter(role_id=staff.role_id)
-#         if not actions.exists():
-#             actions = StaffAction.objects.all()
-
-#         return render(request, 'staff/home.html', {'actions': actions})
     
 def staff(request):
     if 'staff_id' in request.session:
@@ -61,12 +46,50 @@ def staff_doctor_list(request):
 
     return render(request, 'staff/doctor_list.html')
 
-def staff_patient_list(request):
+#<-------------------------------------------STAFF PATIENT----------------------------------------------->
 
-    return render(request, 'staff/patient_list.html')
+def staff_patient_create(request):
+    if request.method =='POST':
+        form = CustomPatientCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('staff_patient_list')
+    else:
+        form = CustomPatientCreationForm()
+    return render(request,'staff/patient_create.html', {'form':form})
+
+def staff_patient_list(request):
+    patient = Patient.objects.all()
+    patient_name = request.GET.get('patient_name')
+    if patient_name != '' and patient_name is not None:
+        patient = patient.filter(firstname__icontains = patient_name)
+    return render(request, 'staff/patient_list.html', {'patient':patient})
+
+def staff_patient_details(request, patient_id):
+    patient = get_object_or_404(Patient, id=patient_id)
+    return render (request, 'staff/patient_details.html', {'patient': patient})
+
+def staff_patient_delete(request, patient_id):
+    patient = get_object_or_404(Patient, id=patient_id)
+    patient.delete()
+    return redirect('staff_patient_list')
+
+def staff_patient_edit(request, patient_id):
+    patient = get_object_or_404(Patient, id=patient_id)
+    if request.method =="POST":
+        form = CustomPatientModification(request.POST, instance=patient)
+        if form.is_valid():
+            form.save()
+            return redirect('staff_patient_list')
+    else:
+            form = CustomPatientCreationForm()
+    return render(request, 'staff/patient_edit.html',{'form':form})
+
+#<-------------------------------------------STAFF PATIENT----------------------------------------------->
 
 def staff_invoice(request):
     return render(request,'staff/invoice.html')
+
 
 def staff_lab_report(request):
     if request.method == 'POST':

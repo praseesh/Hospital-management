@@ -91,6 +91,8 @@ def doctor_delete(request, doctor_id):
     doctor.delete()
     return redirect('doctor_list')
 
+
+
 #  <-------------------------------------------STAFF SECTION-------------------------------------------->
 
 def staff_list(request):
@@ -170,6 +172,11 @@ def patient_create(request):
     else:
         form = CustomPatientCreationForm()
     return render (request,'hospital_admins/patient_create.html',{'form':form})
+
+def patient_delete(request, patient_id):
+    patient = get_object_or_404(Patient,id = patient_id)
+    patient.delete()
+    return redirect('patient_list')
 
 
 
