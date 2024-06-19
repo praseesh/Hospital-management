@@ -125,12 +125,11 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-# Ensure STATICFILES_DIRS is correctly set
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
+    os.path.join(BASE_DIR, 'hospital_management', 'hospital_management', 'static'),
 ]
 
-# Ensure you have STATIC_ROOT defined if you plan to use collectstatic
+# STATIC_ROOT is where collectstatic will gather static files for deployment
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

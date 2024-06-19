@@ -15,6 +15,8 @@ urlpatterns = [
     
     path('invoice',views.staff_invoice,name='staff_invoice'),
     path('lab_report', views.staff_lab_report, name="staff_lab_report"),
+    path('lab_report_create',views.staff_labreport_create, name="lab_report_create" ),
+    
     path('prescription', views.staff_prescription, name="staff_prescription"),
     path('discharge', views.staff_discharge, name="staff_discharge"),
     path('rooms', views.staff_rooms, name="staff_rooms"),

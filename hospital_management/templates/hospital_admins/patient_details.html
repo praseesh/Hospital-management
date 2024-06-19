@@ -6,29 +6,25 @@
     <title>Patient Details</title>
 </head>
 <body>
-    <h1> {{ patient.firstname }} {{ patient.lastname }} </h1>
+    <h1>{{ patient.firstname }} {{ patient.lastname }}</h1>
     <p>Firstname: {{ patient.firstname }}</p>
-    <p>Lastname: {{ patient.lastname }} </p>
+    <p>Lastname: {{ patient.lastname }}</p>
     <p>Mobile: {{ patient.mobile }}</p>
     <p>Email: {{ patient.email }}</p>
-    <p>Date of Birth: {{ patient.dob }} </p>
-    <p>Gender: {{ patient.gender }} </p>
-    <p>Admission Date: {{ patient.admission_date }} </p>
-    <p>Checkout Date: {{ patient.checkout_date }} </p>
+    <p>Date of Birth: {{ patient.dob }}</p>
+    <p>Gender: {{ patient.gender }}</p>
+    <p>Admission Date: {{ patient.admission_date }}</p>
+    <p>Checkout Date: {{ patient.checkout_date }}</p>
 
     <button><a href="{% url 'patient_edit' patient.id %}">Edit</a></button>
-    <button>
-        <a href="{% url 'patient_delete' patient.id %}">DELETE</a>
-    </button>
+    <button onclick="confirmDelete({{ patient.id }})">DELETE</button>
+
     <script>
         function confirmDelete(patientId) {
-            if (!patientId) {
-                alert("Invalid patient ID.");
-                return;
-            }
-        
             if (confirm("Are you sure you want to delete this patient?")) {
-                window.location.href = "{% url 'staff_patient_delete' patient_id=patient.id %}";
+                
+                const deleteUrl = "{% url 'patient_delete' patient_id=0 %}".replace('0', patientId);
+                window.location.href = deleteUrl;
             }
         }
     </script>

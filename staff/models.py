@@ -89,9 +89,9 @@ class Prescription(models.Model):
         db_table = 'prescriptions'
         
 class LabReport(models.Model):
-    category = models.CharField(max_length=100)
     patient = models.ForeignKey(Patient,on_delete=models.CASCADE)       
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
+    category = models.CharField(max_length=100)
     date = models.DateField()
     amount = models.CharField(max_length=50, default='pending')
     remarks = models.TextField(blank=True, null=True)

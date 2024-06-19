@@ -85,10 +85,12 @@ def staff_patient_edit(request, patient_id):
             form = CustomPatientCreationForm()
     return render(request, 'staff/patient_edit.html',{'form':form})
 
-#<-------------------------------------------STAFF PATIENT----------------------------------------------->
 
 def staff_invoice(request):
     return render(request,'staff/invoice.html')
+
+#<------------------------------------------LAB REPORT----------------------------------------------->
+
 
 
 def staff_lab_report(request):
@@ -100,6 +102,20 @@ def staff_lab_report(request):
     else:
         form = LabReportCreation()
     return render(request, 'staff/lab_report.html',{'form':form})
+
+def staff_labreport_create(request):
+    if request.method =='POST':
+        form = LabReportCreation(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('staff_lab_report')
+    else:
+        form = LabReportCreation()
+    return render(request, 'staff/lab_report_create.html', {'form':form}) 
+   
+#<----------------------------------------------------------------------------------------------------->
+#<------------------------------------------PRESCRIPTION----------------------------------------------->
+#<----------------------------------------------------------------------------------------------------->
 
 def staff_prescription(request):
     return render (request, 'staff/prescription.html')
