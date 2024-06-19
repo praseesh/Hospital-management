@@ -1,24 +1,45 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Patient Details</title>
+    {% comment %} <link href="{% static 'css/staff/patient_details.css' %}" rel="stylesheet"> {% endcomment %}
 </head>
 <body>
     <h1> {{ patient.firstname }} {{ patient.lastname }} </h1>
-    <p>Firstname: {{ patient.firstname }}</p>
-    <p>Lastname: {{ patient.lastname }} </p>
-    <p>Mobile: {{ patient.mobile }}</p>
-    <p>Email: {{ patient.email }}</p>
-    <p>Date of Birth: {{ patient.dob }} </p>
-    <p>Gender: {{ patient.gender }} </p>
-    <p>Admission Date: {{ patient.admission_date }} </p>
-    <p>Checkout Date: {{ patient.checkout_date }} </p>
+    <div class="details">
+        <p><strong>Firstname:</strong> {{ patient.firstname }}</p>
+        <p><strong>Lastname:</strong> {{ patient.lastname }} </p>
+        <p><strong>Mobile:</strong> {{ patient.mobile }}</p>
+        <p><strong>Email:</strong> {{ patient.email }}</p>
+        <p><strong>Date of Birth:</strong> {{ patient.dob|date:"F j, Y" }}</p>
+        <p><strong>Gender:</strong> {{ patient.gender }}</p>
+        <p><strong>Admission Date:</strong> {{ patient.admission_date|date:"F j, Y" }}</p>
+        <p><strong>Checkout Date:</strong> {{ patient.checkout_date|default:"Not checked out yet" }}</p>
+        <button><a href="{% url 'staff_patient_edit' patient.id %}">Edit</a></button>
+        <button onclick="confirmDelete({{ patient.id }})">DELETE</button>
+    </div>
 
-    <button><a href="{% url 'staff_patient_edit' patient.id %}">Edit</a></button>
-    <button>
-        <a href="{% url 'staff_patient_delete' patient.id %}">DELETE</a>
-    </button>
+    <script>
+        function confirmDelete(patientId) {
+            if (!patientId) {
+                alert("Invalid patient ID.");
+                return;
+            }
+        
+            if (confirm("Are you sure you want to delete this patient?")) {
+                window.location.href = "{% url 'staff_patient_delete' patient_id=patient.id %}";
+            }
+        }
+    </script>
 </body>
 </html>
+
+
+
+
+
+
+

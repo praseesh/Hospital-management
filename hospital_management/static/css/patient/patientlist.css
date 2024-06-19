@@ -1,0 +1,74 @@
+body {
+    background-color: #0d1117;
+    color: #c9d1d9;
+    font-family: 'Roboto', sans-serif;
+}
+.navbar {
+    background-color: #9ed329;
+    border-bottom: 1px solid #30363d;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.navbar .nav-link {
+    color: #c9d1d9;
+    transition: color 0.3s ease;
+}
+.navbar .nav-link:hover {
+    color: #58a6ff;
+}
+.navbar-brand img {
+    filter: invert(1);
+}
+.form-control {
+    background-color: #161b22;
+    border: 1px solid #30363d;
+    color: #c9d1d9;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+.form-control::placeholder {
+    color: #8b949e;
+}
+.form-control:focus {
+    border-color: #58a6ff;
+    background-color: #0d1117;
+}
+.btn-outline-primary {
+    color: #58a6ff;
+    border-color: #58a6ff;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+.btn-outline-primary:hover {
+    background-color: #58a6ff;
+    color: #0d1117;
+}
+.btn-success {
+    transition: background-color 0.3s ease;
+}
+.btn-success a {
+    color: #ffffff;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+.btn-success:hover {
+    background-color: #2ea043;
+}
+.btn-success:hover a {
+    color: #0d1117;
+}
+.list-group-item {
+    background-color: #161b22;
+    border: 1px solid #30363d;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+.list-group-item:hover {
+    background-color: #0d1117;
+    border-color: #58a6ff;
+}
+.list-group-item a {
+    color: #58a6ff;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+.list-group-item a:hover {
+    text-decoration: underline;
+    color: #c9d1d9;
+}

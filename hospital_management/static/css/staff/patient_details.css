@@ -1,0 +1,30 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    padding: 20px;
+    background-color: #f8f9fa;
+}
+h1 {
+    color: #333;
+}
+.details {
+    margin-top: 20px;
+}
+.details p {
+    margin-bottom: 10px;
+}
+.details button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+.details button a {
+    color: #fff;
+    text-decoration: none;
+}
+.details button:hover {
+    background-color: #0056b3;
+}
