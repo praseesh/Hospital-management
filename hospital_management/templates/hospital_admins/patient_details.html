@@ -20,6 +20,17 @@
     <button>
         <a href="{% url 'patient_delete' patient.id %}">DELETE</a>
     </button>
-   
+    <script>
+        function confirmDelete(patientId) {
+            if (!patientId) {
+                alert("Invalid patient ID.");
+                return;
+            }
+        
+            if (confirm("Are you sure you want to delete this patient?")) {
+                window.location.href = "{% url 'staff_patient_delete' patient_id=patient.id %}";
+            }
+        }
+    </script>
 </body>
 </html>
