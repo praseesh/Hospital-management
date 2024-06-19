@@ -1,4 +1,4 @@
-from .models import Staff, LabReport
+from .models import Staff, LabReport, Prescription,SugarTest
 from django import forms
 from django.contrib.auth.hashers import make_password
 
@@ -21,4 +21,19 @@ class CustomStaffModification(forms.ModelForm):
 class LabReportCreation(forms.ModelForm):
     class Meta:
         model = LabReport
-        fields = ['category','patient', 'doctor', 'date', 'amount', 'remarks', 'result']
+        fields = ['category','patient', 'doctor', 'date', 'amount', 'result']
+        
+
+class PrescriptionForm(forms.ModelForm):
+    class Meta:
+        model = Prescription
+        fields = ['patient', 'doctor', 'medication', 'dosage', 'frequency', 'duration', 'instructions']
+        
+class SugarTestForm(forms.Form):
+    fbs	 = forms.CharField(max_length=50)
+    pbs	 = forms.CharField(max_length=50)
+    rbs	 = forms.CharField(max_length=50)
+    hba1c= forms.CharField(max_length=50)
+    ogtt = forms.CharField(max_length=50)
+    class Meta:
+        fields = ['result']

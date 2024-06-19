@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Prescription List</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    
+</head>
+<body >
+    <h1>Prescription List</h1>
+    <div style="text-align: right; margin-bottom: 20px;">
+        <a href="{% url 'staff_prescription_create' %}" class="btn btn-primary">Create Prescription</a>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Prescription ID</th>
+                <th>Medication</th>
+                <th>Dosage</th>
+                <th>Frequency</th>
+                <th>Duration</th>
+                <th>Instructions</th>
+                <th>Created By</th>
+                <th>Date Created</th>
+                <th>Date Last Modified</th>
+                <th>Doctor</th>
+                <th>Patient</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for prescription in prescriptions %}
+                <tr>
+                    <td>{{ prescription.prescription_id }}</td>
+                    <td>{{ prescription.medication }}</td>
+                    <td>{{ prescription.dosage }}</td>
+                    <td>{{ prescription.frequency }}</td>
+                    <td>{{ prescription.duration }}</td>
+                    <td>{{ prescription.instructions }}</td>
+                    <td>{{ prescription.created_by }}</td>
+                    <td>{{ prescription.date_created }}</td>
+                    <td>{{ prescription.date_last_modified }}</td>
+                    <td>{{ prescription.doctor.name }}</td>
+                    <td>{{ prescription.patient.name }}</td>
+                    <td>
+                        <a href="{% url 'delete_prescription' prescription.prescription_id %}">Delete</a>
+                    </td>
+                    <td>
+                        {% comment %} {% url 'send_email' prescription.prescription_id %} {% endcomment %}
+                        <a href="">Send To Email</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

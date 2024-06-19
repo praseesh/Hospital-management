@@ -1,7 +1,8 @@
+
 from django.shortcuts import render,redirect, get_object_or_404
-from .models import StaffAction, Staff, StaffActionRoles
+from .models import StaffAction, Staff, StaffActionRoles,Prescription,ST,SugarTest
 from django.contrib.auth.hashers import check_password
-from .forms import LabReportCreation
+from .forms import LabReportCreation, PrescriptionForm,SugarTestForm
 from patient.forms import CustomPatientCreationForm,CustomPatientModification
 from patient.models import Patient
 
@@ -89,8 +90,52 @@ def staff_patient_edit(request, patient_id):
 def staff_invoice(request):
     return render(request,'staff/invoice.html')
 
-#<------------------------------------------LAB REPORT----------------------------------------------->
 
+
+   
+#<----------------------------------------------------------------------------------------------------->
+#<------------------------------------------PRESCRIPTION----------------------------------------------->
+#<----------------------------------------------------------------------------------------------------->
+
+def staff_prescription_create(request):
+    if 'staff_id' not in request.session:
+        return redirect('staff_login')
+
+    staff_id = request.session['staff_id']
+    
+    if request.method == 'POST':
+        form = PrescriptionForm(request.POST)
+        if form.is_valid():
+            prescription = form.save(commit=False)
+            prescription.created_by = staff_id
+            prescription.save()
+            return redirect('staff_prescription')
+    else:
+        form = PrescriptionForm()
+    return render(request, 'staff/prescription.html', {'form': form})
+
+def staff_prescription(request):
+    if 'staff_id' not in request.session:
+        return redirect('staff_login')
+
+    staff_id = request.session['staff_id']
+    prescriptions = Prescription.objects.filter(created_by=staff_id).distinct()
+    return render (request,'staff/prescription_list.html',{'prescriptions': prescriptions})
+
+def staff_rooms(request):
+    return render (request,'staff/rooms.html')
+
+def staff_discharge(request):
+    return render(request, 'staff/discharge.html')
+
+def staff_appointment(request):
+    return render(request, 'staff/appointment.html')
+
+def delete_prescription(request,patient_id):
+    pass
+
+
+#<------------------------------------------LAB REPORT----------------------------------------------->
 
 
 def staff_lab_report(request):
@@ -112,19 +157,33 @@ def staff_labreport_create(request):
     else:
         form = LabReportCreation()
     return render(request, 'staff/lab_report_create.html', {'form':form}) 
-   
-#<----------------------------------------------------------------------------------------------------->
-#<------------------------------------------PRESCRIPTION----------------------------------------------->
-#<----------------------------------------------------------------------------------------------------->
 
-def staff_prescription(request):
-    return render (request, 'staff/prescription.html')
 
-def staff_rooms(request):
-    return render (request,'staff/rooms.html')
 
-def staff_discharge(request):
-    return render(request, 'staff/discharge.html')
+def create_kidney_test(request):
+    pass
 
-def staff_appointment(request):
-    return render(request, 'staff/appointment.html')
+
+def create_sugar_test(request):
+ if request.method =='POST':
+    form = SugarTestForm(request.POST)
+    if form.is_valid():
+        fbs_value = form.cleaned_data.get('fbs')
+        pbs_value = form.cleaned_data.get('pbs')
+        rbs_value = form.cleaned_data.get('rbs')
+        hba1c_value = form.cleaned_data.get('hba1c')
+        ogtt_value = form.cleaned_data.get('ogtt')
+        concatenated_values = f'{fbs_value}, {pbs_value}, {rbs_value}, {hba1c_value}, {ogtt_value}'
+        new_sugar_test = SugarTest.objects.create(
+        result=concatenated_values,
+        )
+        new_sugar_test.save()
+    
+    return render(request,'staff/sugar_test.html')
+ else:
+        form = SugarTestForm()
+        st = ST.objects.all()
+        return render(request, 'staff/sugar_test.html', {'form':form,'st':st}) 
+
+def create_liver_test(request):
+    pass
