@@ -93,7 +93,6 @@ def staff_invoice(request):
 
 
    
-#<----------------------------------------------------------------------------------------------------->
 #<------------------------------------------PRESCRIPTION----------------------------------------------->
 #<----------------------------------------------------------------------------------------------------->
 
@@ -119,20 +118,30 @@ def staff_prescription(request):
         return redirect('staff_login')
 
     staff_id = request.session['staff_id']
-    prescriptions = Prescription.objects.filter(created_by=staff_id).distinct()
-    return render (request,'staff/prescription_list.html',{'prescriptions': prescriptions})
+    prescriptions = Prescription.objects.filter(created_by=staff_id).select_related('patient', 'doctor')
+    return render(request, 'staff/prescription_list.html', {'prescriptions': prescriptions})
+
+def delete_prescription(request, prescription_id):
+    prescription = get_object_or_404(Prescription, id=prescription_id)
+    prescription.delete()
+    return redirect('staff_prescription')
+    
+#<----------------------------------------------ROOMS----------------------------------------------->
 
 def staff_rooms(request):
     return render (request,'staff/rooms.html')
 
+#<----------------------------------------------DISCHARGE----------------------------------------------->
+
 def staff_discharge(request):
     return render(request, 'staff/discharge.html')
+
+#<----------------------------------------------DISCHARGE----------------------------------------------->
 
 def staff_appointment(request):
     return render(request, 'staff/appointment.html')
 
-def delete_prescription(request,patient_id):
-    pass
+
 
 
 #<------------------------------------------LAB REPORT----------------------------------------------->
