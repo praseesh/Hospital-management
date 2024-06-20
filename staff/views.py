@@ -177,8 +177,30 @@ def create_cholesterol_test(request):
         return render(request,'staff/cholesterol_test.html', {'form':form}, {'ct':ct})
 
 def create_kidney_test(request):
+    if request.method == 'POST':
+        form = KidneyFunctionTest(request.POST)
+        if form.is_valid():
+            urea_value = form.cleaned_data.get('urea')
+            creatinine_value = form.cleaned_data.get('creatinine')
+            uric_acid_value = form.cleaned_data.get('uric_acid')
+            calcium_total_value = form.cleaned_data.get('calcium_total')
+            phosphorus_value = form.cleaned_data.get('phosphorus')
+            alkaline_phosphatase_value = form.cleaned_data.get('alkaline_phosphatase')
+            total_protein_value = form.cleaned_data.get('total_protein')
+            albumin_value = form.cleaned_data.get('albumin')
+            sodium_value = form.cleaned_data.get('sodium')
+            potassium_value = form.cleaned_data.get('potassium')
+            chloride_value = form.cleaned_data.get('chloride')
+            
+            concatenated_values = f" { urea_value }, { creatinine_value }, { uric_acid_value }, { calcium_total_value }, { phosphorus_value }, { alkaline_phosphatase_value }, { total_protein_value }, { albumin_value }, { sodium_value }, { potassium_value }, { chloride_value } "
+            new_kidney_test = KidneyFunctionTest.objects.create(result = concatenated_values)
+            new_kidney_test.save()
+        return render(request, 'staff/kidney_test.html', {'form':form})
+    else:
+        form = KidneyTestForm()
+        kft = KFT.objects.all()
+        return render(request, 'staff/kidney_test.html', {'form': form}, {'kft':kft})
     
-    pass
 
 
 def create_sugar_test(request):

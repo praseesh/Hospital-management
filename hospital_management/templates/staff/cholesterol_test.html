@@ -36,16 +36,14 @@
                 <tr>
                     <td>{{ ct.investigation }}</td>
                     <td>
-                        {% if ct.investigation == 'Fasting Blood Sugar' %}
-                            {{ form.fbs }}
-                        {% elif ct.investigation == 'Postprandial Blood Sugar' %}
-                            {{ form.pbs }}
-                        {% elif ct.investigation == 'Random Blood Sugar' %}
-                            {{ form.rbs }}
-                        {% elif ct.investigation == 'HbA1c' %}
-                            {{ form.hba1c }}
-                        {% elif ct.investigation == 'Oral Glucose Tolerance Test (OGTT)' %}
-                            {{ form.ogtt }}
+                        {% if ct.investigation == 'Total Cholesterol' %}
+                            {{ form.total_cholesterol }}
+                        {% elif ct.investigation == 'LDL Cholesterol (Low-Density Lipoprotein)' %}
+                            {{ form.ldl_cholesterol }}
+                        {% elif ct.investigation == 'HDL Cholesterol (High-Density Lipoprotein)' %}
+                            {{ form.hdl_cholesterol }}
+                        {% elif ct.investigation == 'Triglycerides' %}
+                            {{ form.triglycerides }}
                         {% endif %}
                     </td>
                     <td>{{ ct.reference_value }}</td>
