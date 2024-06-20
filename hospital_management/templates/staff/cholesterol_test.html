@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cholesterol Test</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <table>
+        <form method="post" action="{% url 'create_cholestrerol_test' %}">
+            {% csrf_token %}
+        <thead>
+            <tr>
+                <th>Investgation</th>
+                <th>Result</th>
+                <th>Reference</th>
+                <th>Unit</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ct in ct %}
+                <tr>
+                    <td>{{ ct.investigation }}</td>
+                    <td>
+                        {% if ct.investigation == 'Fasting Blood Sugar' %}
+                            {{ form.fbs }}
+                        {% elif ct.investigation == 'Postprandial Blood Sugar' %}
+                            {{ form.pbs }}
+                        {% elif ct.investigation == 'Random Blood Sugar' %}
+                            {{ form.rbs }}
+                        {% elif ct.investigation == 'HbA1c' %}
+                            {{ form.hba1c }}
+                        {% elif ct.investigation == 'Oral Glucose Tolerance Test (OGTT)' %}
+                            {{ form.ogtt }}
+                        {% endif %}
+                    </td>
+                    <td>{{ ct.reference_value }}</td>
+                    <td>{{ ct.unit }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <button type="submit">Submit</button>
+    </form>
+    
+</body>
+</html>

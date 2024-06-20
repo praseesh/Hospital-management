@@ -1,8 +1,8 @@
 
 from django.shortcuts import render,redirect, get_object_or_404
-from .models import StaffAction, Staff, StaffActionRoles,Prescription,ST,SugarTest
+from .models import StaffAction, Staff, StaffActionRoles,Prescription,ST,SugarTest,CholesterolTest,CT,LiverFunctionTest,LFT,KidneyFunctionTest,KFT
 from django.contrib.auth.hashers import check_password
-from .forms import LabReportCreation, PrescriptionForm,SugarTestForm
+from .forms import LabReportCreation, PrescriptionForm,SugarTestForm,CholesterolTestForm,KidneyTestForm, LiverTestForm
 from patient.forms import CustomPatientCreationForm,CustomPatientModification
 from patient.models import Patient
 
@@ -159,8 +159,25 @@ def staff_labreport_create(request):
     return render(request, 'staff/lab_report_create.html', {'form':form}) 
 
 
+def create_cholesterol_test(request):
+    if request.method=='POST':
+        form = CholesterolTestForm(request.POST)
+        if form.is_valid():
+            total_cholesterol =form.cleaned_data.get('total_cholesterol')
+            ldl_cholesterol = form.cleaned_data.get('ldl_cholesterol')
+            hdl_cholesterol = form.cleaned_data.get('hdl_cholesterol')
+            triglycerides = form.cleaned_data.get('triglycerides')
+            concatenated_values = f' { total_cholesterol },{ ldl_cholesterol }, { hdl_cholesterol }, { triglycerides } '
+            new_cholesterol_test = CholesterolTest.objects.create(result=concatenated_values)
+            new_cholesterol_test.save()
+        return render(request, 'staff/cholesterol_test.html')
+    else:
+        form = CholesterolTestForm()
+        ct = CT.objects.all()
+        return render(request,'staff/cholesterol_test.html', {'form':form}, {'ct':ct})
 
 def create_kidney_test(request):
+    
     pass
 
 

@@ -140,56 +140,59 @@ class LFT(models.Model):
     
     class Meta:
         db_table = 'lft'
+        
+class CholesterolTest(models.Model):
+    investigation = models.CharField(
+        max_length=255,
+        default='Total Cholesterol, LDL Cholesterol (Low-Density Lipoprotein), HDL Cholesterol (High-Density Lipoprotein), Triglycerides'
+    )
+    reference_value = models.CharField(
+        max_length=255,
+        default='< 200, < 100, > 40, < 150'
+    )
+    unit = models.CharField(
+        max_length=255,
+        default='mg/dL, mg/dL, mg/dL, mg/dL'
+    )
+
+    class Meta:
+        db_table = 'cholesterol_test'
+        
+    def __str__(self):
+        return self.investigation
     
+class CT(models.Model):
+    investigation = models.CharField(max_length=50)
+    reference_value = models.CharField(max_length=20)
+    unit = models.CharField(max_length=10)
     
-# class BloodSugarTest(models.Model):
-#     investigation = models.CharField(max_length=50, null=True, blank=True)
-#     result = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
-#     reference_value = models.CharField(max_length=20, null=True, blank=True)
-#     unit = models.CharField(max_length=10, null=True, blank=True)
-
-#     class Meta:
-#         db_table = 'sugar_test'
+    class Meta:
+        db_table = 'ct'
         
-# class KidneyFunctionTest(models.Model):
-#     investigation = models.CharField(max_length=50, null=True, blank=True)
-#     result = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
-#     reference_value = models.CharField(max_length=20, null=True, blank=True)
-#     unit = models.CharField(max_length=10, null=True, blank=True)
-
-#     class Meta:
-#         db_table = 'kidney_function_test'
+class KidneyFunctionTest(models.Model):
+    investigation = models.CharField(
+        max_length=255,
+        default='Urea, Creatinine, Uric Acid, Calcium, Total, Phosphorus, Alkaline Phosphatase (ALP), Total Protein, Albumin, Sodium, Potassium, Chloride'
+    )
+    reference_value = models.CharField(
+        max_length=255,
+        default='13 - 43, 0.7 - 1.3, 3.5 - 7.2, 8.7 - 10.4, 2.4 - 5.1, 30 - 120, 5.7 - 8.2, 3.2 - 4.8, 136 - 145, 3.5 - 5.1, 98 - 107'
+    )
+    unit = models.CharField(
+        max_length=255,
+        default='mg/dL, mg/dL, mg/dL, mg/dL, mg/dL, U/L, g/dL, g/dL, mEq/L, mEq/L, mEq/L'
+    )
+    class Meta:
+        db_table = 'kidney_function_test'
         
-# class CholesterolTest(models.Model):
-#     investigation = models.CharField(max_length=50, null=True, blank=True)
-#     result = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
-#     reference_value = models.CharField(max_length=20, null=True, blank=True)
-#     unit = models.CharField(max_length=10, null=True, blank=True)
-      
-#     class Meta:
-#         db_table = 'cholesterol_test'
-        
-# class LiverFunctionTest(models.Model):
-#     investigation = models.CharField(max_length=50, null=True, blank=True)
-#     result = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
-#     reference_value = models.CharField(max_length=20, null=True, blank=True)
-#     unit = models.CharField(max_length=10, null=True, blank=True)
-      
-#     class Meta:
-#         db_table = 'liver_function_test'
-
-# 23
-# 44
-# 55
-# 33
-# 11
-
-# '23, 44, 55, 33, 11  '
-
-# CREATE TABLE kidney_function_test (
-#     id SERIAL PRIMARY KEY,
-#     investigation VARCHAR(50) DEFAULT 'Urea, Creatinine, Uric Acid, Calcium, Total, Phosphorus, Alkaline Phosphatase (ALP), Total Protein, Albumin, Sodium, Potassium, Chloride',
-#     # result varchar(20)
-#     reference_value VARCHAR(20) DEFAULT '13 - 43, 0.7 - 1.3, 3.5 - 7.2, 8.7 - 10.4, 2.4 - 5.1, 30 - 120, 5.7 - 8.2, 3.2 - 4.8, 136 - 145, 3.5 - 5.1, 98 - 107',
-#     unit VARCHAR(10) DEFAULT 'mg/dL, mg/dL, mg/dL, mg/dL, mg/dL, U/L, g/dL, g/dL, mEq/L, mEq/L, mEq/L'
-# );
+    def __str__(self):
+        return self.investigation
+    
+class KFT(models.Model):
+    investigation = models.CharField(max_length=50)
+    reference_value = models.CharField(max_length=20)
+    unit = models.CharField(max_length=10)
+    
+    class Meta:
+        db_table = 'kft'
+    
