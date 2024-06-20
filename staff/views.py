@@ -159,22 +159,25 @@ def staff_labreport_create(request):
     return render(request, 'staff/lab_report_create.html', {'form':form}) 
 
 
+
 def create_cholesterol_test(request):
-    if request.method=='POST':
+    if request.method == 'POST':
         form = CholesterolTestForm(request.POST)
         if form.is_valid():
-            total_cholesterol =form.cleaned_data.get('total_cholesterol')
+            total_cholesterol = form.cleaned_data.get('total_cholesterol')
             ldl_cholesterol = form.cleaned_data.get('ldl_cholesterol')
             hdl_cholesterol = form.cleaned_data.get('hdl_cholesterol')
             triglycerides = form.cleaned_data.get('triglycerides')
-            concatenated_values = f' { total_cholesterol },{ ldl_cholesterol }, { hdl_cholesterol }, { triglycerides } '
+            concatenated_values = f'{total_cholesterol}, {ldl_cholesterol}, {hdl_cholesterol}, {triglycerides}'
             new_cholesterol_test = CholesterolTest.objects.create(result=concatenated_values)
             new_cholesterol_test.save()
-        return render(request, 'staff/cholesterol_test.html')
+        form = CholesterolTestForm()
+        ct = CT.objects.all()
+        return render(request, 'staff/cholesterol_test.html', {'form': form, 'ct': ct})
     else:
         form = CholesterolTestForm()
         ct = CT.objects.all()
-        return render(request,'staff/cholesterol_test.html', {'form':form}, {'ct':ct})
+        return render(request, 'staff/cholesterol_test.html', {'form': form, 'ct': ct})
 
 def create_kidney_test(request):
     if request.method == 'POST':

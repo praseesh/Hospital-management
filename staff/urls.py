@@ -19,6 +19,7 @@ urlpatterns = [
     path('kidney_test',views.create_kidney_test,name="create_kidney_test"),
     path('sugar_test',views.create_sugar_test,name="create_sugar_test"),
     path('liver_test',views.create_liver_test,name="create_liver_test"),
+    # path('cholesterol_test', views.create_cholesterol_test, name="create_cholesterol_test"),
     path('cholesterol_test', views.create_cholesterol_test, name="create_cholesterol_test"),
     
     path('prescription', views.staff_prescription, name="staff_prescription"),
