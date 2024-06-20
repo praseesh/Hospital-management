@@ -1,0 +1,71 @@
+<!DOlftYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cholesterol Test</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <table>
+        <form method="post" alftion="{% url 'create_liver_test' %}">
+            {% csrf_token %}
+        <thead>
+            <tr>
+                <th>Investgation</th>
+                <th>Result</th>
+                <th>Reference</th>
+                <th>Unit</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for lft in lft %}
+                <tr>
+                    <td>{{ lft.investigation }}</td>
+                    <td>
+                        {% if lft.investigation == 'Total Bilirubin' %}
+                        {{ form.total_bilirubin }}
+                        {% elif lft.investigation == 'Direct Bilirubin' %}
+                            {{ form.direct_bilirubin }}
+                        {% elif lft.investigation == 'Indirect Bilirubin' %}
+                            {{ form.indirect_bilirubin }}
+                        {% elif lft.investigation == 'Aspartate Aminotransferase (AST/SGOT)' %}
+                            {{ form.ast_sgot }}
+                        {% elif lft.investigation == 'Alanine Aminotransferase (ALT/SGPT)' %}
+                            {{ form.alt_sgpt }}
+                        {% elif lft.investigation == 'Alkaline Phosphatase (ALP)' %}
+                            {{ form.alp }}
+                        {% elif lft.investigation == 'Total Protein' %}
+                            {{ form.total_protein }}
+                        {% elif lft.investigation == 'Albumin' %}
+                            {{ form.albumin }}
+                        {% elif lft.investigation == 'Globulin' %}
+                            {{ form.globulin }}
+                        {% elif lft.investigation == 'Albumin/Globulin Ratio' %}
+                            {{ form.albumin_globulin_ratio }}
+                        {% endif %}
+                    </td>
+                    <td>{{ lft.reference_value }}</td>
+                    <td>{{ lft.unit }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <button type="submit">Submit</button>
+    </form>
+    
+</body>
+</html>

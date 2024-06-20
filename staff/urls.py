@@ -13,6 +13,7 @@ urlpatterns = [
     path('patient/delete/<int:patient_id>', views.staff_patient_delete, name='staff_patient_delete'),
     
     path('invoice',views.staff_invoice,name='staff_invoice'),
+    
     path('lab_report', views.staff_lab_report, name="staff_lab_report"),
     path('lab_report_create',views.staff_labreport_create, name="lab_report_create" ),
     path('kidney_test',views.create_kidney_test,name="create_kidney_test"),

@@ -1,0 +1,73 @@
+<!DOkftYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cholesterol Test</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <table>
+        <form method="post" akftion="{% url 'create_kidney_test' %}">
+            {% csrf_token %}
+        <thead>
+            <tr>
+                <th>Investgation</th>
+                <th>Result</th>
+                <th>Reference</th>
+                <th>Unit</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for kft in kft %}
+                <tr>
+                    <td>{{ kft.investigation }}</td>
+                    <td>
+                        {% if kft.investigation == 'Urea' %}
+                            {{ form.urea }}
+                        {% elif kft.investigation == 'Creatinine' %}
+                            {{ form.creatinine }}
+                        {% elif kft.investigation == 'Uric Acid' %}
+                            {{ form.uric_acid }}
+                        {% elif kft.investigation == 'Calcium Total' %}
+                            {{ form.calcium_total }}
+                        {% elif kft.investigation == 'Phosphorus' %}
+                            {{ form.phosphorus }}
+                        {% elif kft.investigation == 'Alkaline Phosphatase (ALP)' %}
+                            {{ form.alkaline_phosphatase }}
+                        {% elif kft.investigation == 'Total Protein' %}
+                            {{ form.total_protein }}
+                        {% elif kft.investigation == 'Albumin' %}
+                            {{ form.albumin }}
+                        {% elif kft.investigation == 'Sodium' %}
+                            {{ form.sodium }}
+                        {% elif kft.investigation == 'Potassium' %}
+                            {{ form.potassium }}
+                        {% elif kft.investigation == 'Chloride' %}
+                            {{ form.chloride }}
+                        {% endif %}
+                    </td>
+                    <td>{{ kft.reference_value }}</td>
+                    <td>{{ kft.unit }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <button type="submit">Submit</button>
+    </form>
+    
+</body>
+</html>
