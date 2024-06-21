@@ -67,6 +67,8 @@ def staff_patient_list(request):
     return render(request, 'staff/patient_list.html', {'patient':patient})
 
 def staff_patient_details(request, patient_id):
+    if 'staff_id' not in request.session:
+        return redirect('staff_login')
     patient = get_object_or_404(Patient, id=patient_id)
     return render (request, 'staff/patient_details.html', {'patient': patient})
 
@@ -116,19 +118,18 @@ def staff_prescription_create(request):
 def staff_prescription(request):
     if 'staff_id' not in request.session:
         return redirect('staff_login')
-
     staff_id = request.session['staff_id']
     prescriptions = Prescription.objects.filter(created_by=staff_id).select_related('patient', 'doctor')
     return render(request, 'staff/prescription_list.html', {'prescriptions': prescriptions})
 
 def delete_prescription(request, prescription_id):
-    prescription = get_object_or_404(Prescription, id=prescription_id)
+    prescription = get_object_or_404(Prescription,id=prescription_id)
     prescription.delete()
     return redirect('staff_prescription')
     
 #<----------------------------------------------ROOMS----------------------------------------------->
 
-def staff_rooms(request):
+def rooms(request):
     return render (request,'staff/rooms.html')
 
 #<----------------------------------------------DISCHARGE----------------------------------------------->

@@ -22,12 +22,12 @@ urlpatterns = [
     path('cholesterol_test', views.create_cholesterol_test, name="create_cholesterol_test"),
     
     path('prescription', views.staff_prescription, name="staff_prescription"),
-    path('staff/prescription/delete/<int:prescription_id>/', views.delete_prescription, name='delete_prescription'),
+    path('prescription/delete/<int:prescription_id>', views.delete_prescription, name='delete_prescription'),
     path('prescription_create', views.staff_prescription_create, name="staff_prescription_create"),
     path('staff_prescription_list', views.staff_prescription, name="staff_prescription_list"),
     
     path('discharge', views.staff_discharge, name="staff_discharge"),
-    path('rooms', views.staff_rooms, name="staff_rooms"),
+    path('rooms', views.rooms, name="staff_rooms"),
     path('appointment', views.staff_appointment, name="staff_appointment"),
     path('patient/edit/<int:patient_id>', views.staff_patient_edit, name="staff_patient_edit"),
     
