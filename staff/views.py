@@ -1,10 +1,11 @@
 
 from django.shortcuts import render,redirect, get_object_or_404
-from .models import StaffAction, Staff, StaffActionRoles,Prescription,ST,SugarTest,CholesterolTest,CT,LiverFunctionTest,LFT,KidneyFunctionTest,KFT
+from .models import StaffAction, Staff, StaffActionRoles, Invoice, Prescription,ST,SugarTest,CholesterolTest,CT,LiverFunctionTest,LFT,KidneyFunctionTest,KFT
 from django.contrib.auth.hashers import check_password
-from .forms import LabReportCreation, PrescriptionForm,SugarTestForm,CholesterolTestForm,KidneyTestForm, LiverTestForm
+from .forms import LabReportCreation, InvoiceCreationForm, PrescriptionForm,SugarTestForm,CholesterolTestForm,KidneyTestForm, LiverTestForm
 from patient.forms import CustomPatientCreationForm,CustomPatientModification
 from patient.models import Patient
+
 
     
 def staff(request):
@@ -89,8 +90,7 @@ def staff_patient_edit(request, patient_id):
     return render(request, 'staff/patient_edit.html',{'form':form})
 
 
-def staff_invoice(request):
-    return render(request,'staff/invoice.html')
+
 
 
 
@@ -107,7 +107,7 @@ def staff_prescription_create(request):
     if request.method == 'POST':
         form = PrescriptionForm(request.POST)
         if form.is_valid():
-            prescription = form.save(commit=False)
+            prescription = form.save(commit=False)  
             prescription.created_by = staff_id
             prescription.save()
             return redirect('staff_prescription')
@@ -181,9 +181,7 @@ def create_cholesterol_test(request):
             concatenated_values = f'{total_cholesterol}, {ldl_cholesterol}, {hdl_cholesterol}, {triglycerides}'
             new_cholesterol_test = CholesterolTest.objects.create(result=concatenated_values)
             new_cholesterol_test.save()
-        form = CholesterolTestForm()
-        ct = CT.objects.all()
-        return render(request, 'staff/cholesterol_test.html', {'form': form, 'ct': ct})
+        return render(request, 'staff/cholesterol_test.html', {'form': form})
     else:
         form = CholesterolTestForm()
         ct = CT.objects.all()
@@ -191,7 +189,7 @@ def create_cholesterol_test(request):
 
 def create_kidney_test(request):
     if request.method == 'POST':
-        form = KidneyFunctionTest(request.POST)
+        form = KidneyTestForm(request.POST)
         if form.is_valid():
             urea_value = form.cleaned_data.get('urea')
             creatinine_value = form.cleaned_data.get('creatinine')
@@ -208,11 +206,11 @@ def create_kidney_test(request):
             concatenated_values = f" { urea_value }, { creatinine_value }, { uric_acid_value }, { calcium_total_value }, { phosphorus_value }, { alkaline_phosphatase_value }, { total_protein_value }, { albumin_value }, { sodium_value }, { potassium_value }, { chloride_value } "
             new_kidney_test = KidneyFunctionTest.objects.create(result = concatenated_values)
             new_kidney_test.save()
-        return render(request, 'staff/kidney_test.html', {'form':form})
+        return render(request, 'staff/kidney_test.html')
     else:
         form = KidneyTestForm()
         kft = KFT.objects.all()
-        return render(request, 'staff/kidney_test.html', {'form': form}, {'kft':kft})
+        return render(request, 'staff/kidney_test.html', {'form': form, 'kft': kft})
     
 
 
@@ -239,3 +237,13 @@ def create_sugar_test(request):
 
 def create_liver_test(request):
     pass
+
+
+#<------------------------------------------INVOICE----------------------------------------------->
+
+
+def staff_invoice(request):
+    if request.method =='POST':
+        return redirect('staff_login')
+    invoice = Invoice.objects.create()
+    return render(request,'staff/invoice.html')

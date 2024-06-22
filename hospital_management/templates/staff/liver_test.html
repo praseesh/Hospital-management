@@ -1,4 +1,4 @@
-<!DOlftYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -21,7 +21,7 @@
 </head>
 <body>
     <table>
-        <form method="post" alftion="{% url 'create_liver_test' %}">
+        <form method="post" action="{% url 'create_liver_test' %}">
             {% csrf_token %}
         <thead>
             <tr>

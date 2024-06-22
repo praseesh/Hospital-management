@@ -1,0 +1,50 @@
+body {
+    background-color: #0d1117;
+    color: #c9d1d9;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.card {
+    border: none;
+    background-color: #161b22;
+}
+
+.card-title {
+    color: #58a6ff;
+}
+
+.form-control {
+    background-color: #0d1117;
+    border: 1px solid #30363d;
+    color: #c9d1d9;
+}
+
+.form-control::placeholder {
+    color: #8b949e;
+}
+
+.btn-primary {
+    background-color: #238636;
+    border-color: #238636;
+}
+
+.btn-primary:hover {
+    background-color: #2ea043;
+    border-color: #2ea043;
+}
+
+.alert-danger {
+    background-color: #da3633;
+    border-color: #da3633;
+    color: #fff;
+}
+
+.container {
+    max-width: 400px;
+}
+
+@media (max-width: 576px) {
+    .container {
+        padding: 0 15px;
+    }
+}

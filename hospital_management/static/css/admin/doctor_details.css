@@ -1,0 +1,43 @@
+body {
+    background-color: #0d1117;
+    color: #c9d1d9;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+h1 {
+    color: #58a6ff;
+}
+
+.card {
+    border: none;
+    background-color: #161b22;
+}
+
+.card p {
+    margin-bottom: 0.5rem;
+}
+
+.btn-primary {
+    background-color: #238636;
+    border-color: #238636;
+}
+
+.btn-primary:hover {
+    background-color: #2ea043;
+    border-color: #2ea043;
+}
+
+.btn-danger {
+    background-color: #d73a49;
+    border-color: #d73a49;
+}
+
+.btn-danger:hover {
+    background-color: #cb2431;
+    border-color: #cb2431;
+}
+
+.container {
+    max-width: 600px;
+    margin: auto;
+}

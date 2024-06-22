@@ -195,4 +195,20 @@ class KFT(models.Model):
     
     class Meta:
         db_table = 'kft'
+        
+#__________________________________________INVOICE_____________________________________________
     
+class Invoice(models.Model):
+    invoice_no = models.CharField(max_length=50)
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    payment_method = models.CharField(max_length=255)
+    description = models.CharField(max_length=255)
+    status = models.CharField(max_length=50)
+    date = models.DateField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'invoice'
+    
+    def __str__(self):
+        return f"Invoice {self.invoice_no} for {self.patient}"

@@ -1,4 +1,4 @@
-from .models import Staff, LabReport, Prescription,SugarTest
+from .models import Staff, LabReport, Prescription,SugarTest,Invoice
 from django import forms
 from django.contrib.auth.hashers import make_password
 
@@ -78,3 +78,9 @@ class LiverTestForm(forms.Form):
 
     class Meta:
         fields = ['result']
+        
+        
+class InvoiceCreationForm(forms.ModelForm):
+    class Meta:
+        model = Invoice
+        fields = '__all__'
