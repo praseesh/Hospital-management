@@ -5,7 +5,7 @@ from .models import Doctor
 class DoctorCreationForm(forms.ModelForm):
     class Meta:
         model = Doctor
-        fields = ['firstname', 'lastname', 'specialty', 'email', 'availability', 'contact', 'password']
+        fields = ['firstname', 'lastname', 'specialty', 'email', 'availability', 'contact']
 
 class DoctorModificationForm(forms.ModelForm):
     class Meta:

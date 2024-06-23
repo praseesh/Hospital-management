@@ -7,7 +7,8 @@ from patient.forms import CustomPatientCreationForm,CustomPatientModification
 from patient.models import Patient, Room
 
 
-    
+#<-----------------------------------------STAFF---------------------------------------------------->
+
 def staff(request):
     if 'staff_id' in request.session:
         staff_id = request.session['staff_id']
@@ -90,13 +91,7 @@ def staff_patient_edit(request, patient_id):
     return render(request, 'staff/patient_edit.html',{'form':form})
 
 
-
-
-
-
-   
 #<------------------------------------------PRESCRIPTION----------------------------------------------->
-#<----------------------------------------------------------------------------------------------------->
 
 def staff_prescription_create(request):
     if 'staff_id' not in request.session:
@@ -271,17 +266,41 @@ def staff_invoice(request):
 
 #<----------------------------------------------ROOMS----------------------------------------------->
 
-def rooms(request):
-    rooms =None
+def staff_rooms(request):
     if request.method == "GET":
-        rooms = Room.objects.all()
-        
-    return render (request,'staff/rooms.html',{'rooms':rooms} )
-
+        room_no = request.GET.get('search')
+        rooms = Room.objects.filter(room_number__icontains=room_no) if room_no else Room.objects.all()
+        context = {'rooms': rooms, 'room_no': room_no}
+        return render(request, 'staff/rooms.html', context)
 
 def create_room(request):
     if request.method == 'POST':
-        return redirect('create_room')
+        form = CreateRoomForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('staff_rooms')
+    else:
+        form = CreateRoomForm()
+    return render(request, 'staff/create_rooms.html', {'form': form})
+
+def assign_patient(request,room_id):
+    if request.method=="POST":
+        patient_id = request.POST.get('patient_id')
         
-    form = CreateRoomForm
-    return render(request,'staff/create_rooms.html',{'form': form,})
+        try:
+            patient = Patient.objects.get(id=patient_id)
+            room = Room.objects.get(id=room_id)
+            patient.room = room
+            patient.save()
+            return redirect('staff_rooms')
+        except Patient.DoesNotExist:
+            error_message = "Patient does not exist."
+        except Room.DoesNotExist:
+            error_message = "Room does not Exist"
+        except Exception as e:
+            error_message = str(e)
+        return render(request, 'staff/assign_patient.html', {'message':error_message, 'room_id': room_id})
+        
+    
+    return render(request, 'staff/assign_patient.html', {'room_id': room_id})
+    

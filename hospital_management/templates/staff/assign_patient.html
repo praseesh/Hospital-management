@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Room Creation</title>
+    <title>Assign Room</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -52,11 +52,15 @@
     </style>
 </head>
 <body>
-    <h2>Create Room</h2>
-    <form action="{% url 'create_room' %}" method="post">
+    <h2>Assign Room</h2>
+    <form action="{% url 'assign_patient' room_id %}" method="post">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button>Submit</button>
+        <label for="patient_id">Patient ID:</label>
+        <input type="text" id="patient_id" name="patient_id" required>
+        <button type="submit">Assign Room</button>
     </form>
+    {% if message %}
+        <p style="color: red;">{{ message }}</p>
+    {% endif %}
 </body>
 </html>

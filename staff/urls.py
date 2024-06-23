@@ -22,14 +22,17 @@ urlpatterns = [
     path('cholesterol_test', views.create_cholesterol_test, name="create_cholesterol_test"),
     
     path('prescription', views.staff_prescription, name="staff_prescription"),
-    path('prescription/delete/<int:prescription_id>', views.delete_prescription, name='delete_prescription'),
+    path('prescription/delete/<int:prescription_id>/', views.delete_prescription, name='delete_prescription'),
     path('prescription_create', views.staff_prescription_create, name="staff_prescription_create"),
     path('staff_prescription_list', views.staff_prescription, name="staff_prescription_list"),
     
     path('discharge', views.staff_discharge, name="staff_discharge"),
+    path('staff_rooms', views.staff_rooms, name="staff_rooms"),
+    path('create_room',views.create_room, name="create_room"),
+    path('room_search', views.staff_rooms,name="room_search"),
+    # path('assign_patient', views.assign_patient, name="assign_patient"),
+     path('assign_patient/<int:room_id>/', views.assign_patient, name='assign_patient'),
     
-    path('create_room',views.create_rooms, name="create_room"),
-    path('rooms', views.rooms, name="staff_rooms"),
     path('appointment', views.staff_appointment, name="staff_appointment"),
     path('patient/edit/<int:patient_id>', views.staff_patient_edit, name="staff_patient_edit"),
     

@@ -7,8 +7,62 @@
     <title>Doctor List</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="{% static 'css/doctor_list.css' %}" rel="stylesheet">
+    <style>
+        body {
+            background-color: #0d1117;
+            color: #c9d1d9;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #161b22;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+            width: 90%;
+            max-width: 800px;
+        }
+        h1 {
+            color: #58a6ff;
+        }
+        .form-control {
+            background-color: #0d1117;
+            color: #c9d1d9;
+            border: 1px solid #30363d;
+        }
+        .btn-primary {
+            background-color: #2ea043;
+            border-color: #2ea043;
+        }
+        .btn-primary:hover {
+            background-color: #26963c;
+            border-color: #26963c;
+        }
+        .btn-success {
+            background-color: #1f6feb;
+            border-color: #1f6feb;
+        }
+        .btn-success:hover {
+            background-color: #1158c7;
+            border-color: #1158c7;
+        }
+        .list-group-item {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+        }
+        .text-light {
+            color: #c9d1d9 !important;
+        }
+        .text-decoration-none {
+            text-decoration: none !important;
+        }
+    </style>
 </head>
-<body >
+<body>
     <div class="container mt-4">
         <h1 class="text-center mb-4">All Doctors</h1>
         <div class="d-flex justify-content-between mb-4">

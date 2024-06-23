@@ -71,7 +71,7 @@ class StaffActionRoles(models.Model):
 
 
 class Prescription(models.Model):
-    prescription_id = models.AutoField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name='prescriptions')
     medication = models.CharField(max_length=255)

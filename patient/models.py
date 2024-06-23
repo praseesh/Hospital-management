@@ -15,6 +15,9 @@ class Room(models.Model):
 
     class Meta:
         db_table = 'rooms'
+        
+    def is_vacant(self):
+        return not self.patient_set.exists()
     
     def __str__(self):
         return f"{self.room_number} - {self.type}"

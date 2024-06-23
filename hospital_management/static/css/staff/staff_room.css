@@ -1,6 +1,6 @@
 body {
     background-color: #0d1117;
-    color: #0482ff;
+    color: #c9d1d9;
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
@@ -54,4 +54,29 @@ h1 {
 .container {
     max-width: 800px;
     margin: auto;
+}
+
+.table {
+    background-color: #161b22;
+    color: #c9d1d9;
+}
+
+.table thead th {
+    color: #58a6ff;
+}
+
+.table tbody td {
+    color: #c9d1d9;
+}
+
+.table tbody tr:hover {
+    background-color: #21262d;
+}
+
+a {
+    color: #58a6ff;
+}
+
+a:hover {
+    color: #1f6feb;
 }
