@@ -283,6 +283,7 @@ def create_room(request):
         form = CreateRoomForm()
     return render(request, 'staff/create_rooms.html', {'form': form})
 
+
 def assign_patient(request,room_id):
     if request.method=="POST":
         patient_id = request.POST.get('patient_id')
