@@ -6,6 +6,14 @@
     <title>Document</title>
 </head>
 <body>
-    <h1>Rooms</h1>
+    <h1>Rooms List</h1>
+    <ul class="list-group">
+        {% for room in rooms %}
+            <li class="list-group-item">
+                <a href="{% url 'staff_patient_details' patient.pk %}">{{ room }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+        
 </body>
 </html>

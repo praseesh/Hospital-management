@@ -51,7 +51,6 @@ class Staff(models.Model):
     
 class StaffAction(models.Model):
     name = models.CharField(max_length=100)
-    # role = models.ForeignKey(Roles, on_delete=models.CASCADE, default=1)
     description = models.CharField(max_length=255)
     url_name = models.CharField(max_length=100, default="")
 
@@ -87,18 +86,7 @@ class Prescription(models.Model):
     class Meta:
         db_table = 'prescriptions'
         
-class LabReport(models.Model):
-    patient = models.ForeignKey(Patient,on_delete=models.CASCADE)       
-    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
-    category = models.CharField(max_length=100)
-    date = models.DateField()
-    amount = models.CharField(max_length=50, default='pending')
-    result = models.TextField(blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    
-    class Meta:
-        db_table = 'lab_report'
+
         
         
 class SugarTest(models.Model):
@@ -212,3 +200,30 @@ class Invoice(models.Model):
     
     def __str__(self):
         return f"Invoice {self.invoice_no} for {self.patient}"
+    
+    
+    
+class LabReport(models.Model):
+    CATEGORY_CHOICES = [
+        ('Sugar Test', 'Sugar Test'),
+        ('Cholesterol Test', 'Cholesterol Test'),
+        ('Liver Test', 'Liver Test'),
+        ('Kidney Test', 'Kidney Test'),
+    ]
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
+    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
+    category = models.CharField(max_length=100,choices=CATEGORY_CHOICES)
+    date = models.DateField()
+    amount = models.CharField(max_length=50, default='pending')
+    result = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    liver_test = models.ForeignKey(LiverFunctionTest, on_delete=models.CASCADE, null=True, blank=True)
+    kidney_test = models.ForeignKey(KidneyFunctionTest, on_delete=models.CASCADE, null=True, blank=True)
+    sugar_test = models.ForeignKey(SugarTest, on_delete=models.CASCADE, null=True, blank=True)
+    cholesterol_test = models.ForeignKey(CholesterolTest, on_delete=models.CASCADE, null=True, blank=True)
+
+    class Meta:
+        db_table = 'lab_report'
+        
+        

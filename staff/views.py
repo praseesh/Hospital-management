@@ -2,9 +2,9 @@
 from django.shortcuts import render,redirect, get_object_or_404
 from .models import StaffAction, Staff, StaffActionRoles, Invoice, Prescription,ST,SugarTest,CholesterolTest,CT,LiverFunctionTest,LFT,KidneyFunctionTest,KFT
 from django.contrib.auth.hashers import check_password
-from .forms import LabReportCreation, InvoiceCreationForm, PrescriptionForm,SugarTestForm,CholesterolTestForm,KidneyTestForm, LiverTestForm
+from .forms import LabReportCreation, InvoiceCreationForm, PrescriptionForm,SugarTestForm,CholesterolTestForm,KidneyTestForm, LiverTestForm,CreateRoomForm
 from patient.forms import CustomPatientCreationForm,CustomPatientModification
-from patient.models import Patient
+from patient.models import Patient, Room
 
 
     
@@ -127,10 +127,7 @@ def delete_prescription(request, prescription_id):
     prescription.delete()
     return redirect('staff_prescription')
     
-#<----------------------------------------------ROOMS----------------------------------------------->
 
-def rooms(request):
-    return render (request,'staff/rooms.html')
 
 #<----------------------------------------------DISCHARGE----------------------------------------------->
 
@@ -148,7 +145,7 @@ def staff_appointment(request):
 #<------------------------------------------LAB REPORT----------------------------------------------->
 
 
-def staff_lab_report(request):
+def staff_lab_report(request, liver_test_id=None, kidney_test_id=None, sugar_test_id=None, cholesterol_test_id=None):
     if request.method == 'POST':
         form = LabReportCreation(request.POST)
         if form.is_valid():
@@ -181,6 +178,7 @@ def create_cholesterol_test(request):
             concatenated_values = f'{total_cholesterol}, {ldl_cholesterol}, {hdl_cholesterol}, {triglycerides}'
             new_cholesterol_test = CholesterolTest.objects.create(result=concatenated_values)
             new_cholesterol_test.save()
+            return redirect('staff_lab_report')
         return render(request, 'staff/cholesterol_test.html', {'form': form})
     else:
         form = CholesterolTestForm()
@@ -206,6 +204,8 @@ def create_kidney_test(request):
             concatenated_values = f" { urea_value }, { creatinine_value }, { uric_acid_value }, { calcium_total_value }, { phosphorus_value }, { alkaline_phosphatase_value }, { total_protein_value }, { albumin_value }, { sodium_value }, { potassium_value }, { chloride_value } "
             new_kidney_test = KidneyFunctionTest.objects.create(result = concatenated_values)
             new_kidney_test.save()
+            return redirect('staff_lab_report')
+        
         return render(request, 'staff/kidney_test.html')
     else:
         form = KidneyTestForm()
@@ -224,11 +224,10 @@ def create_sugar_test(request):
         hba1c_value = form.cleaned_data.get('hba1c')
         ogtt_value = form.cleaned_data.get('ogtt')
         concatenated_values = f'{fbs_value}, {pbs_value}, {rbs_value}, {hba1c_value}, {ogtt_value}'
-        new_sugar_test = SugarTest.objects.create(
-        result=concatenated_values,
-        )
+        new_sugar_test = SugarTest.objects.create(result=concatenated_values,)
         new_sugar_test.save()
-    
+        return redirect('staff_lab_report')
+
     return render(request,'staff/sugar_test.html')
  else:
         form = SugarTestForm()
@@ -236,8 +235,30 @@ def create_sugar_test(request):
         return render(request, 'staff/sugar_test.html', {'form':form,'st':st}) 
 
 def create_liver_test(request):
-    pass
-
+    if request.method =='POST':
+        form = LiverTestForm(request.POST)
+        if form.is_valid():
+            total_bilirubin = form.cleaned_data.get('total_bilirubin')
+            direct_bilirubin = form.cleaned_data.get('direct_bilirubin')
+            indirect_bilirubin = form.cleaned_data.get('indirect_bilirubin')
+            ast_sgot= form.cleaned_data.get('ast_sgot')
+            alt_sgot = form.cleaned_data.get('alt_sgpt')
+            alp= form.cleaned_data.get('alp')
+            total_protein= form.cleaned_data.get('total_protein')
+            albumin= form.cleaned_data.get('albumin')
+            globulin = form.cleaned_data.get('globulin')
+            albumin_globulin_ratio = form.cleaned_data.get('albumin_globulin_ratio')
+            
+            concatenated_values = f"{ total_bilirubin }, {direct_bilirubin}, { indirect_bilirubin }, { ast_sgot }, {alt_sgot}, { alp }, { total_protein }, { albumin }, { globulin } { albumin_globulin_ratio }"
+            new_lft = LiverFunctionTest.objects.create(result = concatenated_values)
+            new_lft.save()
+            return redirect('staff_lab_report')
+        return render(request,'staff/liver_test.html')
+    else:
+        form = LiverTestForm()
+        lft = LFT.objects.all()
+        return render(request, 'staff/liver_test.html', {'form': form, 'lft':lft})
+    
 
 #<------------------------------------------INVOICE----------------------------------------------->
 
@@ -247,3 +268,20 @@ def staff_invoice(request):
         return redirect('staff_login')
     invoice = Invoice.objects.create()
     return render(request,'staff/invoice.html')
+
+#<----------------------------------------------ROOMS----------------------------------------------->
+
+def rooms(request):
+    rooms =None
+    if request.method == "GET":
+        rooms = Room.objects.all()
+        
+    return render (request,'staff/rooms.html',{'rooms':rooms} )
+
+
+def create_room(request):
+    if request.method == 'POST':
+        return redirect('create_room')
+        
+    form = CreateRoomForm
+    return render(request,'staff/create_rooms.html',{'form': form,})

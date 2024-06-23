@@ -3,19 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kidney test</title>
+    <title>Kidney Test</title>
     <style>
+        body {
+            background-color: #0d1117;
+            color: #c9d1d9;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
         table {
             width: 100%;
             border-collapse: collapse;
+            margin: 20px 0;
         }
         th, td {
-            border: 1px solid black;
-            padding: 8px;
+            border: 1px solid #30363d;
+            padding: 12px;
             text-align: left;
         }
         th {
-            background-color: #f2f2f2;
+            background-color: #161b22;
+            color: #8b949e;
+        }
+        td {
+            background-color: #0d1117;
+        }
+        form {
+            padding: 20px;
+            max-width: 90%;
+            margin: auto;
+        }
+        button {
+            background-color: #238636;
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #2ea043;
+        }
+        button:active {
+            background-color: #238636;
+        }
+        @media (max-width: 768px) {
+            table, th, td {
+                display: block;
+                width: 100%;
+            }
+            th {
+                display: none;
+            }
+            td {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding-left: 50%;
+                position: relative;
+            }
+            td:before {
+                content: attr(data-label);
+                position: absolute;
+                left: 10px;
+                width: 45%;
+                padding-right: 10px;
+                text-align: left;
+                font-weight: bold;
+            }
         }
     </style>
 </head>
@@ -34,8 +91,8 @@
             <tbody>
                 {% for kft in kft %}
                     <tr>
-                        <td>{{ kft.investigation }}</td>
-                        <td>
+                        <td data-label="Investigation">{{ kft.investigation }}</td>
+                        <td data-label="Result">
                             {% if kft.investigation == 'Urea' %}
                                 {{ form.urea }}
                             {% elif kft.investigation == 'Creatinine' %}
@@ -60,13 +117,13 @@
                                 {{ form.chloride }}
                             {% endif %}
                         </td>
-                        <td>{{ kft.reference_value }}</td>
-                        <td>{{ kft.unit }}</td>
+                        <td data-label="Reference">{{ kft.reference_value }}</td>
+                        <td data-label="Unit">{{ kft.unit }}</td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
-        <button type="submit">Submit</button>
+        <button type="submit" onclick="alert('Form submitted!')">Submit</button>
     </form>
 </body>
 </html>

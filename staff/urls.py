@@ -27,6 +27,8 @@ urlpatterns = [
     path('staff_prescription_list', views.staff_prescription, name="staff_prescription_list"),
     
     path('discharge', views.staff_discharge, name="staff_discharge"),
+    
+    path('create_room',views.create_rooms, name="create_room"),
     path('rooms', views.rooms, name="staff_rooms"),
     path('appointment', views.staff_appointment, name="staff_appointment"),
     path('patient/edit/<int:patient_id>', views.staff_patient_edit, name="staff_patient_edit"),

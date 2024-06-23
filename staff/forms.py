@@ -1,4 +1,5 @@
 from .models import Staff, LabReport, Prescription,SugarTest,Invoice
+from patient.models import Room
 from django import forms
 from django.contrib.auth.hashers import make_password
 
@@ -19,10 +20,35 @@ class CustomStaffModification(forms.ModelForm):
         fields = ['firstname', 'lastname','role', 'contact','email'] 
         
 class LabReportCreation(forms.ModelForm):
+    # class Meta:
+    #     model = LabReport
+    #     fields = ['category','patient', 'doctor', 'date', 'amount', 'result', 'kidney_test', 'liver_test', 'sugar_test', 'cholesterol_test']
+    #     widgets = {
+    #         'date': forms.DateInput(attrs={'type': 'date'}),
+    #     }
     class Meta:
         model = LabReport
-        fields = ['category','patient', 'doctor', 'date', 'amount', 'result']
-        
+        fields = ['category', 'patient', 'doctor', 'date', 'amount', 'result', 'kidney_test', 'liver_test', 'sugar_test', 'cholesterol_test']
+        widgets = {
+            'date': forms.DateInput(attrs={'type': 'date'}),
+        }
+        labels = {
+            'category': 'Category',
+            'patient': 'Patient',
+            'doctor': 'Doctor',
+            'date': 'Date',
+            'amount': 'Amount',
+            'result': 'Result',
+            'kidney_test': 'Kidney Test',
+            'liver_test': 'Liver Test',
+            'sugar_test': 'Sugar Test',
+            'cholesterol_test': 'Cholesterol Test',
+        }
+
+    def clean_date(self):
+        date = self.cleaned_data['date']
+
+        return date
 
 class PrescriptionForm(forms.ModelForm):
     class Meta:
@@ -83,4 +109,9 @@ class LiverTestForm(forms.Form):
 class InvoiceCreationForm(forms.ModelForm):
     class Meta:
         model = Invoice
+        fields = '__all__'
+        
+class CreateRoomForm(forms.ModelForm):
+    class Meta:
+        model = Room
         fields = '__all__'

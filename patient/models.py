@@ -1,6 +1,24 @@
 from django.db import models
 from datetime import datetime
 
+class Room(models.Model):
+    ROOM_TYPES = [
+        ('General', 'General'),
+        ('ICU', 'ICU'),
+        ('Rooms', 'Rooms'),
+    ]
+    
+    room_number = models.CharField(max_length=50, unique=True)
+    type = models.CharField(max_length=50, choices=ROOM_TYPES)
+    is_vacant = models.BooleanField(default=True)
+    price = models.IntegerField()
+
+    class Meta:
+        db_table = 'rooms'
+    
+    def __str__(self):
+        return f"{self.room_number} - {self.type}"
+
 class Patient(models.Model):
     firstname = models.CharField(max_length=255, blank=False, null=False)
     lastname = models.CharField(max_length=255, blank=True, null=True)  
@@ -9,7 +27,8 @@ class Patient(models.Model):
     dob = models.DateField(blank=False, null=False)
     gender = models.CharField(max_length=7, blank=True, null=True) 
     address = models.CharField(max_length=255, blank=True, null=True)
-    admission_date = models.DateField(blank=True, null=True, default=datetime.now)
+    room = models.ForeignKey(Room, on_delete=models.SET_NULL, null=True, blank=True)
+    admission_date = models.DateField(blank=True, null=True)
     checkout_date = models.DateField(blank=True, null=True, default=None) 
     
     class Meta:
@@ -17,3 +36,4 @@ class Patient(models.Model):
 
     def __str__(self):
         return f"{self.firstname} {self.lastname}"
+    
