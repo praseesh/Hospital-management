@@ -9,31 +9,48 @@ class Room(models.Model):
     ]
     
     room_number = models.CharField(max_length=50, unique=True)
-    type = models.CharField(max_length=50, choices=ROOM_TYPES)
+    room_type = models.CharField(max_length=50, choices=ROOM_TYPES)
     is_vacant = models.BooleanField(default=True)
     price = models.IntegerField()
 
     class Meta:
         db_table = 'rooms'
-        
-    def is_vacant(self):
-        return not self.patient_set.exists()
     
     def __str__(self):
         return f"{self.room_number} - {self.type}"
 
 class Patient(models.Model):
+    DISEASE_CHOICES = [
+        ('fever', 'Fever'),
+        ('headache', 'Headache'),
+        ('flu', 'Flu'),
+        ('covid', 'COVID-19'),
+        ('diabetes', 'Diabetes'),
+        ('hypertension', 'Hypertension'),
+        ('asthma', 'Asthma'),
+        ('arthritis', 'Arthritis'),
+        ('cancer', 'Cancer'),
+        ('depression', 'Depression'),
+        ('allergy', 'Allergy'),
+        ('pneumonia', 'Pneumonia'),
+        ('bronchitis', 'Bronchitis'),
+        ('migraine', 'Migraine'),
+        ('insomnia', 'Insomnia'),
+        ('other', 'Other'),
+    ]
+
     firstname = models.CharField(max_length=255, blank=False, null=False)
-    lastname = models.CharField(max_length=255, blank=True, null=True)  
+    lastname = models.CharField(max_length=255, blank=True, null=True)
     mobile = models.CharField(max_length=20, unique=True, blank=False, null=False)
     email = models.CharField(max_length=255, unique=True, blank=False, null=False)
     dob = models.DateField(blank=False, null=False)
-    gender = models.CharField(max_length=7, blank=True, null=True) 
+    disease = models.CharField(max_length=50, choices=DISEASE_CHOICES, blank=False, null=False, default='')
+    gender = models.CharField(max_length=7, blank=True, null=True)
     address = models.CharField(max_length=255, blank=True, null=True)
     room = models.ForeignKey(Room, on_delete=models.SET_NULL, null=True, blank=True)
     admission_date = models.DateField(blank=True, null=True)
-    checkout_date = models.DateField(blank=True, null=True, default=None) 
-    
+    checkout_date = models.DateField(blank=True, null=True, default=None)
+
     class Meta:
         db_table = 'patient'     
 

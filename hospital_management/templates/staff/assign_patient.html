@@ -7,25 +7,32 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f6f8fa;
-            color: #24292e;
+            background-color: #0d1117;
+            color: #c9d1d9;
             margin: 0;
             padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
         h2 {
-            color: #0366d6; /* GitHub blue */
+            color: #58a6ff;
+            text-align: center;
         }
         form {
-            background-color: #fff;
+            background-color: #161b22;
             padding: 20px;
             border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            margin-top: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
         }
         label {
             font-weight: bold;
             margin-bottom: 10px;
             display: block;
+            color: #c9d1d9;
         }
         input[type="text"],
         input[type="number"] {
@@ -33,13 +40,16 @@
             padding: 8px;
             margin-bottom: 15px;
             box-sizing: border-box;
-            border: 1px solid #ccc;
+            border: 1px solid #30363d;
             border-radius: 3px;
             font-size: 14px;
+            background-color: #0d1117;
+            color: #c9d1d9;
         }
         button {
+            width: 100%;
             padding: 10px 20px;
-            background-color: #2ea44f; /* GitHub green */
+            background-color: #2ea44f;
             color: #fff;
             border: none;
             border-radius: 5px;
@@ -47,20 +57,24 @@
             font-size: 16px;
         }
         button:hover {
-            background-color: #22863a; /* Darker green on hover */
+            background-color: #22863a;
+        }
+        p {
+            color: #ff7b72;
+            text-align: center;
         }
     </style>
 </head>
 <body>
-    <h2>Assign Room</h2>
     <form action="{% url 'assign_patient' room_id %}" method="post">
         {% csrf_token %}
+        <h2>Assign Room</h2>
         <label for="patient_id">Patient ID:</label>
         <input type="text" id="patient_id" name="patient_id" required>
         <button type="submit">Assign Room</button>
     </form>
     {% if message %}
-        <p style="color: red;">{{ message }}</p>
+        <p>{{ message }}</p>
     {% endif %}
 </body>
 </html>

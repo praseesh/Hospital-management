@@ -81,14 +81,15 @@ def staff_patient_delete(request, patient_id):
 
 def staff_patient_edit(request, patient_id):
     patient = get_object_or_404(Patient, id=patient_id)
-    if request.method =="POST":
+    if request.method == "POST":
         form = CustomPatientModification(request.POST, instance=patient)
         if form.is_valid():
             form.save()
             return redirect('staff_patient_list')
     else:
-            form = CustomPatientCreationForm()
-    return render(request, 'staff/patient_edit.html',{'form':form})
+        form = CustomPatientModification(instance=patient)
+    
+    return render(request, 'staff/patient_edit.html', {'form': form})
 
 
 #<------------------------------------------PRESCRIPTION----------------------------------------------->
@@ -262,7 +263,8 @@ def create_liver_test(request):
 def staff_invoice(request):
     if request.method =='POST':
         return redirect('staff_login')
-    invoice = Invoice.objects.create()
+    
+    
     return render(request,'staff/invoice.html')
 
 #<----------------------------------------------ROOMS----------------------------------------------->
@@ -288,21 +290,21 @@ def create_room(request):
 def assign_patient(request,room_id):
     if request.method=="POST":
         patient_id = request.POST.get('patient_id')
-        
-        try:
-            patient = Patient.objects.get(id=patient_id)
-            room = Room.objects.get(id=room_id)
-            patient.room = room
-            patient.save()
-            return redirect('staff_rooms')
-        except Patient.DoesNotExist:
-            error_message = "Patient does not exist."
-        except Room.DoesNotExist:
-            error_message = "Room does not Exist"
-        except Exception as e:
-            error_message = str(e)
-        return render(request, 'staff/assign_patient.html', {'message':error_message, 'room_id': room_id})
-        
     
+        updated = Patient.objects.filter(id=patient_id).update(room_id=room_id)
+        room_update = Room.objects.filter(id=room_id).update(is_vacant=False)
+        if updated:
+            return redirect('staff_rooms')
+        else:
+            error_message = "Patient does not exist."
+
+        return render(request, 'staff/assign_patient.html', {'message': error_message, 'room_id': room_id})
+
     return render(request, 'staff/assign_patient.html', {'room_id': room_id})
     
+    
+    
+    
+    
+    
+# https://www.dbdiagram.io/d/Hospital-Management-665befbcb65d933879443c64

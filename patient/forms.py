@@ -13,13 +13,15 @@ GENDER_CHOICES = [
 ]
 
 class CustomPatientCreationForm(forms.ModelForm):
-
     class Meta:
         model = Patient
-        fields = ['firstname', 'lastname', 'mobile', 'email', 'dob', 'gender', 'address', 'admission_date']
+        fields = ['firstname', 'lastname','disease', 'mobile', 'email', 'dob', 'gender', 'address', 'admission_date']
         widgets = {
             'dob': forms.DateInput(attrs={'type': 'date'}),
             'gender': forms.RadioSelect(choices=GENDER_CHOICES),
+            'admission_date': forms.DateInput(attrs={'type': 'date'}),
+            
+            
         }
         
     def clean_mobile(self):
