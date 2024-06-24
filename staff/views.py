@@ -288,9 +288,14 @@ def create_room(request):
 
 
 def assign_patient(request,room_id):
+    room = get_object_or_404(Room, id=room_id)
     if request.method=="POST":
         patient_id = request.POST.get('patient_id')
-    
+        
+        if not room.is_vacant:
+            error_message = "This room is already occupied."
+            return render(request, 'staff/assign_patient.html', {'message': error_message, 'room_id': room_id})
+        
         updated = Patient.objects.filter(id=patient_id).update(room_id=room_id)
         room_update = Room.objects.filter(id=room_id).update(is_vacant=False)
         if updated:
