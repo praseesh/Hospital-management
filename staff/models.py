@@ -252,4 +252,29 @@ class PatientBills(models.Model):
     class Meta:
         db_table = 'patient_bills'
 
+class Invoice(models.Model):
+    PAYMENT_METHOD_CHOICES = [
+        ('cash', 'Cash'),
+        ('credit_card', 'Credit Card'),
+        ('debit_card', 'Debit Card'),
+        ('paypal', 'PayPal'),
+        ('razorpay', 'Razorpay')
+
+    ]
+    invoice_no = models.CharField(max_length=50)
+    patient_bill = models.ForeignKey(PatientBills, on_delete=models.CASCADE)
+    room_charges = models.IntegerField(null=True, blank=True)
+    medicine_bill = models.FloatField(null=True, blank=True)
+    labreport_bill = models.IntegerField(null=True, blank=True)
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    payment_method = models.CharField(max_length=255, choices=PAYMENT_METHOD_CHOICES)
+    description = models.CharField(max_length=255, blank=True)
+    status = models.CharField(max_length=50)
+    date = models.DateField()
+
+    class Meta:
+        db_table = 'invoice'
+
+    def __str__(self):
+        return self.invoice_no
     
