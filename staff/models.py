@@ -1,6 +1,6 @@
 from django.db import models
 from doctor.models import Doctor
-from patient.models import Patient
+from patient.models import Patient, Room
 
 class StaffManager(models.Manager):
     def get_queryset(self):
@@ -94,7 +94,8 @@ class SugarTest(models.Model):
     result = models.CharField(max_length=255)
     reference_value = models.CharField(max_length=255, default='70 - 100, 70 - 140, 70 - 140, 4.0 - 5.6, 140 - 199')
     unit = models.CharField(max_length=255, default='mg/dL, mg/dL, mg/dL, %, mg/dL')
-   
+    price = models.CharField(max_length=100, default='')
+
     class Meta:
         db_table = 'sugar_test'
     def __str__(self):
@@ -114,6 +115,7 @@ class LiverFunctionTest(models.Model):
     result =models.CharField(max_length=255)
     reference_value = models.CharField(max_length=255,default='0.1 - 1.2, 0.0 - 0.4, 0.1 - 0.8, 5 - 40, 7 - 56, 30 - 120, 6.0 - 8.3, 3.5 - 5.0, 2.0 - 3.5, 1.0 - 2')
     unit = models.CharField(max_length=255,default='mg/dL, mg/dL, mg/dL, U/L, U/L, U/L, g/dL, g/dL, g/dL, ratio')
+    price = models.CharField(max_length=100, default='')
 
     class Meta:
         db_table = 'liver_function_test'
@@ -142,6 +144,8 @@ class CholesterolTest(models.Model):
         max_length=255,
         default='mg/dL, mg/dL, mg/dL, mg/dL'
     )
+    price = models.CharField(max_length=100, default='')
+    
 
     class Meta:
         db_table = 'cholesterol_test'
@@ -170,6 +174,8 @@ class KidneyFunctionTest(models.Model):
         max_length=255,
         default='mg/dL, mg/dL, mg/dL, mg/dL, mg/dL, U/L, g/dL, g/dL, mEq/L, mEq/L, mEq/L'
     )
+    price = models.CharField(max_length=100, default='')
+    
     class Meta:
         db_table = 'kidney_function_test'
         
@@ -232,8 +238,18 @@ class Medicine(models.Model):
     name = models.CharField(max_length=100)
     strength = models.CharField(max_length=50)
     expiry_date = models.DateField()
-    quantity = models.PositiveIntegerField()
+    # quantity = models.PositiveIntegerField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
     class Meta:
         db_table = 'medicine'
-        
+
+class PatientBills(models.Model):
+    patient = models.ForeignKey(Patient,on_delete=models.CASCADE, null=True, blank=True)
+    room = models.ForeignKey(Room,on_delete=models.CASCADE, null=True, blank=True)
+    medicine_bill = models.IntegerField(default=0)
+    lab_report_bill = models.IntegerField(default=0)
+    is_completed = models.BooleanField(default=False)
+    class Meta:
+        db_table = 'patient_bills'
+
+    

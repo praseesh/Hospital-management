@@ -1,4 +1,4 @@
-from .models import Staff, LabReport, Prescription,SugarTest,Invoice
+from .models import Medicine, PatientBills, Staff, LabReport, Prescription,SugarTest,Invoice
 from patient.models import Patient, Room
 from django import forms
 from django.contrib.auth.hashers import make_password
@@ -120,3 +120,9 @@ class RoomAssignForm(forms.ModelForm):
      class Meta:
         model = Patient
         fields = ['id']    
+        
+class MedicineBillCreationForm(forms.ModelForm):
+    
+    class Meta:
+        model = PatientBills
+        fields = ['patient']

@@ -31,7 +31,9 @@ urlpatterns = [
     path('create_room',views.create_room, name="create_room"),
     path('room_search', views.staff_rooms,name="room_search"),
     # path('assign_patient', views.assign_patient, name="assign_patient"),
-     path('assign_patient/<int:room_id>/', views.assign_patient, name='assign_patient'),
+    path('assign_patient/<int:room_id>/', views.assign_patient, name='assign_patient'),
+    path('create_medicine_list', views.create_medicine_list, name="create_medicine_list"), 
+     
     
     path('appointment', views.staff_appointment, name="staff_appointment"),
     path('patient/edit/<int:patient_id>', views.staff_patient_edit, name="staff_patient_edit"),

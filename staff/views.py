@@ -1,8 +1,8 @@
 
 from django.shortcuts import render,redirect, get_object_or_404
-from .models import StaffAction, Staff, StaffActionRoles, Invoice, Prescription,ST,SugarTest,CholesterolTest,CT,LiverFunctionTest,LFT,KidneyFunctionTest,KFT
+from .models import StaffAction, Staff, StaffActionRoles, Invoice, Prescription,ST,SugarTest,CholesterolTest,CT,LiverFunctionTest,LFT,KidneyFunctionTest,KFT, Medicine,PatientBills
 from django.contrib.auth.hashers import check_password
-from .forms import LabReportCreation, InvoiceCreationForm, PrescriptionForm,SugarTestForm,CholesterolTestForm,KidneyTestForm, LiverTestForm,CreateRoomForm
+from .forms import LabReportCreation, InvoiceCreationForm, MedicineBillCreationForm, PrescriptionForm,SugarTestForm,CholesterolTestForm,KidneyTestForm, LiverTestForm,CreateRoomForm
 from patient.forms import CustomPatientCreationForm,CustomPatientModification
 from patient.models import Patient, Room
 
@@ -309,7 +309,20 @@ def assign_patient(request,room_id):
 
     return render(request, 'staff/assign_patient.html', {'room_id': room_id})
     
+
+#<----------------------------------------------MEDICINE----------------------------------------------->
+
+def create_medicine_list(request):
     
+    medicines = Medicine.objects.all()
+    if request.method == 'POST':
+        form = MedicineBillCreationForm(request.POST)
+        total_price = request.POST.get('total_price')
+        
+        return render(request,'staff/create_medicine_list.html',{'medicines':medicines,'msg':'Medicine Bill created successfully','form':form})
+    
+    form = MedicineBillCreationForm(request.POST)
+    return render(request, 'staff/create_medicine_list.html',{'medicines':medicines,'msg':'', 'form':form})
     
     
     
