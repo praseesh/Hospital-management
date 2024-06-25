@@ -298,11 +298,12 @@ def assign_patient(request,room_id):
         
         updated = Patient.objects.filter(id=patient_id).update(room_id=room_id)
         room_update = Room.objects.filter(id=room_id).update(is_vacant=False)
-        if updated:
+        
+        if updated and room_update:
             return redirect('staff_rooms')
         
         else:
-            error_message = "Patient does not exist."
+            error_message = "Patient or Room does not exists"
 
         return render(request, 'staff/assign_patient.html', {'message': error_message, 'room_id': room_id})
 
