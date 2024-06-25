@@ -313,18 +313,45 @@ def assign_patient(request,room_id):
 #<----------------------------------------------MEDICINE----------------------------------------------->
 
 def create_medicine_list(request):
-    
     medicines = Medicine.objects.all()
     if request.method == 'POST':
         form = MedicineBillCreationForm(request.POST)
-        total_price = request.POST.get('total_price')
         
-        return render(request,'staff/create_medicine_list.html',{'medicines':medicines,'msg':'Medicine Bill created successfully','form':form})
+        if form.is_valid():
+            patient = form.cleaned_data.get('patient')
+           
+            if patient is None:
+                return render(request, 'staff/create_medicine_list.html', {
+                    'medicines': medicines,
+                    'form': form,
+                    'msg':'Invalid Patient ID'
+                })
+            patient_id = patient.id
+            total_price = request.POST.get('total_price')
+            bills = PatientBills.objects.filter(patient_id=patient_id, is_completed=False)
+            
+            if bills.exists():
+                bill = bills.first()
+                bill.medicine_bill += float(total_price)
+                bill.save()
+            else:
+                PatientBills.objects.create(
+                    patient_id=patient_id,
+                    medicine_bill = float(total_price)
+                )
+            
+            return render(request, 'staff/create_medicine_list.html', {
+                    'medicines': medicines,
+                    'form': form,
+                    'msg':'Medicine Bill Successfully Generated'
+                })
+    else:
+        form = MedicineBillCreationForm()
     
-    form = MedicineBillCreationForm(request.POST)
-    return render(request, 'staff/create_medicine_list.html',{'medicines':medicines,'msg':'', 'form':form})
-    
-    
+    return render(request, 'staff/create_medicine_list.html', {
+        'medicines': medicines,
+        'form': form
+    })
     
     
 # https://www.dbdiagram.io/d/Hospital-Management-665befbcb65d933879443c64

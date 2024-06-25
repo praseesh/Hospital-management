@@ -7,30 +7,146 @@
     <title>Staff Dashboard</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <link href="{% static 'css/staff/home.css' %}" rel="stylesheet">
+    <style>
+        body {
+            background-color: #0d1117;
+            color: #c9d1d9;
+            font-family: 'Roboto', sans-serif;
+        }
+        .container {
+            margin-top: 20px;
+        }
+        .row {
+            margin-top: 10px;
+        }
+        .card {
+            background-color: #161b22;
+            color: #c9d1d9;
+            border: 1px solid #30363d;
+            transition: transform 0.3s ease-in-out;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .card-title, .card-text {
+            color: #c9d1d9;
+        }
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 200px;
+            background-color: #161b22;
+            border-right: 1px solid #30363d;
+            padding-top: 60px;
+            overflow-y: auto;
+            transition: transform 0.3s ease-in-out;
+            z-index: 1001;
+        }
+        .sidebar a {
+            color: #c9d1d9;
+            text-decoration: none;
+            display: block;
+            padding: 10px 20px;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+        .sidebar a:hover, .sidebar a.active {
+            background-color: #21262d;
+            color: #58a6ff;
+        }
+        .main-content {
+            margin-left: 200px;
+            transition: margin-left 0.3s ease-in-out;
+        }
+        .header {
+            background-color: #161b22;
+            padding: 15px 20px;
+            position: fixed;
+            width: calc(100% - 200px);
+            top: 0;
+            left: 200px;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: left 0.3s ease-in-out, width 0.3s ease-in-out;
+        }
+        .header h1 {
+            margin: 0;
+            color: #58a6ff;
+            font-weight: 700;
+        }
+        .content-wrapper {
+            margin-top: 80px;
+            padding: 20px;
+        }
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: #c9d1d9;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .header {
+                left: 0;
+                width: 100%;
+            }
+            .menu-toggle {
+                display: inline-block;
+            }
+            .content-wrapper {
+                margin-top: 100px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>Staff Homepage</h1>
-    <div class="container mt-5">
-        <div class="row">
-            {% for action in actions %}
-                <div class="col-md-3 mb-4">
-                 {% comment %} <button > {% endcomment %}
-                    <div class="card h-100">
-                        <a href="{% url action.url_name %}" class="stretched-link"></a>
-                        <div class="card-body d-flex flex-column">
-                            <h5 class="card-title">{{ action.name }}</h5>
-                            <p class="card-text">{{ action.description }}</p>
+    <div class="sidebar" id="sidebar">
+        <a href="{% url 'staff_home' %}" class="active">Dashboard</a>
+        {% for action in actions %}
+            <a href="{% url action.url_name %}">{{ action.name }}</a>
+        {% endfor %}
+    </div>
+    <div class="main-content">
+        <div class="header">
+            <button class="menu-toggle" id="menu-toggle">☰</button>
+            <h1>Staff Dashboard</h1>
+        </div>
+        <div class="container content-wrapper">
+            <div class="row">
+                {% for action in actions %}
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title">{{ action.name }}</h5>
+                                <p class="card-text flex-grow-1">{{ action.description }}</p>
+                                <a href="{% url action.url_name %}" class="btn btn-primary mt-auto">Go to {{ action.name }}</a>
+                            </div>
                         </div>
                     </div>
-                {% comment %} </button> {% endcomment %}
-                </div>
-            {% endfor %}
+                {% endfor %}
+            </div>
         </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        document.getElementById('menu-toggle').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('active');
+        });
+    </script>
 </body>
 </html>

@@ -122,7 +122,8 @@ class RoomAssignForm(forms.ModelForm):
         fields = ['id']    
         
 class MedicineBillCreationForm(forms.ModelForm):
-    
+    # patient_id = forms.IntegerField()
+
     class Meta:
         model = PatientBills
         fields = ['patient']
