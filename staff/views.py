@@ -300,6 +300,7 @@ def assign_patient(request,room_id):
         room_update = Room.objects.filter(id=room_id).update(is_vacant=False)
         if updated:
             return redirect('staff_rooms')
+        
         else:
             error_message = "Patient does not exist."
 
