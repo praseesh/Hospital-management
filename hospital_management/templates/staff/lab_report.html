@@ -1,25 +1,153 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Lab Report</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #0d1117;
+            color: #c9d1d9;
+            font-family: 'Roboto', sans-serif;
+        }
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 200px;
+            background-color: #161b22;
+            border-right: 1px solid #30363d;
+            padding-top: 60px;
+            overflow-y: auto;
+            transition: transform 0.3s ease-in-out;
+            z-index: 1001;
+        }
+        .sidebar a {
+            color: #c9d1d9;
+            text-decoration: none;
+            display: block;
+            padding: 10px 20px;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+        .sidebar a:hover, .sidebar a.active {
+            background-color: #21262d;
+            color: #58a6ff;
+        }
+        .main-content {
+            margin-left: 200px;
+            transition: margin-left 0.3s ease-in-out;
+        }
+        .header {
+            background-color: #161b22;
+            padding: 15px 20px;
+            position: fixed;
+            width: calc(100% - 200px);
+            top: 0;
+            left: 200px;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .header h1 {
+            margin: 0;
+            color: #58a6ff;
+            font-weight: 700;
+        }
+        .content-wrapper {
+            margin-top: 80px;
+            padding: 20px;
+        }
+        .btn-primary {
+            background-color: #0969da;
+            border-color: #0969da;
+            margin-bottom: 10px;
+        }
+        .btn-primary:hover {
+            background-color: #0a5bbd;
+            border-color: #0a5bbd;
+        }
+        form {
+            background-color: #161b22;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: #c9d1d9;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .header {
+                left: 0;
+                width: 100%;
+            }
+            .menu-toggle {
+                display: inline-block;
+            }
+            .content-wrapper {
+                margin-top: 100px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>Lab report</h1>
-    <a href="{% url 'create_liver_test' %}" class="btn btn-primary">Create Liver test</a>
-    <a href="{% url 'create_kidney_test' %}" class="btn btn-primary">Create Kidney test</a>
-    <a href="{% url 'create_sugar_test' %}" class="btn btn-primary">Create Sugar test</a>
-    <a href="{% url 'create_cholesterol_test' %}" class="btn btn-primary">Create Cholesterol test</a>
-    
+    <div class="sidebar" id="sidebar">
+        <a href="#" class="active">Lab Report</a>
+        <!-- Add more sidebar links as needed -->
+    </div>
+    <div class="main-content">
+        <div class="header">
+            <button class="menu-toggle" id="menu-toggle">☰</button>
+            <h1>Lab Report</h1>
+        </div>
+        <div class="content-wrapper">
+            <div class="row">
+                <div class="col-md-3 col-sm-6 mb-3">
+                    <a href="{% url 'create_liver_test' %}" class="btn btn-primary btn-block">Create Liver test</a>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-3">
+                    <a href="{% url 'create_kidney_test' %}" class="btn btn-primary btn-block">Create Kidney test</a>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-3">
+                    <a href="{% url 'create_sugar_test' %}" class="btn btn-primary btn-block">Create Sugar test</a>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-3">
+                    <a href="{% url 'create_cholesterol_test' %}" class="btn btn-primary btn-block">Create Cholesterol test</a>
+                </div>
+            </div>
 
+            <form action="{% url 'staff_lab_report' %}" method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-success">Submit</button>
+            </form>
+        </div>
+    </div>
 
-    <form action="url 'staff_lab_report'" method="post" >
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" >Submit</button>
-    </form>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        document.getElementById('menu-toggle').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('active');
+        });
+    </script>
 </body>
 </html>
