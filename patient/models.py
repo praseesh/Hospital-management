@@ -1,5 +1,6 @@
 from django.db import models
 from datetime import datetime
+from doctor.models import Doctor
 
 class Room(models.Model):
     ROOM_TYPES = [
@@ -59,5 +60,45 @@ class Patient(models.Model):
     
     
 
+class Appointment(models.Model):
+    APPOINTMENT_STATUS_CHOICES = [
+        ('scheduled', 'Scheduled'),
+        ('completed', 'Completed'),
+        ('canceled', 'Canceled'),
+    ]
+    DISEASE_CHOICES = [
+        ('fever', 'Fever'),
+        ('headache', 'Headache'),
+        ('flu', 'Flu'),
+        ('covid', 'COVID-19'),
+        ('diabetes', 'Diabetes'),
+        ('hypertension', 'Hypertension'),
+        ('asthma', 'Asthma'),
+        ('arthritis', 'Arthritis'),
+        ('cancer', 'Cancer'),
+        ('depression', 'Depression'),
+        ('allergy', 'Allergy'),
+        ('pneumonia', 'Pneumonia'),
+        ('bronchitis', 'Bronchitis'),
+        ('migraine', 'Migraine'),
+        ('insomnia', 'Insomnia'),
+        ('other', 'Other'),
+    ]
+
+    appointment_id = models.AutoField(primary_key=True)
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
+    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
+    appointment_date = models.DateTimeField()
+    status = models.CharField(max_length=50, choices=APPOINTMENT_STATUS_CHOICES, default='scheduled')
+    reason_for_visit = models.TextField(choices=DISEASE_CHOICES, blank=False, null=False, default='Other')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
+    class Meta:
+        db_table = 'appointment'
+
+    def __str__(self):
+        return f"Appointment {self.appointment_id} - {self.patient} with {self.doctor} on {self.appointment_date}"
 
     
