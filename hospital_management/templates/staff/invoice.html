@@ -7,5 +7,9 @@
 </head>
 <body>
     <h1>Invoice</h1>
+    <form action="{% url 'staff_invoice' %}" method="post">
+        {{ form.as_p }}
+    
+    </form>
 </body>
 </html>

@@ -3,7 +3,7 @@ from django.shortcuts import render,redirect, get_object_or_404
 from .models import StaffAction, Staff, StaffActionRoles, Invoice, Prescription,ST,SugarTest,CholesterolTest,CT,LiverFunctionTest,LFT,KidneyFunctionTest,KFT, Medicine,PatientBills
 from django.contrib.auth.hashers import check_password
 from .forms import LabReportCreation, InvoiceCreationForm, MedicineBillCreationForm, PrescriptionForm,SugarTestForm,CholesterolTestForm,KidneyTestForm, LiverTestForm,CreateRoomForm
-from patient.forms import CustomPatientCreationForm,CustomPatientModification
+from patient.forms import CustomPatientCreationForm,CustomPatientModification, InvoiceForm
 from patient.models import Patient, Room
 
 
@@ -262,10 +262,21 @@ def create_liver_test(request):
 
 def staff_invoice(request):
     if request.method =='POST':
-        return redirect('staff_login')
-    
-    
-    return render(request,'staff/invoice.html')
+        form = InvoiceForm(request.POST)
+        patient_id = form.cleaned_data.get('patient_id')
+        patient = get_object_or_404(Patient.objects.select_related('rooms'),pk=patient_id)
+        if patient.room :
+             price = 'calculate'
+        
+        
+        
+        if form.is_valid():
+            form.save()
+            return redirect('staff_home')
+    else:
+        form = InvoiceForm()
+
+    return render(request,'staff/invoice.html',{'form':form})
 
 #<----------------------------------------------ROOMS----------------------------------------------->
 
@@ -291,12 +302,14 @@ def assign_patient(request,room_id):
     room = get_object_or_404(Room, id=room_id)
     if request.method=="POST":
         patient_id = request.POST.get('patient_id')
-        
+        print("@@@@@@@@",patient_id,room_id)
         if not room.is_vacant:
             error_message = "This room is already occupied."
             return render(request, 'staff/assign_patient.html', {'message': error_message, 'room_id': room_id})
+        print("!!!!!!!!!!!!!!!!!!",patient_id,room_id)
         
-        updated = Patient.objects.filter(id=patient_id).update(room_id=room_id)
+        updated = Patient.objects.filter(id=patient_id).update(room=room_id)
+        print("$$$$$$$$$$$$$$$$$$",patient_id,room_id)
         room_update = Room.objects.filter(id=room_id).update(is_vacant=False)
         
         if updated and room_update:

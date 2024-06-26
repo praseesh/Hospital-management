@@ -1,6 +1,7 @@
 from django.db import models
 from doctor.models import Doctor
 from patient.models import Patient, Room
+from . helper import generate_random_string
 
 class StaffManager(models.Manager):
     def get_queryset(self):
@@ -27,17 +28,17 @@ class Staff(models.Model):
     firstname = models.CharField(max_length=255, blank=False, null=False, default='')
     lastname = models.CharField(max_length=255, blank=True, null=True)
     role = models.ForeignKey(Roles, on_delete=models.CASCADE, default=1)
-    city = models.CharField(max_length=50, default='')
+    city = models.CharField(max_length=50, blank=False, null=False, default='default_city')
     joined = models.DateField(blank=True, null=True)
     salary = models.IntegerField()
     contact = models.CharField(max_length=100, blank=True, null=True)
     email = models.CharField(max_length=255, blank=False, null=True, unique=True)
-    password = models.CharField(max_length=255, blank=False, null=False, default=1234)
+    password = models.CharField(max_length=255, blank=False, null=False, default='1234')
     is_deleted = models.BooleanField(default=False)
 
-    objects = StaffManager() 
-    all_objects = AllObjectsManager()  
-    deleted_objects = DeletedStaffManager()  
+    objects = StaffManager()
+    all_objects = AllObjectsManager()
+    deleted_objects = DeletedStaffManager()
 
     class Meta:
         db_table = 'staff'
@@ -48,6 +49,7 @@ class Staff(models.Model):
     def delete(self):
         self.is_deleted = True
         self.save()
+
     
 class StaffAction(models.Model):
     name = models.CharField(max_length=100)
@@ -190,22 +192,7 @@ class KFT(models.Model):
     class Meta:
         db_table = 'kft'
         
-#__________________________________________INVOICE_____________________________________________
     
-class Invoice(models.Model):
-    invoice_no = models.CharField(max_length=50)
-    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
-    payment_method = models.CharField(max_length=255)
-    description = models.CharField(max_length=255)
-    status = models.CharField(max_length=50)
-    date = models.DateField(auto_now_add=True)
-
-    class Meta:
-        db_table = 'invoice'
-    
-    def __str__(self):
-        return f"Invoice {self.invoice_no} for {self.patient}"
     
     
     
@@ -251,30 +238,32 @@ class PatientBills(models.Model):
     is_completed = models.BooleanField(default=False)
     class Meta:
         db_table = 'patient_bills'
+#__________________________________________INVOICE_____________________________________________
 
 class Invoice(models.Model):
     PAYMENT_METHOD_CHOICES = [
         ('cash', 'Cash'),
-        ('credit_card', 'Credit Card'),
-        ('debit_card', 'Debit Card'),
         ('paypal', 'PayPal'),
         ('razorpay', 'Razorpay')
-
     ]
     invoice_no = models.CharField(max_length=50)
-    patient_bill = models.ForeignKey(PatientBills, on_delete=models.CASCADE)
+    patient_id = models.ForeignKey(Patient, on_delete=models.CASCADE)
     room_charges = models.IntegerField(null=True, blank=True)
-    medicine_bill = models.FloatField(null=True, blank=True)
-    labreport_bill = models.IntegerField(null=True, blank=True)
+    bill_id = models.ForeignKey(PatientBills,on_delete=models.CASCADE, null=True, blank=True)
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
     payment_method = models.CharField(max_length=255, choices=PAYMENT_METHOD_CHOICES)
     description = models.CharField(max_length=255, blank=True)
-    status = models.CharField(max_length=50)
-    date = models.DateField()
+    status = models.CharField(max_length=50,default='pending')
+    date = models.DateField(auto_now_add=True)
 
     class Meta:
         db_table = 'invoice'
 
     def __str__(self):
         return self.invoice_no
+    
+        def save(self, *args, **kwargs):
+            if not self.invoice_no:
+                self.invoice_no = generate_random_string()
+            super().save(*args, **kwargs)
     

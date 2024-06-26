@@ -1,4 +1,5 @@
 import random
+import string
 from django.core.mail import send_mail
 from django.conf import settings
 
@@ -18,3 +19,9 @@ def send_otp_email(email, otp):
     except Exception as e:
         print(e)
         return False
+    
+
+
+def generate_random_string(length=10):
+    letters_and_digits = string.ascii_letters + string.digits
+    return ''.join(random.choice(letters_and_digits) for i in range(length))

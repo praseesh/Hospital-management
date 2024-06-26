@@ -1,11 +1,13 @@
 from django import forms
+
+from staff.models import Invoice
 from .models import Patient
 
 class CustomPatientModification(forms.ModelForm):
     class Meta:
         model = Patient
-        # fields = ['firstname', 'lastname', 'mobile', 'email', 'dob', 'gender', 'address', 'admission_date', 'checkout_date']
-        fields = '__all__'
+        fields = ['firstname', 'lastname', 'mobile', 'email', 'dob', 'gender', 'address', 'admission_date', 'checkout_date']
+        # fields = '__all__'
 GENDER_CHOICES = [
     ('M', 'Male'),
     ('F', 'Female'),
@@ -33,3 +35,8 @@ class CustomPatientCreationForm(forms.ModelForm):
     def clean_email(self):
         email = self.cleaned_data['email']
         return email
+    
+class InvoiceForm(forms.ModelForm):
+    class Meta:
+        model = Invoice
+        fields =['patient_id','payment_method','description']
