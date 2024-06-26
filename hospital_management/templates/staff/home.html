@@ -109,6 +109,21 @@
                 margin-top: 100px;
             }
         }
+        .popup {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px;
+            background-color: #238636;
+            color: white;
+            border-radius: 6px;
+            display: none;
+            animation: fadeInOut 3s ease-in-out;
+        }
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0; }
+            10%, 90% { opacity: 1; }
+        }
     </style>
 </head>
 <body>
@@ -139,7 +154,24 @@
             </div>
         </div>
     </div>
+    <div id="message-popup" class="popup"></div>
 
+    <script>
+        function showMessage(message) {
+            const popup = document.getElementById('message-popup');
+            popup.textContent = message;
+            popup.style.display = 'block';
+            setTimeout(() => {
+                popup.style.display = 'none';
+            }, 3000);
+        }
+
+        {% if messages %}
+            {% for message in messages %}
+                showMessage("{{ message }}");
+            {% endfor %}
+        {% endif %}
+    </script>
     
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>

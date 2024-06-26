@@ -1,6 +1,6 @@
 
 from django.shortcuts import render,redirect, get_object_or_404
-
+from django.contrib import messages
 from doctor.models import Doctor
 from .models import StaffAction, Staff, StaffActionRoles, Invoice, Prescription,ST,SugarTest,CholesterolTest,CT,LiverFunctionTest,LFT,KidneyFunctionTest,KFT, Medicine,PatientBills
 from django.contrib.auth.hashers import check_password
@@ -443,6 +443,8 @@ def staff_appointment(request):
             appointment.appointment_id = generate_random_string()
             
             appointment.save()
+            
+            messages.success(request, "Appointment created successfully!")
             return redirect('staff_home')  
     else:    
         form = AppointmentCreationForm()
