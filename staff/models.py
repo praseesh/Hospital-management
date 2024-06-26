@@ -262,8 +262,5 @@ class Invoice(models.Model):
     def __str__(self):
         return self.invoice_no
     
-        def save(self, *args, **kwargs):
-            if not self.invoice_no:
-                self.invoice_no = generate_random_string()
-            super().save(*args, **kwargs)
+
     

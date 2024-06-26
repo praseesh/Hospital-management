@@ -5,7 +5,7 @@ from django.contrib.auth.hashers import check_password
 from .forms import LabReportCreation, InvoiceCreationForm, MedicineBillCreationForm, PrescriptionForm,SugarTestForm,CholesterolTestForm,KidneyTestForm, LiverTestForm,CreateRoomForm
 from patient.forms import CustomPatientCreationForm,CustomPatientModification, InvoiceForm
 from patient.models import Patient, Room
-
+from datetime import date
 
 #<-----------------------------------------STAFF---------------------------------------------------->
 
@@ -257,27 +257,6 @@ def create_liver_test(request):
     
 
 
-#<------------------------------------------INVOICE----------------------------------------------->
-
-
-def staff_invoice(request):
-    if request.method =='POST':
-        form = InvoiceForm(request.POST)
-        patient_id = form.cleaned_data.get('patient_id')
-        patient = get_object_or_404(Patient.objects.select_related('rooms'),pk=patient_id)
-        if patient.room :
-             price = 'calculate'
-        
-        
-        
-        if form.is_valid():
-            form.save()
-            return redirect('staff_home')
-    else:
-        form = InvoiceForm()
-
-    return render(request,'staff/invoice.html',{'form':form})
-
 #<----------------------------------------------ROOMS----------------------------------------------->
 
 def staff_rooms(request):
@@ -366,5 +345,41 @@ def create_medicine_list(request):
         'form': form
     })
     
+    
+#<------------------------------------------INVOICE----------------------------------------------->
+
+def staff_invoice(request):
+    if request.method =='POST':
+        form = InvoiceForm(request.POST)
+        patient_id = form.cleaned_data.get('patient_id')
+        patient = get_object_or_404(Patient.objects.select_related('rooms'),pk=patient_id)
+        room_charges =None
+        if patient.room :
+            today = date.today()
+            duration = patient.admission_date - today
+            room_charges = duration * patient.room.price
+        
+        bills = PatientBills.objects.get(patient=patient_id,is_completed=False)
+        medicine_bill= bills.medicine_bill
+        lab_report_bill = bills.lab_report_bill
+        total_amount = (room_charges or 0) + (medicine_bill or 0) + (lab_report_bill or 0)
+        
+        invoice = Invoice(
+            patient_id=patient_id,
+            room_charges=room_charges,
+            bill_id=bills,
+            total_amount=total_amount,
+          
+            
+        )
+        
+        
+        if form.is_valid():
+            form.save()
+            return redirect('staff_home')
+    else:
+        form = InvoiceForm()
+
+    return render(request,'staff/invoice.html',{'form':form})
     
 # https://www.dbdiagram.io/d/Hospital-Management-665befbcb65d933879443c64
