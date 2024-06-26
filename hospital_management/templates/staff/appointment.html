@@ -7,5 +7,10 @@
 </head>
 <body>
     <h1>Appointment</h1>
+    <form method="post" action="{% url 'staff_appointment' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Create Appointment</button>
+    </form>
 </body>
 </html>

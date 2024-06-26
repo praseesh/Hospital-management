@@ -225,7 +225,6 @@ class Medicine(models.Model):
     name = models.CharField(max_length=100)
     strength = models.CharField(max_length=50)
     expiry_date = models.DateField()
-    # quantity = models.PositiveIntegerField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
     class Meta:
         db_table = 'medicine'

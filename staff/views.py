@@ -2,7 +2,7 @@
 from django.shortcuts import render,redirect, get_object_or_404
 from .models import StaffAction, Staff, StaffActionRoles, Invoice, Prescription,ST,SugarTest,CholesterolTest,CT,LiverFunctionTest,LFT,KidneyFunctionTest,KFT, Medicine,PatientBills
 from django.contrib.auth.hashers import check_password
-from .forms import LabReportCreation, InvoiceCreationForm, MedicineBillCreationForm, PrescriptionForm,SugarTestForm,CholesterolTestForm,KidneyTestForm, LiverTestForm,CreateRoomForm
+from .forms import AppointmentCreationForm, LabReportCreation, InvoiceCreationForm, MedicineBillCreationForm, PrescriptionForm,SugarTestForm,CholesterolTestForm,KidneyTestForm, LiverTestForm,CreateRoomForm
 from patient.forms import CustomPatientCreationForm,CustomPatientModification, InvoiceForm
 from patient.models import Patient, Room
 from datetime import date
@@ -130,11 +130,6 @@ def delete_prescription(request, prescription_id):
 
 def staff_discharge(request):
     return render(request, 'staff/discharge.html')
-
-#<----------------------------------------------DISCHARGE----------------------------------------------->
-
-def staff_appointment(request):
-    return render(request, 'staff/appointment.html')
 
 
 
@@ -375,12 +370,7 @@ def create_medicine_list(request):
 #             room_charges=room_charges,
 #             bill_id=bills,
 #             total_amount=total_amount,
-          
-
 #         )
-        
-        
-        
 #             form.save()
 #             return redirect('staff_home')
 #     else:
@@ -420,5 +410,36 @@ def staff_invoice(request):
         form = InvoiceForm()
 
     return render(request, 'staff/invoice.html', {'form': form})
+
+
+#<----------------------------------------------DISCHARGE----------------------------------------------->
+
+# def staff_appointment(request):
+#     if request.method == 'POST':
+#         form = AppointmentCreationForm(request.POST)
+#         if form.is_valid():
+#             appointment = form.save(commit=False)
+#         appointment_id = generate_random_string()
+#         patient = form.cleaned_data('patient_id')
+        
+#     else:    
+#         form = AppointmentCreationForm()
+#     return render(request, 'staff/appointment.html',{'form':form})
+
+def staff_appointment(request):
+    if request.method == 'POST':
+        form = AppointmentCreationForm(request.POST)
+        if form.is_valid():
+            appointment = form.save(commit=False)
+            appointment.appointment_id = generate_random_string()
+            appointment.patient = get_object_or_404(Patient, pk=form.cleaned_data.get('patient_id'))
+            appointment.doctor = get_object_or_404(Doctor, pk=form.cleaned_data.get('doctor_id'))
+            appointment.save()
+            return redirect('staff_home')  # Redirect to a success page
+    else:    
+        form = AppointmentCreationForm()
+    
+    return render(request, 'staff/appointment.html', {'form': form})
+
     
 # https://www.dbdiagram.io/d/Hospital-Management-665befbcb65d933879443c64

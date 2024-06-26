@@ -1,5 +1,5 @@
 from .models import Medicine, PatientBills, Staff, LabReport, Prescription,SugarTest,Invoice
-from patient.models import Patient, Room
+from patient.models import Patient, Room,Appointment
 from django import forms
 from django.contrib.auth.hashers import make_password
 
@@ -127,3 +127,11 @@ class MedicineBillCreationForm(forms.ModelForm):
     class Meta:
         model = PatientBills
         fields = ['patient']
+        
+class AppointmentCreationForm(forms.ModelForm):
+    class Meta:
+        model = Appointment
+        fields = ['patient', 'doctor', 'appointment_date', 'reason_for_visit']
+        widgets = {
+            'appointment_date': forms.DateInput(attrs={'type': 'date'}),
+        }
