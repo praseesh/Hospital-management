@@ -85,7 +85,7 @@ class Appointment(models.Model):
         ('other', 'Other'),
     ]
 
-    appointment_id = models.AutoField(primary_key=True)
+    appointment_id = models.CharField(max_length=20, primary_key=True)
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE, null=False, blank=False)
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
     appointment_date = models.DateTimeField()

@@ -1,5 +1,7 @@
 
 from django.shortcuts import render,redirect, get_object_or_404
+
+from doctor.models import Doctor
 from .models import StaffAction, Staff, StaffActionRoles, Invoice, Prescription,ST,SugarTest,CholesterolTest,CT,LiverFunctionTest,LFT,KidneyFunctionTest,KFT, Medicine,PatientBills
 from django.contrib.auth.hashers import check_password
 from .forms import AppointmentCreationForm, LabReportCreation, InvoiceCreationForm, MedicineBillCreationForm, PrescriptionForm,SugarTestForm,CholesterolTestForm,KidneyTestForm, LiverTestForm,CreateRoomForm
@@ -431,11 +433,17 @@ def staff_appointment(request):
         form = AppointmentCreationForm(request.POST)
         if form.is_valid():
             appointment = form.save(commit=False)
+            
+            patient = form.cleaned_data.get('patient')
+            doctor = form.cleaned_data.get('doctor')
+            patient_id = patient.pk
+            doctor_id = doctor.pk
+            appointment.patient_id = patient_id
+            appointment.doctor_id = doctor_id
             appointment.appointment_id = generate_random_string()
-            appointment.patient = get_object_or_404(Patient, pk=form.cleaned_data.get('patient_id'))
-            appointment.doctor = get_object_or_404(Doctor, pk=form.cleaned_data.get('doctor_id'))
+            
             appointment.save()
-            return redirect('staff_home')  # Redirect to a success page
+            return redirect('staff_home')  
     else:    
         form = AppointmentCreationForm()
     

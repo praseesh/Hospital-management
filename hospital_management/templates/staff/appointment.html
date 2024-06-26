@@ -6,7 +6,10 @@
     <title>Document</title>
 </head>
 <body>
-    <h1>Appointment</h1>
+    <h1>Appointment</h1><br>
+
+    <h2>Are You a new Patient? Plese Register      <button><a href="{% url 'staff_patient_create' %}"></a>Register</button></h2>
+    
     <form method="post" action="{% url 'staff_appointment' %}">
         {% csrf_token %}
         {{ form.as_p }}
