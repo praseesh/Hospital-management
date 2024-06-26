@@ -15,7 +15,7 @@ GENDER_CHOICES = [
 ]
 
 class CustomPatientCreationForm(forms.ModelForm):
-    class Meta:
+    class Meta: 
         model = Patient
         fields = ['firstname', 'lastname','disease', 'mobile', 'email', 'dob', 'gender', 'address', 'admission_date']
         widgets = {

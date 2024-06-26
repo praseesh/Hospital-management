@@ -6,6 +6,7 @@ from .forms import LabReportCreation, InvoiceCreationForm, MedicineBillCreationF
 from patient.forms import CustomPatientCreationForm,CustomPatientModification, InvoiceForm
 from patient.models import Patient, Room
 from datetime import date
+from .helper import generate_random_string
 
 #<-----------------------------------------STAFF---------------------------------------------------->
 
@@ -348,38 +349,76 @@ def create_medicine_list(request):
     
 #<------------------------------------------INVOICE----------------------------------------------->
 
-def staff_invoice(request):
-    if request.method =='POST':
-        form = InvoiceForm(request.POST)
-        patient_id = form.cleaned_data.get('patient_id')
-        patient = get_object_or_404(Patient.objects.select_related('rooms'),pk=patient_id)
-        room_charges =None
-        if patient.room :
-            today = date.today()
-            duration = patient.admission_date - today
-            room_charges = duration * patient.room.price
-        
-        bills = PatientBills.objects.get(patient=patient_id,is_completed=False)
-        medicine_bill= bills.medicine_bill
-        lab_report_bill = bills.lab_report_bill
-        total_amount = (room_charges or 0) + (medicine_bill or 0) + (lab_report_bill or 0)
-        
-        invoice = Invoice(
-            patient_id=patient_id,
-            room_charges=room_charges,
-            bill_id=bills,
-            total_amount=total_amount,
-          
+# def staff_invoice(request):
+#     if request.method =='POST':
+#         form = InvoiceForm(request.POST)
+#         if form.is_valid():
+#             invoice = form.save(commit=False)  
+#             # patient = invoice.patient_id
             
-        )
+            
+#         patient_id = form.cleaned_data.get('patient_id')
+#         patient = get_object_or_404(Patient.objects.select_related('rooms'),pk=patient_id)
+#         room_charges =None
+#         if patient.room :
+#             today = date.today()
+#             duration = patient.admission_date - today
+#             room_charges = duration * patient.room.price
+        
+#         bills = PatientBills.objects.get(patient=patient_id,is_completed=False)
+#         medicine_bill= bills.medicine_bill
+#         lab_report_bill = bills.lab_report_bill
+#         total_amount = (room_charges or 0) + (medicine_bill or 0) + (lab_report_bill or 0)
+        
+#         invoice = Invoice(
+#             patient_id=patient_id,
+#             room_charges=room_charges,
+#             bill_id=bills,
+#             total_amount=total_amount,
+          
+
+#         )
         
         
+        
+#             form.save()
+#             return redirect('staff_home')
+#     else:
+#         form = InvoiceForm()
+
+#     return render(request,'staff/invoice.html',{'form':form})
+
+
+def staff_invoice(request):
+    if request.method == 'POST':
+        form = InvoiceForm(request.POST)
         if form.is_valid():
-            form.save()
+            invoice = form.save(commit=False)  # Do not save to the database yet
+            patient = invoice.patient_id
+
+            if patient.room_id:
+                today = date.today()
+                duration = (today - patient.admission_date).days
+                invoice.room_charges = duration * patient.room.price
+            else:
+                invoice.room_charges = 0
+            bills =None
+            try:
+                bills = get_object_or_404(PatientBills, patient_id=patient.id, is_completed=False)
+            except Exception:
+                print('bills not found')
+            invoice.total_amount = invoice.room_charges
+            if bills:
+                invoice.bill_id = bills
+                invoice.total_amount += (bills.medicine_bill or 0) + (bills.lab_report_bill or 0)
+            invoice.invoice_no = generate_random_string()
+            invoice.date = date.today()
+
+            invoice.save()  # Save the form to the database
             return redirect('staff_home')
     else:
         form = InvoiceForm()
 
-    return render(request,'staff/invoice.html',{'form':form})
+    return render(request, 'staff/invoice.html', {'form': form})
     
 # https://www.dbdiagram.io/d/Hospital-Management-665befbcb65d933879443c64

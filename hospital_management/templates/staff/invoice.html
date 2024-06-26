@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Invoice</title>
 </head>
 <body>
     <h1>Invoice</h1>
     <form action="{% url 'staff_invoice' %}" method="post">
+        {% csrf_token %}
         {{ form.as_p }}
-    
+        <button type="submit">Submit</button>
     </form>
 </body>
 </html>
