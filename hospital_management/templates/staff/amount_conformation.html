@@ -61,7 +61,7 @@
     <div class="container">
         <h1>Confirm your amount</h1>
     {% if payment_method == 'razorpay' %}
-    <form action="{% url 'create_order' %}" method="post">
+    <form action="{% url 'create_order' invoice_id  %}" method="post">
     {% elif payment_method == 'paypal' %}
     <form action="{% url 'paypal' %}" method="post">
     {% else %}
