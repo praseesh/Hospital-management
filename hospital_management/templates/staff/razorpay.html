@@ -1,28 +1,98 @@
+{% load multiply %}
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Payment Page</title>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            background-color: #0d1117;
+            color: #c9d1d9;
+            line-height: 1.5;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background-color: #161b22;
+            border-radius: 6px;
+            padding: 2rem;
+            box-shadow: 0 8px 24px rgba(140,149,159,0.2);
+            max-width: 400px;
+            width: 100%;
+        }
+        h1, h2 {
+            color: #58a6ff;
+            margin-top: 0;
+        }
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        h2 {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+        .razorpay-payment-button {
+            background-color: #238636;
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            width: 100%;
+            margin-top: 1rem;
+        }
+        .razorpay-payment-button:hover {
+            background-color: #2ea043;
+        }
+        .invoice-details {
+            background-color: #21262d;
+            border-radius: 6px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        .invoice-details p {
+            margin: 0.5rem 0;
+        }
+        @media (max-width: 480px) {
+            .container {
+                padding: 1rem;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>Payment Page</h1>
-    <h1>Complete Your Payment</h1>
-    <form action="/payment/success/" method="POST">
-        <script
-            src="https://checkout.razorpay.com/v1/checkout.js"
-            data-key="{{ razorpay_key }}" 
-            data-amount="{{ invoice.total_amount|floatformat:2|mul:100 }}" 
-            data-currency="INR"
-            data-order_id="{{ order_id }}" 
-            data-buttontext="Pay with Razorpay"
-            data-name="Hospital Management"
-            data-description="Invoice #{{ invoice.id }}"
-            data-image="https://example.com/your_logo.jpg"
-            data-prefill.name="{{ request.user.first_name }} {{ request.user.last_name }}"
-            data-prefill.email="{{ request.user.email }}"
-            data-theme.color="#F37254"
-        ></script>
-        <input type="hidden" name="invoice_id" value="{{ invoice.id }}">
-    </form>
+    <div class="container">
+        <h1>Payment Page</h1>
+        <h2>Complete Your Payment</h2>
+        <div class="invoice-details">
+            {% comment %} <p><strong>Invoice ID:</strong> #{{ invoice.id }}</p> {% endcomment %}
+            <h1><strong>Total Amount:</strong> ₹{{ invoice.total_amount|floatformat:2 }}</h1>
+        </div>
+        <form action="/payment/success/" method="POST">
+            <script
+                src="https://checkout.razorpay.com/v1/checkout.js"
+                data-key="{{ razorpay_key }}" 
+                data-amount="{{ invoice.total_amount|floatformat:2|multiply:100 }}" 
+                data-currency="INR"
+                data-order_id="{{ order_id }}"
+                data-buttontext="Pay with Razorpay"
+                data-name="Hospital Management"
+                data-description="Invoice #{{ invoice.id }}"
+                data-theme.color="#238636"
+            ></script>
+            <input type="hidden" name="invoice_id" value="{{ invoice.id }}">
+        </form>
+    </div>
 </body>
 </html>
