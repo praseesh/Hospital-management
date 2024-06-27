@@ -10,6 +10,9 @@ from patient.models import Patient, Room
 from datetime import date
 from .helper import generate_random_string
 from django.urls import reverse
+from django.conf import settings
+import razorpay
+from django.views.decorators.csrf import csrf_exempt
 
 #<-----------------------------------------STAFF---------------------------------------------------->
 
@@ -405,33 +408,50 @@ def staff_invoice(request):
             invoice.save()  
             url = reverse('amount_conformation', args=[invoice.id])
             return redirect(url)
-            
-            
-
     else:
         form = InvoiceForm()
+
 
     return render(request, 'staff/invoice.html', {'form': form})
 
 #<----------------------------------------------PAYMENT----------------------------------------------->
     
-def amount_conformation(request,invoice_id):
-    if request.method == 'POST':
-        invoice= get_object_or_404(Invoice,id=invoice_id)
-        bill = get_object_or_404(PatientBills, id=invoice.bill_id.id) 
-        lab_report = bill.lab_report_bill if bill.lab_report_bill > 0 else None
-        medicine = bill.medicine_bill if bill.medicine_bill > 0 else None
-        room = invoice.room_charges if invoice.room_charges > 0 else None
-        amount = invoice.total_amount if invoice.total_amount > 0 else None
-        context = {'room': room, 'lab_report': lab_report,'medicine':medicine, 'amount':amount,'invoice_id':invoice_id}
-        if invoice.payment_method == 'razorpay':
-            return redirect('razorpay')
-        elif invoice.payment_method == 'paypal':
-            return redirect('paypal')
-        else: 
-            return redirect('staff_home')
-        
-    return render(request, 'staff/amount_conformation.html',context )
+# def amount_conformation(request,invoice_id):
+#     context =None
+#     if request.method == 'POST':
+#         invoice= get_object_or_404(Invoice,id=invoice_id)
+#         bill = get_object_or_404(PatientBills, id=invoice.bill_id.id) 
+#         lab_report = bill.lab_report_bill if bill.lab_report_bill > 0 else None
+#         medicine = bill.medicine_bill if bill.medicine_bill > 0 else None
+#         room = invoice.room_charges if invoice.room_charges > 0 else None
+#         amount = invoice.total_amount if invoice.total_amount > 0 else None
+#         context = {'room': room, 'lab_report': lab_report,'medicine':medicine, 'amount':amount,'invoice_id':invoice_id}
+#         if invoice.payment_method == 'Razorpay':
+#             return redirect('razorpay')
+#         elif invoice.payment_method == 'paypal':
+#             return redirect('paypal')
+#         else: 
+#             return redirect('staff_home')
+#     return render(request, 'staff/amount_conformation.html',context )
+
+# from django.shortcuts import render, get_object_or_404, redirect
+# from .models import Invoice, PatientBills
+
+def amount_conformation(request, invoice_id):
+    invoice = get_object_or_404(Invoice, id=invoice_id)
+    print(invoice.payment_method)
+    context = {
+        'invoice': invoice,
+        'room': invoice.room_charges if invoice.room_charges > 0 else None,
+        'lab_report': invoice.bill_id.lab_report_bill if invoice.bill_id and invoice.bill_id.lab_report_bill > 0 else None,
+        'medicine': invoice.bill_id.medicine_bill if invoice.bill_id and invoice.bill_id.medicine_bill > 0 else None,
+        'amount': invoice.total_amount if invoice.total_amount > 0 else None,
+        'invoice_id': invoice_id,
+        'payment_method':invoice.payment_method
+    }
+    return render(request, 'staff/amount_conformation.html', context)
+
+razorpay_client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID,settings.RAZORPAY_KEY_SECRET ))
 
 def razorpay(request):
     return render(request,'staff/razorpay.html')

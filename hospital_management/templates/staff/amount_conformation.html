@@ -60,7 +60,13 @@
 <body>
     <div class="container">
         <h1>Confirm your amount</h1>
-        <form action="{% url 'amount_conformation' invoice_id %}" method="post">
+    {% if payment_method == 'razorpay' %}
+    <form action="{% url 'razorpay' %}" method="post">
+    {% elif payment_method == 'paypal' %}
+    <form action="{% url 'paypal' %}" method="post">
+    {% else %}
+    <form action="{% url 'staff_home' %}" method="post">
+    {% endif %}
             {% csrf_token %}
             {% if room %}
                 <h3>Room Charges: {{ room }}</h3>
