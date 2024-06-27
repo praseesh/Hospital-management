@@ -415,27 +415,7 @@ def staff_invoice(request):
     return render(request, 'staff/invoice.html', {'form': form})
 
 #<----------------------------------------------PAYMENT----------------------------------------------->
-    
-# def amount_conformation(request,invoice_id):
-#     context =None
-#     if request.method == 'POST':
-#         invoice= get_object_or_404(Invoice,id=invoice_id)
-#         bill = get_object_or_404(PatientBills, id=invoice.bill_id.id) 
-#         lab_report = bill.lab_report_bill if bill.lab_report_bill > 0 else None
-#         medicine = bill.medicine_bill if bill.medicine_bill > 0 else None
-#         room = invoice.room_charges if invoice.room_charges > 0 else None
-#         amount = invoice.total_amount if invoice.total_amount > 0 else None
-#         context = {'room': room, 'lab_report': lab_report,'medicine':medicine, 'amount':amount,'invoice_id':invoice_id}
-#         if invoice.payment_method == 'Razorpay':
-#             return redirect('razorpay')
-#         elif invoice.payment_method == 'paypal':
-#             return redirect('paypal')
-#         else: 
-#             return redirect('staff_home')
-#     return render(request, 'staff/amount_conformation.html',context )
 
-# from django.shortcuts import render, get_object_or_404, redirect
-# from .models import Invoice, PatientBills
 
 def amount_conformation(request, invoice_id):
     invoice = get_object_or_404(Invoice, id=invoice_id)
@@ -453,7 +433,7 @@ def amount_conformation(request, invoice_id):
 
 razorpay_client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID,settings.RAZORPAY_KEY_SECRET ))
 
-def razorpay(request):
+def create_order(request, invoice_id):
     return render(request,'staff/razorpay.html')
 
 def paypal(request):
