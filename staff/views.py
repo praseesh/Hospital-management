@@ -434,7 +434,22 @@ def amount_conformation(request, invoice_id):
 razorpay_client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID,settings.RAZORPAY_KEY_SECRET ))
 
 def create_order(request, invoice_id):
-    return render(request,'staff/razorpay.html')
+    invoice = get_object_or_404(Invoice, id=invoice_id)
+    total_amount = int(invoice.total_amount*100)
+    DATA = {
+        'amount':total_amount,
+        'currency':'INR',
+        'payment_capture':1
+    }
+    order = razorpay_client.order.create(data=DATA)
+    order_id =order['id']
+    context = {
+        'order_id': order_id,
+        'razorpay_key': settings.RAZORPAY_KEY_ID,
+        'invoice': invoice
+    }
+    
+    return render(request,'staff/razorpay.html', context)
 
 def paypal(request):
     return render(request,'staff/paypal.html')

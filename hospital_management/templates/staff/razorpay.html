@@ -1,11 +1,27 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Payment Page</title>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
 <body>
-    <h2>RazorPay</h2>
+    <h1>Complete Your Payment</h1>
+    <form action="/payment/success/" method="POST">
+        <script
+            src="https://checkout.razorpay.com/v1/checkout.js"
+            data-key="{{ razorpay_key }}" 
+            data-amount="{{ invoice.total_amount|floatformat:2|mul:100 }}" 
+            data-currency="INR"
+            data-order_id="{{ order_id }}" 
+            data-buttontext="Pay with Razorpay"
+            data-name="Hospital Management"
+            data-description="Invoice #{{ invoice.id }}"
+            data-image="https://example.com/your_logo.jpg"
+            data-prefill.name="{{ request.user.first_name }} {{ request.user.last_name }}"
+            data-prefill.email="{{ request.user.email }}"
+            data-theme.color="#F37254"
+        ></script>
+        <input type="hidden" name="invoice_id" value="{{ invoice.id }}">
+    </form>
 </body>
 </html>
