@@ -5,39 +5,31 @@ urlpatterns = [
     path('', views.staff, name='staff_home'),
     path('login', views.staff_login, name="staff_login"),
     path('doctors/', views.staff_doctor_list, name='staff_doctor_list'),
-    
     path('patient', views.staff_patient_list, name='staff_patient_list'),
     path('patient/<int:patient_id>', views.staff_patient_details, name='staff_patient_details'),
     path('patient/create', views.staff_patient_create, name='staff_patient_create'),
     path('patient/edit/<int:patient_id>', views.staff_patient_edit, name='staff_patient_edit'),
     path('patient/delete/<int:patient_id>', views.staff_patient_delete, name='staff_patient_delete'),
-    
     path('invoice/',views.staff_invoice,name="staff_invoice"),
-    
+    path('amount_conformation/<int:invoice_id>', views.amount_conformation, name='amount_conformation'),
     path('lab_report', views.staff_lab_report, name="staff_lab_report"),
     path('lab_report_create',views.staff_labreport_create, name="lab_report_create" ),
     path('kidney_test',views.create_kidney_test,name="create_kidney_test"),
     path('sugar_test',views.create_sugar_test,name="create_sugar_test"),
     path('liver_test',views.create_liver_test,name="create_liver_test"),
     path('cholesterol_test', views.create_cholesterol_test, name="create_cholesterol_test"),
-    
     path('prescription', views.staff_prescription, name="staff_prescription"),
     path('prescription/delete/<int:prescription_id>/', views.delete_prescription, name='delete_prescription'),
     path('prescription_create', views.staff_prescription_create, name="staff_prescription_create"),
     path('staff_prescription_list', views.staff_prescription, name="staff_prescription_list"),
-    
     path('discharge', views.staff_discharge, name="staff_discharge"),
     path('staff_rooms', views.staff_rooms, name="staff_rooms"),
     path('create_room',views.create_room, name="create_room"),
     path('room_search', views.staff_rooms,name="room_search"),
-    # path('assign_patient', views.assign_patient, name="assign_patient"),
     path('assign_patient/<int:room_id>/', views.assign_patient, name='assign_patient'),
     path('create_medicine_list', views.create_medicine_list, name="create_medicine_list"), 
-     
-    
     path('appointment', views.staff_appointment, name="staff_appointment"),
     path('patient/edit/<int:patient_id>', views.staff_patient_edit, name="staff_patient_edit"),
     
-    # path('staff/prescription/send_email/<int:prescription_id>/', views.send_email, name='send_email'),
 
 ]

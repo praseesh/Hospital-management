@@ -1,14 +1,94 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Prescription</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            line-height: 1.5;
+            color: #c9d1d9;
+            background-color: #0d1117;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background-color: #161b22;
+            padding: 2rem;
+            border-radius: 6px;
+            box-shadow: 0 8px 24px rgba(140,149,159,0.2);
+            width: 100%;
+            max-width: 500px;
+        }
+        h1 {
+            color: #58a6ff;
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-size: 1.5rem;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        p {
+            margin-bottom: 1rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #8b949e;
+        }
+        input[type="text"],
+        input[type="number"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #30363d;
+            background-color: #0d1117;
+            color: #c9d1d9;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        button {
+            background-color: #238636;
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 6px;
+            font-size: 1rem;
+            margin-top: 1rem;
+            transition: background-color 0.2s ease;
+        }
+        button:hover {
+            background-color: #2ea043;
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 1rem;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>Create Prescription</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Submit</button>
-    </form>
+    <div class="container">
+        <h1>Create Prescription</h1>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Submit</button>
+        </form>
+    </div>
 </body>
 </html>

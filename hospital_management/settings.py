@@ -144,3 +144,7 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'prasee@gmail.com'
 EMAIL_HOST_PASSWORD = 'your_email_password'
+
+
+razorpay_key_id = 'rzp_test_cdD68077R7SXLJ'
+key_secret = 'pg0KqtzxNBo1xEwLoh7Q7ZsD'

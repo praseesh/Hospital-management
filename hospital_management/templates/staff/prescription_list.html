@@ -6,15 +6,71 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Prescription List</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="{% static 'css/staff/prescription.css' %}" rel="stylesheet">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            background-color: #0d1117;
+            color: #c9d1d9;
+        }
+        .container-fluid {
+            max-width: 1200px;
+        }
+        h1 {
+            color: #58a6ff;
+        }
+        .btn-primary {
+            background-color: #238636;
+            border-color: #238636;
+        }
+        .btn-primary:hover {
+            background-color: #2ea043;
+            border-color: #2ea043;
+        }
+        .table-wrapper {
+            background-color: #161b22;
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(140,149,159,0.2);
+        }
+        .table {
+            margin-bottom: 0;
+        }
+        .table-dark {
+            background-color: #161b22;
+            color: #c9d1d9;
+        }
+        .table-dark thead th {
+            background-color: #21262d;
+            border-color: #30363d;
+        }
+        .table-dark td, .table-dark th {
+            border-color: #30363d;
+        }
+        .table-hover tbody tr:hover {
+            background-color: #1f2428;
+        }
+        .btn-danger {
+            background-color: #da3633;
+            border-color: #da3633;
+        }
+        .btn-danger:hover {
+            background-color: #b62324;
+            border-color: #b62324;
+        }
+        @media (max-width: 768px) {
+            .table-responsive {
+                border: none;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="container-fluid mt-4">
-        <h1 class="text-center mb-4">Prescription</h1>
+        <h1 class="text-center mb-4">Prescription List</h1>
         <div class="d-flex justify-content-center mb-3">
             <a href="{% url 'staff_prescription_create' %}" class="btn btn-primary">Create Prescription</a>
         </div>
-        <div class="table-responsive d-flex justify-content-center">
+        <div class="table-responsive">
             <div class="table-wrapper">
                 <table class="table table-dark table-striped table-hover">
                     <thead>
@@ -47,7 +103,7 @@
                                 <td>{{ prescription.doctor.firstname|add:" "|add:prescription.doctor.lastname }}</td>
                                 <td>
                                     {% if prescription.id %}
-                                        <a href="{% url 'delete_prescription' prescription.id %}" class="btn btn-danger">Delete</a>
+                                        <a href="{% url 'delete_prescription' prescription.id %}" class="btn btn-danger btn-sm delete-btn" data-id="{{ prescription.id }}">Delete</a>
                                     {% else %}
                                         ID not found
                                     {% endif %}
@@ -59,5 +115,20 @@
             </div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const deleteButtons = document.querySelectorAll('.delete-btn');
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const prescriptionId = this.getAttribute('data-id');
+                    if (confirm(`Are you sure you want to delete prescription #${prescriptionId}?`)) {
+                        window.location.href = this.getAttribute('href');
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>

@@ -9,6 +9,7 @@ from patient.forms import CustomPatientCreationForm,CustomPatientModification, I
 from patient.models import Patient, Room
 from datetime import date
 from .helper import generate_random_string
+from django.urls import reverse
 
 #<-----------------------------------------STAFF---------------------------------------------------->
 
@@ -343,42 +344,37 @@ def create_medicine_list(request):
         'form': form
     })
     
+
+
+#<----------------------------------------------APPOINTMENT----------------------------------------------->
+
+
+def staff_appointment(request):
+    if request.method == 'POST':
+        form = AppointmentCreationForm(request.POST)
+        if form.is_valid():
+            appointment = form.save(commit=False)
+            
+            patient = form.cleaned_data.get('patient')
+            doctor = form.cleaned_data.get('doctor')
+            patient_id = patient.pk
+            doctor_id = doctor.pk
+            appointment.patient_id = patient_id
+            appointment.doctor_id = doctor_id
+            appointment.appointment_id = generate_random_string()
+            
+            appointment.save()
+            
+            messages.success(request, "Appointment created successfully!")
+            return redirect('staff_home')  
+    else:    
+        form = AppointmentCreationForm()
     
+    return render(request, 'staff/appointment.html', {'form': form})
+
+
 #<------------------------------------------INVOICE----------------------------------------------->
 
-# def staff_invoice(request):
-#     if request.method =='POST':
-#         form = InvoiceForm(request.POST)
-#         if form.is_valid():
-#             invoice = form.save(commit=False)  
-#             # patient = invoice.patient_id
-            
-            
-#         patient_id = form.cleaned_data.get('patient_id')
-#         patient = get_object_or_404(Patient.objects.select_related('rooms'),pk=patient_id)
-#         room_charges =None
-#         if patient.room :
-#             today = date.today()
-#             duration = patient.admission_date - today
-#             room_charges = duration * patient.room.price
-        
-#         bills = PatientBills.objects.get(patient=patient_id,is_completed=False)
-#         medicine_bill= bills.medicine_bill
-#         lab_report_bill = bills.lab_report_bill
-#         total_amount = (room_charges or 0) + (medicine_bill or 0) + (lab_report_bill or 0)
-        
-#         invoice = Invoice(
-#             patient_id=patient_id,
-#             room_charges=room_charges,
-#             bill_id=bills,
-#             total_amount=total_amount,
-#         )
-#             form.save()
-#             return redirect('staff_home')
-#     else:
-#         form = InvoiceForm()
-
-#     return render(request,'staff/invoice.html',{'form':form})
 
 
 def staff_invoice(request):
@@ -406,50 +402,44 @@ def staff_invoice(request):
             invoice.invoice_no = generate_random_string()
             invoice.date = date.today()
 
-            invoice.save()  # Save the form to the database
-            return redirect('staff_home')
+            invoice.save()  
+            url = reverse('amount_conformation', args=[invoice.id])
+            return redirect(url)
+            
+            
+
     else:
         form = InvoiceForm()
 
     return render(request, 'staff/invoice.html', {'form': form})
 
-
-#<----------------------------------------------DISCHARGE----------------------------------------------->
-
-# def staff_appointment(request):
-#     if request.method == 'POST':
-#         form = AppointmentCreationForm(request.POST)
-#         if form.is_valid():
-#             appointment = form.save(commit=False)
-#         appointment_id = generate_random_string()
-#         patient = form.cleaned_data('patient_id')
-        
-#     else:    
-#         form = AppointmentCreationForm()
-#     return render(request, 'staff/appointment.html',{'form':form})
-
-def staff_appointment(request):
-    if request.method == 'POST':
-        form = AppointmentCreationForm(request.POST)
-        if form.is_valid():
-            appointment = form.save(commit=False)
-            
-            patient = form.cleaned_data.get('patient')
-            doctor = form.cleaned_data.get('doctor')
-            patient_id = patient.pk
-            doctor_id = doctor.pk
-            appointment.patient_id = patient_id
-            appointment.doctor_id = doctor_id
-            appointment.appointment_id = generate_random_string()
-            
-            appointment.save()
-            
-            messages.success(request, "Appointment created successfully!")
-            return redirect('staff_home')  
-    else:    
-        form = AppointmentCreationForm()
+#<----------------------------------------------PAYMENT----------------------------------------------->
     
-    return render(request, 'staff/appointment.html', {'form': form})
+def amount_conformation(request,invoice_id):
+    invoice= get_object_or_404(Invoice,id=invoice_id)
+    bill = get_object_or_404(PatientBills, id=invoice.bill_id.id)  # Fetch the related PatientBills record
 
+    lab_report = bill.lab_report_bill if bill.lab_report_bill > 0 else None
+    medicine = bill.medicine_bill if bill.medicine_bill > 0 else None
+    room = invoice.room_charges if invoice.room_charges > 0 else None
+    amount = invoice.total_amount if invoice.total_amount > 0 else None
     
+    context = {'room': room, 'lab_report': lab_report,'medicine':medicine, 'amount':amount,'invoice_id':invoice_id}
+    
+    return render(request, 'staff/amount_conformation.html',context )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # https://www.dbdiagram.io/d/Hospital-Management-665befbcb65d933879443c64
