@@ -24,6 +24,18 @@
             box-shadow: 0 8px 24px rgba(140,149,159,0.2);
             width: 100%;
             max-width: 400px;
+            position: relative;
+        }
+        .message {
+            background-color: #28a745;
+            color: white;
+            padding: 10px;
+            position: absolute;
+            top: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 4px;
+            display: none;
         }
         h1 {
             color: #58a6ff;
@@ -59,14 +71,17 @@
 </head>
 <body>
     <div class="container">
+        {% if messages %}
+            <div class="message" id="popupMessage">{{ messages }}</div>
+        {% endif %}
         <h1>Confirm your amount</h1>
-    {% if payment_method == 'razorpay' %}
-    <form action="{% url 'create_order' invoice_id  %}" method="post">
-    {% elif payment_method == 'paypal' %}
-    <form action="{% url 'paypal' %}" method="post">
-    {% else %}
-    <form action="{% url 'staff_home' %}" method="post">
-    {% endif %}
+        {% if payment_method == 'razorpay' %}
+        <form action="{% url 'create_order' invoice_id  %}" method="post">
+        {% elif payment_method == 'paypal' %}
+        <form action="{% url 'paypal' %}" method="post">
+        {% else %}
+        <form action="{% url 'staff_home' %}" method="post">
+        {% endif %}
             {% csrf_token %}
             {% if room %}
                 <h3>Room Charges: {{ room }}</h3>
@@ -80,8 +95,24 @@
             {% if amount %}
                 <h2>Total Amount: {{ amount }}</h2>
             {% endif %}
+            
+            {% if payment_status == 'Success' %}
+            <button type="button">Payment Completed</button>
+            {% else %}
             <button type="submit">Go to Payment Page</button>
+            {% endif %}
         </form>
     </div>
+    <script>
+        window.onload = function() {
+            var message = document.getElementById('popupMessage');
+            if (message) {
+                message.style.display = 'block';
+                setTimeout(function() {
+                    message.style.display = 'none';
+                }, 3000); // 3 seconds
+            }
+        };
+    </script>
 </body>
 </html>

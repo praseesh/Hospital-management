@@ -79,7 +79,7 @@
             {% comment %} <p><strong>Invoice ID:</strong> #{{ invoice.id }}</p> {% endcomment %}
             <h1><strong>Total Amount:</strong> ₹{{ invoice.total_amount|floatformat:2 }}</h1>
         </div>
-        <form action="/payment/success/" method="POST">
+        <form action="{% url 'payment_success' %}" method="POST">
             <script
                 src="https://checkout.razorpay.com/v1/checkout.js"
                 data-key="{{ razorpay_key }}" 

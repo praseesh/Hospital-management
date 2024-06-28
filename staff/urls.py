@@ -13,6 +13,7 @@ urlpatterns = [
     path('invoice/',views.staff_invoice,name="staff_invoice"),
     path('amount_conformation/<int:invoice_id>', views.amount_conformation, name='amount_conformation'),
     path('create_order/<int:invoice_id>/', views.create_order, name='create_order'),
+    path('payment/success/', views.payment_success, name='payment_success'),
     path('paypal',views.paypal, name='paypal'),
     path('lab_report', views.staff_lab_report, name="staff_lab_report"),
     path('lab_report_create',views.staff_labreport_create, name="lab_report_create" ),

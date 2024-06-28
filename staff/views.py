@@ -1,4 +1,4 @@
-
+from django.core.paginator import Paginator
 from django.shortcuts import render,redirect, get_object_or_404
 from django.contrib import messages
 from doctor.models import Doctor
@@ -377,7 +377,11 @@ def staff_appointment(request):
 
 
 #<------------------------------------------INVOICE----------------------------------------------->
-
+def invoice_list(request):
+    if request.method == 'GET':
+        invoice = Invoice.objects.all()
+        paginator = Paginator(invoice,10)
+    
 
 
 def staff_invoice(request):
@@ -419,8 +423,11 @@ def staff_invoice(request):
 
 def amount_conformation(request, invoice_id):
     invoice = get_object_or_404(Invoice, id=invoice_id)
-    print(invoice.payment_method)
+    # if invoice.status == "Success":
+    #     return render(request,'staff/amount_conformation.html',{'messages': 'Bill Already Paid. Go back to Home'})
+    
     context = {
+        'payment_status':invoice.status,
         'invoice': invoice,
         'room': invoice.room_charges if invoice.room_charges > 0 else None,
         'lab_report': invoice.bill_id.lab_report_bill if invoice.bill_id and invoice.bill_id.lab_report_bill > 0 else None,
@@ -450,6 +457,35 @@ def create_order(request, invoice_id):
     }
     
     return render(request,'staff/razorpay.html', context)
+
+@csrf_exempt
+def payment_success(request):
+    if request.method == 'POST':
+
+        razorpay_payment_id = request.POST.get('razorpay_payment_id')
+        razorpay_order_id = request.POST.get('razorpay_order_id')
+        razorpay_signature = request.POST.get('razorpay_signature')
+        invoice_id = request.POST.get('invoice_id')
+
+        payment_details_dict = {
+            'razorpay_order_id': razorpay_order_id,
+            'razorpay_payment_id': razorpay_payment_id,
+            'razorpay_signature': razorpay_signature
+        }
+
+        try:
+            razorpay_client.utility.verify_payment_signature(payment_details_dict)
+        except razorpay.errors.SignatureVerificationError:
+
+            messages.error(request, "Payment verification failed. Please try again.")
+            return redirect('staff_home')
+        invoice = get_object_or_404(Invoice, id=invoice_id)
+        invoice.status = 'Success'
+        invoice.save()
+
+        return render(request, 'staff/payment_success.html', {'invoice': invoice})
+
+    return redirect('staff_home')
 
 def paypal(request):
     return render(request,'staff/paypal.html')
