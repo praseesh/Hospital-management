@@ -497,11 +497,40 @@ def payment_success(request):
 def paypal_create_payment(request,invoice_id):
     invoice = Invoice.object.get(id=invoice_id)
     payment = paypalrestsdk.Payment({
-        "intent":"sale"
-        "payer:{
-            "payment_method":paypal}"
+        "intent": "sale",
+        "payer": {
+            "payment_method": "paypal"
+        },
+        "redirect_urls":{
+            "return_url":request.build_absolute_uri(reverse('execute_paypal_payment',args=[invoice_id])),
+            "cancel_url": request.build_absolute_uri(reverse('payment_cancelled'))
+        },
+        "transactions":[{
+            "item_list":{
+                "items":[{
+                    "name": f"Invoice {invoice.invoice_no}",
+                    "sku": f"INV-{invoice_id}",
+                    "price": str(invoice.total_amount),
+                    "currency": "INR",
+                    "quantity": 1
+                }]
+            },
+            "amount":{
+                "total":str(invoice.total_amount),
+                "currency":"INR"
+            },
+            "description": f"Payment for Invoice {invoice.invoice_no}"
+        }]
+            
     })
-    return render(request,'staff/paypal.html')
+    if payment.create():
+        for link in payment.links:
+            if link.method == "REDIRECT":
+                redirect_url = str(link.href)
+                return redirect(redirect_url)
+            
+    else:
+        return render(request, 'staff/payment_paypal_error.html', {'error': payment.error})
 
 
 
