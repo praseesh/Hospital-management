@@ -379,16 +379,17 @@ def staff_appointment(request):
 #<------------------------------------------INVOICE----------------------------------------------->
 def invoice_list(request):
     if request.method == 'GET':
-        invoice = Invoice.objects.all()
+        invoice = Invoice.objects.all().order_by('id')
         paginator = Paginator(invoice,10)
-    
-
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+        return render(request, 'staff/invoice_list.html', {'page_obj': page_obj})
 
 def staff_invoice(request):
     if request.method == 'POST':
         form = InvoiceForm(request.POST)
         if form.is_valid():
-            invoice = form.save(commit=False)  # Do not save to the database yet
+            invoice = form.save(commit=False)  
             patient = invoice.patient_id
 
             if patient.room_id:
@@ -423,9 +424,13 @@ def staff_invoice(request):
 
 def amount_conformation(request, invoice_id):
     invoice = get_object_or_404(Invoice, id=invoice_id)
-    # if invoice.status == "Success":
-    #     return render(request,'staff/amount_conformation.html',{'messages': 'Bill Already Paid. Go back to Home'})
-    
+    payment_completed = invoice.status == "Success" or invoice.total_amount <= 0
+
+    if payment_completed:
+        messages = 'Bill Already Paid or Invalid Amount'
+    else:
+        messages = 'Proceed to Payment'
+        
     context = {
         'payment_status':invoice.status,
         'invoice': invoice,
@@ -434,7 +439,9 @@ def amount_conformation(request, invoice_id):
         'medicine': invoice.bill_id.medicine_bill if invoice.bill_id and invoice.bill_id.medicine_bill > 0 else None,
         'amount': invoice.total_amount if invoice.total_amount > 0 else None,
         'invoice_id': invoice_id,
-        'payment_method':invoice.payment_method
+        'payment_method':invoice.payment_method,
+        'messages': messages,
+        'payment_completed':payment_completed
     }
     return render(request, 'staff/amount_conformation.html', context)
 

@@ -96,8 +96,8 @@
                 <h2>Total Amount: {{ amount }}</h2>
             {% endif %}
             
-            {% if payment_status == 'Success' %}
-            <button type="button">Payment Completed</button>
+            {% if payment_completed %}
+            <button type="button"><a href="{% url 'staff_invoice' %}">Payment Completed, Go to Home Page</a></button>
             {% else %}
             <button type="submit">Go to Payment Page</button>
             {% endif %}
