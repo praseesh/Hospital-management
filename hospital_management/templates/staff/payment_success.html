@@ -9,6 +9,6 @@
     <h1>Payment Successful!</h1>
     <p>Your payment for Invoice #{{ invoice.id }} has been processed successfully.</p>
     <p>Amount Paid: ₹{{ invoice.total_amount }}</p>
-    <a href="{% url 'staff_home' %}">Go back to Home</a>
+    <button><a href="{% url 'staff_home' %}">Go back to Home</a></button>
 </body>
 </html>

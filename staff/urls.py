@@ -15,7 +15,6 @@ urlpatterns = [
     path('amount_conformation/<int:invoice_id>', views.amount_conformation, name='amount_conformation'),
     path('create_order/<int:invoice_id>/', views.create_order, name='create_order'),
     path('payment/success/', views.payment_success, name='payment_success'),
-    path('paypal',views.paypal, name='paypal'),
     path('create_paypal_payment/<int:invoice_id>/', views.create_paypal_payment, name='create_paypal_payment'),
     path('execute_paypal_payment/<int:invoice_id>/', views.execute_paypal_payment, name='execute_paypal_payment'),
     path('payment_paypal_success/', views.payment_paypal_success, name='payment_paypal_success'),

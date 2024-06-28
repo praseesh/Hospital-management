@@ -83,7 +83,7 @@
         {% if payment_method == 'razorpay' %}
         <form action="{% url 'create_order' invoice_id  %}" method="post">
         {% elif payment_method == 'paypal' %}
-        <form action="{% url 'paypal' %}" method="post">
+        <form action="{% url 'create_paypal_payment' invoice_id %}" method="post">
         {% else %}
         <form action="{% url 'staff_home' %}" method="post">
         {% endif %}

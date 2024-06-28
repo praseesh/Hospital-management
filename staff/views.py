@@ -1,3 +1,4 @@
+from decimal import Decimal
 from django.core.paginator import Paginator
 from django.shortcuts import render,redirect, get_object_or_404
 from django.contrib import messages
@@ -445,6 +446,10 @@ def amount_conformation(request, invoice_id):
     }
     return render(request, 'staff/amount_conformation.html', context)
 
+
+'''<----------------------------------------------RAZORPAY----------------------------------------------->'''
+
+
 razorpay_client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID,settings.RAZORPAY_KEY_SECRET ))
 
 def create_order(request, invoice_id):
@@ -494,45 +499,73 @@ def payment_success(request):
 
     return redirect('staff_home')
 
-def paypal_create_payment(request,invoice_id):
-    invoice = Invoice.object.get(id=invoice_id)
+'''<----------------------------------------------PAYPAL----------------------------------------------->'''
+
+
+INR_TO_USD_RATE = Decimal('0.012')
+
+def create_paypal_payment(request, invoice_id):
+    invoice = Invoice.objects.get(id=invoice_id)
+    total_amount_usd = round(invoice.total_amount * INR_TO_USD_RATE, 2)
+    
     payment = paypalrestsdk.Payment({
         "intent": "sale",
         "payer": {
             "payment_method": "paypal"
         },
-        "redirect_urls":{
-            "return_url":request.build_absolute_uri(reverse('execute_paypal_payment',args=[invoice_id])),
-            "cancel_url": request.build_absolute_uri(reverse('payment_cancelled'))
+        "redirect_urls": {
+            "return_url": request.build_absolute_uri(reverse('execute_paypal_payment', args=[invoice_id])),
+            "cancel_url": request.build_absolute_uri(reverse('payment_paypal_cancelled'))
         },
-        "transactions":[{
-            "item_list":{
-                "items":[{
+        "transactions": [{
+            "item_list": {
+                "items": [{
                     "name": f"Invoice {invoice.invoice_no}",
                     "sku": f"INV-{invoice_id}",
-                    "price": str(invoice.total_amount),
-                    "currency": "INR",
+                    "price": str(total_amount_usd),
+                    "currency": "USD",
                     "quantity": 1
                 }]
             },
-            "amount":{
-                "total":str(invoice.total_amount),
-                "currency":"INR"
+            "amount": {
+                "total": str(total_amount_usd),
+                "currency": "USD"
             },
             "description": f"Payment for Invoice {invoice.invoice_no}"
         }]
-            
     })
+    
     if payment.create():
         for link in payment.links:
             if link.method == "REDIRECT":
                 redirect_url = str(link.href)
                 return redirect(redirect_url)
-            
+    else:
+        print(payment.error)
+        error_details = payment.error.get('details', []) if payment.error else []
+        return render(request, 'staff/payment_paypal_error.html', {
+            'error': payment.error,
+            'error_details': error_details
+        })
+    
+def execute_paypal_payment(request, invoice_id):
+    payment_id = request.GET.get('paymentId')
+    payer_id = request.GET.get('PayerID')
+    payment = paypalrestsdk.Payment.find(payment_id)
+
+    if payment.execute({"payer_id": payer_id}):
+        invoice = Invoice.objects.get(id=invoice_id)
+        invoice.status = "Success"
+        invoice.save()
+        return redirect('payment_paypal_success')
     else:
         return render(request, 'staff/payment_paypal_error.html', {'error': payment.error})
 
+def payment_paypal_success(request):
+    return render(request, 'staff/payment_paypal_success.html')
 
+def payment_paypal_cancelled(request):
+    return render(request, 'staff/payment_paypal_cancelled.html')
 
 
 

@@ -1,4 +1,3 @@
-<!-- hospital_management/templates/staff/payment_error.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,6 +7,15 @@
 <body>
     <h1>Payment Error</h1>
     <p>There was an error processing your payment. Please try again later.</p>
+    <pre>{{ error }}</pre>
+    {% if error_details %}
+        <h2>Error Details:</h2>
+        <ul>
+        {% for detail in error_details %}
+            <li>{{ detail }}</li>
+        {% endfor %}
+        </ul>
+    {% endif %}
     <a href="{% url 'staff_home' %}">Return to Home</a>
 </body>
 </html>
