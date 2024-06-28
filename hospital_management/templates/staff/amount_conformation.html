@@ -15,6 +15,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            flex-direction: column; /* Adjust to align the message at the top */
             min-height: 100vh;
         }
         .container {
@@ -27,15 +28,15 @@
             position: relative;
         }
         .message {
-            background-color: #28a745;
+            background-color: #bd2c00;
             color: white;
-            padding: 10px;
-            position: absolute;
-            top: -50px;
-            left: 50%;
-            transform: translateX(-50%);
+            padding: 20px;
+            margin: 10px 0;
             border-radius: 4px;
             display: none;
+            font-size: 1.2rem;
+            width: 90%;
+            text-align: center;
         }
         h1 {
             color: #58a6ff;
@@ -62,6 +63,10 @@
         button:hover {
             background-color: #2ea043;
         }
+        button a {
+            color: inherit;
+            text-decoration: none;
+        }
         @media (max-width: 480px) {
             .container {
                 padding: 1rem;
@@ -70,10 +75,10 @@
     </style>
 </head>
 <body>
+    {% if messages %}
+        <div class="message" id="popupMessage">{{ messages }}</div>
+    {% endif %}
     <div class="container">
-        {% if messages %}
-            <div class="message" id="popupMessage">{{ messages }}</div>
-        {% endif %}
         <h1>Confirm your amount</h1>
         {% if payment_method == 'razorpay' %}
         <form action="{% url 'create_order' invoice_id  %}" method="post">
@@ -110,7 +115,7 @@
                 message.style.display = 'block';
                 setTimeout(function() {
                     message.style.display = 'none';
-                }, 3000); // 3 seconds
+                }, 3000); 
             }
         };
     </script>

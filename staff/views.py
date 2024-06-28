@@ -13,7 +13,7 @@ from django.urls import reverse
 from django.conf import settings
 import razorpay
 from django.views.decorators.csrf import csrf_exempt
-
+from .paypal_config import *
 #<-----------------------------------------STAFF---------------------------------------------------->
 
 def staff(request):
@@ -494,7 +494,13 @@ def payment_success(request):
 
     return redirect('staff_home')
 
-def paypal(request):
+def paypal_create_payment(request,invoice_id):
+    invoice = Invoice.object.get(id=invoice_id)
+    payment = paypalrestsdk.Payment({
+        "intent":"sale"
+        "payer:{
+            "payment_method":paypal}"
+    })
     return render(request,'staff/paypal.html')
 
 
