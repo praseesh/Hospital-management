@@ -1,14 +1,106 @@
-
-
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Payment Success</title>
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --container-bg: #161b22;
+            --text-color: #c9d1d9;
+            --heading-color: #58a6ff;
+            --button-bg: #238636;
+            --button-hover: #2ea043;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            line-height: 1.5;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: var(--container-bg);
+            padding: 2rem;
+            border-radius: 6px;
+            box-shadow: 0 8px 24px rgba(140,149,159,0.2);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        h1 {
+            color: var(--heading-color);
+            margin-top: 0;
+            font-size: 1.8rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        .amount {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin: 1.5rem 0;
+        }
+
+        button {
+            background-color: var(--button-bg);
+            border: none;
+            padding: 0;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: var(--button-hover);
+        }
+
+        button a {
+            color: white;
+            text-decoration: none;
+            display: inline-block;
+            padding: 12px 20px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 1.5rem;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            p, button a {
+                font-size: 0.9rem;
+            }
+
+            .amount {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>Payment Successful!</h1>
-    <p>Your payment for Invoice #{{ invoice.id }} has been processed successfully.</p>
-    <p>Amount Paid: ₹{{ invoice.total_amount }}</p>
-    <button><a href="{% url 'staff_home' %}">Go back to Home</a></button>
+    <div class="container">
+        <h1>Payment Successful!</h1>
+        <p>Your payment for Invoice #{{ invoice.id }} has been processed successfully.</p>
+        <p class="amount">Amount Paid: ₹{{ invoice.total_amount }}</p>
+        <button><a href="{% url 'staff_home' %}">Go back to Home</a></button>
+    </div>
 </body>
 </html>

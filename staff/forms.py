@@ -110,6 +110,10 @@ class InvoiceCreationForm(forms.ModelForm):
     class Meta:
         model = Invoice
         fields = '__all__'
+class InvoiceModificationForm(forms.ModelForm):
+    # class Meta:
+    #     model = Invoice
+    pass    
         
 class CreateRoomForm(forms.ModelForm):
     class Meta:

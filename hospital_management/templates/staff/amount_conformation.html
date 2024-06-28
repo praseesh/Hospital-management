@@ -5,71 +5,114 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Confirm Amount</title>
     <style>
+        :root {
+            --bg-color: #0d1117;
+            --container-bg: #161b22;
+            --text-color: #c9d1d9;
+            --heading-color: #58a6ff;
+            --button-bg: #238636;
+            --button-hover: #2ea043;
+            --error-bg: #bd2c00;
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
             line-height: 1.5;
-            color: #c9d1d9;
-            background-color: #0d1117;
+            color: var(--text-color);
+            background-color: var(--bg-color);
             margin: 0;
-            padding: 0;
+            padding: 20px;
             display: flex;
             justify-content: center;
             align-items: center;
-            flex-direction: column; /* Adjust to align the message at the top */
+            flex-direction: column;
             min-height: 100vh;
         }
+
         .container {
-            background-color: #161b22;
+            background-color: var(--container-bg);
             padding: 2rem;
             border-radius: 6px;
             box-shadow: 0 8px 24px rgba(140,149,159,0.2);
             width: 100%;
             max-width: 400px;
-            position: relative;
         }
+
         .message {
-            background-color: #bd2c00;
-            color: white;
-            padding: 20px;
-            margin: 10px 0;
-            border-radius: 4px;
-            display: none;
-            font-size: 1.2rem;
-            width: 90%;
+            background-color: #fff; /* Changed to a softer warning color */
+            color: #000; /* Darker text for better contrast */
+            padding: 10px; /* Reduced padding */
+            margin-bottom: 20px;
+            border-radius: 4px; /* Slightly reduced border radius */
+            font-size: 0.9rem; /* Reduced font size */
+            width: 90%; /* Reduced width */
+            max-width: 250px; /* Reduced max-width */
             text-align: center;
+            box-sizing: border-box;
+            position: fixed; /* Fixed position */
+            top: 20px; /* Distance from top */
+            left: 50%; /* Center horizontally */
+            transform: translateX(-50%); /* Adjust for exact center */
+            z-index: 1000; /* Ensure it's above other elements */
         }
+
         h1 {
-            color: #58a6ff;
+            color: var(--heading-color);
             margin-top: 0;
             text-align: center;
+            font-size: 1.5rem;
         }
+
         h2, h3 {
-            color: #c9d1d9;
+            color: var(--text-color);
+            font-size: 1.1rem;
+            margin: 10px 0;
         }
+
         form {
             display: flex;
             flex-direction: column;
         }
+
         button {
-            background-color: #238636;
-            color: #ffffff;
+            background-color: var(--button-bg);
+            color: white;
             border: none;
-            padding: 10px 20px;
+            padding: 12px 20px;
             cursor: pointer;
             border-radius: 6px;
             font-size: 1rem;
-            margin-top: 1rem;
+            margin-top: 1.5rem;
+            transition: background-color 0.3s ease;
         }
+
         button:hover {
-            background-color: #2ea043;
+            background-color: var(--button-hover);
         }
+
         button a {
             color: inherit;
             text-decoration: none;
+            display: block;
+            width: 100%;
+            height: 100%;
         }
+
         @media (max-width: 480px) {
             .container {
-                padding: 1rem;
+                padding: 1.5rem;
+            }
+            
+            h1 {
+                font-size: 1.3rem;
+            }
+
+            h2, h3 {
+                font-size: 1rem;
+            }
+
+            button {
+                padding: 10px 15px;
             }
         }
     </style>

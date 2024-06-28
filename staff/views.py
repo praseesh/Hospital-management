@@ -284,14 +284,11 @@ def assign_patient(request,room_id):
     room = get_object_or_404(Room, id=room_id)
     if request.method=="POST":
         patient_id = request.POST.get('patient_id')
-        print("@@@@@@@@",patient_id,room_id)
         if not room.is_vacant:
             error_message = "This room is already occupied."
             return render(request, 'staff/assign_patient.html', {'message': error_message, 'room_id': room_id})
-        print("!!!!!!!!!!!!!!!!!!",patient_id,room_id)
         
         updated = Patient.objects.filter(id=patient_id).update(room=room_id)
-        print("$$$$$$$$$$$$$$$$$$",patient_id,room_id)
         room_update = Room.objects.filter(id=room_id).update(is_vacant=False)
         
         if updated and room_update:
@@ -380,11 +377,22 @@ def staff_appointment(request):
 #<------------------------------------------INVOICE----------------------------------------------->
 def invoice_list(request):
     if request.method == 'GET':
-        invoice = Invoice.objects.all().order_by('id')
-        paginator = Paginator(invoice,10)
+        invoices = Invoice.objects.all().order_by('id')
+        patient_name = request.GET.get('patient_name', '')
+
+        if patient_name:
+            invoices = invoices.filter(patient_id__firstname__icontains=patient_name) | invoices.filter(patient_id__lastname__icontains=patient_name)
+
+        paginator = Paginator(invoices, 10)
         page_number = request.GET.get('page')
         page_obj = paginator.get_page(page_number)
+
         return render(request, 'staff/invoice_list.html', {'page_obj': page_obj})
+    return render(request, 'staff/invoice_list.html')
+    
+def invoice_edit(request, invoice_id):
+    
+    return render(request, 'staff/invoice_edit.html')
 
 def staff_invoice(request):
     if request.method == 'POST':
