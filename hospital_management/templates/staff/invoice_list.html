@@ -5,94 +5,83 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Invoice List</title>
     <style>
-        :root {
-            --bg-color: #0d1117;
-            --text-color: #c9d1d9;
-            --header-bg: #161b22;
-            --border-color: #30363d;
-            --hover-color: #1f6feb;
-            --button-bg: #238636;
-            --button-text: #ffffff;
-            --accent-color: #58a6ff;
-        }
-
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
+            background-color: #0d1117;
+            color: #c9d1d9;
             padding: 20px;
             line-height: 1.5;
-            max-width: 1200px;
-            margin: 0 auto;
         }
-
         h1 {
-            color: var(--accent-color);
+            color: #58a6ff;
             text-align: center;
-            margin-bottom: 1.5rem;
         }
-
         .table-container {
             overflow-x: auto;
             margin-top: 20px;
         }
-
         table {
             width: 100%;
             border-collapse: separate;
             border-spacing: 0;
-            border: 1px solid var(--border-color);
             border-radius: 6px;
             overflow: hidden;
         }
-
         th, td {
             padding: 12px 15px;
             text-align: left;
         }
-
         th {
-            background-color: var(--header-bg);
-            color: var(--accent-color);
+            background-color: #161b22;
+            color: #58a6ff;
             font-weight: 600;
         }
-
         tr {
-            background-color: var(--bg-color);
+            background-color: #0d1117;
         }
-
         tr:nth-child(even) {
-            background-color: var(--header-bg);
+            background-color: #161b22;
         }
-
         .pagination {
             margin-top: 20px;
             text-align: center;
         }
-
         .pagination a, .pagination span {
-            color: var(--text-color);
+            color: #c9d1d9;
             padding: 8px 16px;
             text-decoration: none;
-            border: 1px solid var(--border-color);
+            border: 1px solid #30363d;
             margin: 0 4px;
             border-radius: 6px;
             display: inline-block;
         }
-
         .pagination a:hover {
-            background-color: var(--hover-color);
+            background-color: #21262d;
         }
-
         .pagination .current-page {
-            background-color: var(--button-bg);
-            color: var(--button-text);
-            border-color: var(--button-bg);
+            background-color: #238636;
+            color: white;
+            border-color: #238636;
         }
-
+        .error-message {
+            color: red;
+            text-align: center;
+            margin: 20px 0;
+        }
+        @media (max-width: 600px) {
+            table, .pagination {
+                font-size: 14px;
+            }
+            th, td {
+                padding: 8px 10px;
+            }
+            .pagination a, .pagination span {
+                padding: 6px 12px;
+            }
+        }
         .invoice-button {
-            background-color: var(--button-bg);
-            color: var(--button-text);
+            background-color: #238636;
+            color: white;
             padding: 10px 20px;
             border: none;
             border-radius: 6px;
@@ -101,78 +90,23 @@
             text-align: center;
             display: block;
             margin: 20px auto;
-            transition: background-color 0.3s ease;
         }
-
         .invoice-button:hover {
-            background-color: var(--hover-color);
-        }
-
-        .search-form {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-
-        .search-form input[type="search"] {
-            padding: 8px;
-            border: 1px solid var(--border-color);
-            border-radius: 6px 0 0 6px;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-        }
-
-        .search-form button {
-            padding: 8px 16px;
-            background-color: var(--button-bg);
-            color: var(--button-text);
-            border: none;
-            border-radius: 0 6px 6px 0;
-            cursor: pointer;
-        }
-
-        @media (max-width: 768px) {
-            body {
-                padding: 10px;
-            }
-
-            table, .pagination {
-                font-size: 14px;
-            }
-
-            th, td {
-                padding: 8px 10px;
-            }
-
-            .pagination a, .pagination span {
-                padding: 6px 12px;
-            }
-
-            .search-form {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .search-form input[type="search"],
-            .search-form button {
-                width: 100%;
-                max-width: 300px;
-                margin-bottom: 10px;
-                border-radius: 6px;
-            }
+            background-color: #2ea043;
         }
     </style>
 </head>
 <body>
     <h1>Invoice List</h1>
+    {% if error_message %}
+        <div class="error-message">{{ error_message }}</div>
+    {% endif %}
     <button class="invoice-button" onclick="location.href='{% url 'staff_invoice' %}'">Go to Staff Invoice</button>
-    
-    <form class="search-form" action="{% url 'invoice_list' %}" method="GET">
-        <input type="search" placeholder="Search by Patient Name" name="patient_name">
-        <button type="submit">Search</button>
-    </form>
-
     <div class="table-container">
+        <form action="{% url 'invoice_list' %}" method="GET">
+            <input type="search" placeholder="Search by Patient Name" name="patient_name">
+            <button type="submit">Search</button>
+        </form>
         <table>
             <thead>
                 <tr>
@@ -181,6 +115,7 @@
                     <th>Date</th>
                     <th>Amount</th>
                     <th>Status</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -191,10 +126,13 @@
                     <td>{{ invoice.date }}</td>
                     <td>{{ invoice.total_amount }}</td>
                     <td>{{ invoice.status }}</td>
+                    <td>
+                        <button onclick="confirmDelete({{ invoice.id }})">DELETE</button>
+                    </td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="5">No invoices found.</td>
+                    <td colspan="6">No invoices found.</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -214,5 +152,18 @@
             <a href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
         {% endif %}
     </div>
+
+    <script>
+        function confirmDelete(invoiceId) {
+            if (!invoiceId) {
+                alert("Invalid invoice ID.");
+                return;
+            }
+        
+            if (confirm("Are you sure you want to delete this invoice?")) {
+                window.location.href = "{% url 'invoice_delete' invoice_id=0 %}".replace('0', invoiceId);
+            }
+        }
+    </script>
 </body>
 </html>

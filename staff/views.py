@@ -390,9 +390,6 @@ def invoice_list(request):
         return render(request, 'staff/invoice_list.html', {'page_obj': page_obj})
     return render(request, 'staff/invoice_list.html')
     
-def invoice_edit(request, invoice_id):
-    
-    return render(request, 'staff/invoice_edit.html')
 
 def staff_invoice(request):
     if request.method == 'POST':
@@ -427,6 +424,11 @@ def staff_invoice(request):
 
 
     return render(request, 'staff/invoice.html', {'form': form})
+
+def invoice_delete(request, invoice_id):
+    invoice =get_object_or_404(Invoice,id=invoice_id)
+    invoice.delete()
+    return redirect('invoice_list')    
 
 #<----------------------------------------------PAYMENT----------------------------------------------->
 
