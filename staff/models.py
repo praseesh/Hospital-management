@@ -148,7 +148,7 @@ class CholesterolTest(models.Model):
         max_length=255,
         default='Total Cholesterol, LDL Cholesterol (Low-Density Lipoprotein), HDL Cholesterol (High-Density Lipoprotein), Triglycerides'
     )
-    result =models.CharField(max_length=255)
+    result =models.CharField(max_length=255,default='')
     reference_value = models.CharField(
         max_length=255,
         default='< 200, < 100, > 40, < 150'
@@ -187,12 +187,11 @@ class KidneyFunctionTest(models.Model):
         max_length=255,
         default='13 - 43, 0.7 - 1.3, 3.5 - 7.2, 8.7 - 10.4, 2.4 - 5.1, 30 - 120, 5.7 - 8.2, 3.2 - 4.8, 136 - 145, 3.5 - 5.1, 98 - 107'
     )
-    result =models.CharField(max_length=255)
+    result =models.CharField(max_length=255, default='')
     unit = models.CharField(
         max_length=255,
         default='mg/dL, mg/dL, mg/dL, mg/dL, mg/dL, U/L, g/dL, g/dL, mEq/L, mEq/L, mEq/L'
     )
-    price = models.CharField(max_length=100, default='150')
     
     class Meta:
         db_table = 'kidney_function_test'
