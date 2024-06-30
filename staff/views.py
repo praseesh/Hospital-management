@@ -513,7 +513,6 @@ razorpay_client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID,settings.RAZORP
 def create_order(request, invoice_id):
     invoice = get_object_or_404(Invoice, id=invoice_id)
     total_amount = int(invoice.total_amount * 100)
-    
     DATA = {
         'amount':total_amount,
         'currency':'INR',
