@@ -5,57 +5,173 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sugar Test</title>
     <style>
+        :root {
+            --bg-color: #0d1117;
+            --text-color: #c9d1d9;
+            --border-color: #30363d;
+            --header-bg: #161b22;
+            --input-bg: #0d1117;
+            --input-border: #30363d;
+            --button-bg: #238636;
+            --button-hover: #2ea043;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.5;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .patient-select {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: var(--header-bg);
+            border-radius: 6px;
+        }
+
+        select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid var(--input-border);
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            border-radius: 6px;
+        }
+
         table {
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-bottom: 20px;
         }
+
         th, td {
-            border: 1px solid black;
-            padding: 8px;
+            border: 1px solid var(--border-color);
+            padding: 12px;
             text-align: left;
         }
+
         th {
-            background-color: #f2f2f2;
+            background-color: var(--header-bg);
+            font-weight: 600;
+        }
+
+        input[type="text"], input[type="number"] {
+            width: 94%;
+            padding: 8px;
+            border: 1px solid var(--input-border);
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            border-radius: 6px;
+        }
+
+        button {
+            background-color: var(--button-bg);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: var(--button-hover);
+        }
+
+        @media (max-width: 768px) {
+            table, thead, tbody, th, td, tr {
+                display: block;
+            }
+
+            thead tr {
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
+
+            tr {
+                margin-bottom: 15px;
+            }
+
+            td {
+                border: none;
+                position: relative;
+                padding-left: 50%;
+            }
+
+            td:before {
+                position: absolute;
+                top: 6px;
+                left: 6px;
+                width: 45%;
+                padding-right: 10px;
+                white-space: nowrap;
+                content: attr(data-label);
+                font-weight: bold;
+            }
         }
     </style>
 </head>
 <body>
-    <table>
+    <div class="container">
+        {% if error %}
+        <p class="error">{{ error }}</p>
+        {% endif %}
         <form method="post" action="{% url 'create_sugar_test' %}">
             {% csrf_token %}
-        <thead>
-            <tr>
-                <th>Investgation</th>
-                <th>Result</th>
-                <th>Reference</th>
-                <th>Unit</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for st in st %}
-                <tr>
-                    <td>{{ st.investigation }}</td>
-                    <td>
-                        {% if st.investigation == 'Fasting Blood Sugar' %}
-                            {{ form.fbs }}
-                        {% elif st.investigation == 'Postprandial Blood Sugar' %}
-                            {{ form.pbs }}
-                        {% elif st.investigation == 'Random Blood Sugar' %}
-                            {{ form.rbs }}
-                        {% elif st.investigation == 'HbA1c' %}
-                            {{ form.hba1c }}
-                        {% elif st.investigation == 'Oral Glucose Tolerance Test (OGTT)' %}
-                            {{ form.ogtt }}
-                        {% endif %}
-                    </td>
-                    <td>{{ st.reference_value }}</td>
-                    <td>{{ st.unit }}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    <button type="submit">Submit</button>
-    </form>
-    
+            <div class="patient-select">
+                <label for="patient">Select Patient:</label>
+                <select id="patient" name="patient" required>
+                    <option value="">-- Select a patient --</option>
+                    {% for patient in patients %}
+                        <option value="{{ patient.id }}">{{ patient.firstname }} {{ patient.lastname }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Investigation</th>
+                        <th>Result</th>
+                        <th>Reference</th>
+                        <th>Unit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for st in st %}
+                        <tr>
+                            <td data-label="Investigation">{{ st.investigation }}</td>
+                            <td data-label="Result">
+                                {% if st.investigation == 'Fasting Blood Sugar' %}
+                                    {{ form.fbs }}
+                                {% elif st.investigation == 'Postprandial Blood Sugar' %}
+                                    {{ form.pbs }}
+                                {% elif st.investigation == 'Random Blood Sugar' %}
+                                    {{ form.rbs }}
+                                {% elif st.investigation == 'HbA1c' %}
+                                    {{ form.hba1c }}
+                                {% elif st.investigation == 'Oral Glucose Tolerance Test (OGTT)' %}
+                                    {{ form.ogtt }}
+                                {% endif %}
+                            </td>
+                            <td data-label="Reference">{{ st.reference_value }}</td>
+                            <td data-label="Unit">{{ st.unit }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
 </body>
 </html>

@@ -5,23 +5,138 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cholesterol Test</title>
     <style>
+        :root {
+            --bg-color: #0d1117;
+            --text-color: #c9d1d9;
+            --border-color: #30363d;
+            --header-bg: #161b22;
+            --input-bg: #0d1117;
+            --input-border: #30363d;
+            --button-bg: #238636;
+            --button-hover: #2ea043;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.5;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .patient-select {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: var(--header-bg);
+            border-radius: 6px;
+        }
+
+        select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid var(--input-border);
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            border-radius: 6px;
+        }
+
         table {
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-bottom: 20px;
         }
+
         th, td {
-            border: 1px solid black;
-            padding: 8px;
+            border: 1px solid var(--border-color);
+            padding: 12px;
             text-align: left;
         }
+
         th {
-            background-color: #f2f2f2;
+            background-color: var(--header-bg);
+            font-weight: 600;
+        }
+
+        input[type="text"], input[type="number"] {
+            width: 94%;
+            padding: 8px;
+            border: 1px solid var(--input-border);
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            border-radius: 6px;
+        }
+
+        button {
+            background-color: var(--button-bg);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: var(--button-hover);
+        }
+
+        @media (max-width: 768px) {
+            table, thead, tbody, th, td, tr {
+                display: block;
+            }
+
+            thead tr {
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
+
+            tr {
+                margin-bottom: 15px;
+            }
+
+            td {
+                border: none;
+                position: relative;
+                padding-left: 50%;
+            }
+
+            td:before {
+                position: absolute;
+                top: 6px;
+                left: 6px;
+                width: 45%;
+                padding-right: 10px;
+                white-space: nowrap;
+                content: attr(data-label);
+                font-weight: bold;
+            }
         }
     </style>
 </head>
 <body>
+    {% if error %}
+    <p class="error">{{ error }}</p>
+    {% endif %}
     <form method="post" action="{% url 'create_cholesterol_test' %}">
         {% csrf_token %}
+        <div class="patient-select">
+            <label for="patient">Select Patient:</label>
+            <select id="patient" name="patient" required>
+                <option value="">-- Select a patient --</option>
+                {% for patient in patients %}
+                    <option value="{{ patient.id }}">{{ patient.firstname }} {{ patient.lastname }}</option>
+                {% endfor %}
+            </select>
+        </div>
         <table>
             <thead>
                 <tr>
@@ -34,8 +149,8 @@
             <tbody>
                 {% for ct in ct %}
                     <tr>
-                        <td>{{ ct.investigation }}</td>
-                        <td>
+                        <td data-label="Investigation">{{ ct.investigation }}</td>
+                        <td data-label="Result">
                             {% if ct.investigation == 'Total Cholesterol' %}
                                 {{ form.total_cholesterol }}
                             {% elif ct.investigation == 'LDL Cholesterol (Low-Density Lipoprotein)' %}
@@ -46,8 +161,8 @@
                                 {{ form.triglycerides }}
                             {% endif %}
                         </td>
-                        <td>{{ ct.reference_value }}</td>
-                        <td>{{ ct.unit }}</td>
+                        <td data-label="Reference">{{ ct.reference_value }}</td>
+                        <td data-label="Unit">{{ ct.unit }}</td>
                     </tr>
                 {% endfor %}
             </tbody>

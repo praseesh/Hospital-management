@@ -3,83 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invoice</title>
+    <title>Create Invoice</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
-            line-height: 1.5;
-            color: #c9d1d9;
             background-color: #0d1117;
-            margin: 0;
+            color: #c9d1d9;
             padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-        .container {
-            background-color: #161b22;
-            padding: 2rem;
-            border-radius: 6px;
-            box-shadow: 0 8px 24px rgba(140,149,159,0.2);
-            width: 100%;
-            max-width: 400px;
+            line-height: 1.5;
         }
         h1 {
             color: #58a6ff;
-            margin-top: 0;
             text-align: center;
         }
-        form {
-            display: flex;
-            flex-direction: column;
+        .form-container {
+            max-width: 600px;
+            margin: auto;
+            background-color: #161b22;
+            padding: 20px;
+            border-radius: 8px;
         }
-        p {
-            margin-bottom: 1rem;
+        .messages {
+            background-color: #238636;
+            color: white;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .messages.error {
+            background-color: #da3633;
+        }
+        .form-group {
+            margin-bottom: 15px;
         }
         label {
             display: block;
-            margin-bottom: 0.5rem;
-            color: #8b949e;
+            margin-bottom: 5px;
+            font-weight: bold;
         }
-        input[type="text"],
-        input[type="number"],
-        select {
+        input, select, textarea {
             width: 100%;
-            padding: 8px;
+            padding: 10px;
             border: 1px solid #30363d;
+            border-radius: 4px;
             background-color: #0d1117;
             color: #c9d1d9;
-            border-radius: 6px;
         }
         button {
             background-color: #238636;
-            color: #ffffff;
+            color: white;
+            padding: 10px 15px;
             border: none;
-            padding: 10px 20px;
+            border-radius: 4px;
             cursor: pointer;
-            border-radius: 6px;
-            font-size: 1rem;
-            margin-top: 1rem;
+            font-size: 16px;
         }
         button:hover {
             background-color: #2ea043;
         }
-        @media (max-width: 480px) {
-            .container {
-                padding: 1rem;
-            }
-        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Invoice</h1>
-        <form action="{% url 'staff_invoice' %}" method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit">Submit</button>
-        </form>
+    <h1>Create Invoice</h1>
+    <div class="form-container">
+        {% if msg %}
+            <div class="messages error">
+                {{ msg }} (Invoice ID: {{ invoice_id }})
+            </div>
+            <form method="post" action="{% url 'amount_conformation' invoice_id=invoice_id %}">
+                {% csrf_token %}
+                <button type="submit">Go To Payment</button>
+            </form>
+        {% else %}
+            <form method="post" action="{% url 'staff_invoice' %}">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit">Create Invoice</button>
+            </form>
+        {% endif %}
     </div>
 </body>
 </html>

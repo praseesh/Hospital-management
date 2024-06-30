@@ -92,11 +92,14 @@ class Prescription(models.Model):
         
         
 class SugarTest(models.Model):
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE,null=True,blank=True,default=None)
     investigation = models.CharField(max_length=255, default='Fasting Blood Sugar, Postprandial Blood Sugar, Random Blood Sugar, HbA1c, Oral Glucose Tolerance Test (OGTT)')
     result = models.CharField(max_length=255)
     reference_value = models.CharField(max_length=255, default='70 - 100, 70 - 140, 70 - 140, 4.0 - 5.6, 140 - 199')
     unit = models.CharField(max_length=255, default='mg/dL, mg/dL, mg/dL, %, mg/dL')
-    price = models.CharField(max_length=100, default='')
+    price = models.IntegerField()
+    is_completed = models.BooleanField(default=False)
+    
 
     class Meta:
         db_table = 'sugar_test'
@@ -113,11 +116,14 @@ class ST(models.Model):
         
 
 class LiverFunctionTest(models.Model):
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE,null=True,blank=True,default=None)
+    price = models.IntegerField()
+    is_completed = models.BooleanField(default=False)
     investigation = models.CharField(max_length=255,default='Total Bilirubin, Direct Bilirubin, Indirect Bilirubin, Aspartate Aminotransferase (AST/SGOT), Alanine Aminotransferase (ALT/SGPT), Alkaline Phosphatase (ALP), Total Protein, Albumin, Globulin, Albumin/Globulin Ratio')
     result =models.CharField(max_length=255)
     reference_value = models.CharField(max_length=255,default='0.1 - 1.2, 0.0 - 0.4, 0.1 - 0.8, 5 - 40, 7 - 56, 30 - 120, 6.0 - 8.3, 3.5 - 5.0, 2.0 - 3.5, 1.0 - 2')
     unit = models.CharField(max_length=255,default='mg/dL, mg/dL, mg/dL, U/L, U/L, U/L, g/dL, g/dL, g/dL, ratio')
-    price = models.CharField(max_length=100, default='')
+
 
     class Meta:
         db_table = 'liver_function_test'
@@ -126,6 +132,7 @@ class LiverFunctionTest(models.Model):
         return self.investigation
 
 class LFT(models.Model):
+
     investigation = models.CharField(max_length=50)
     reference_value = models.CharField(max_length=20)
     unit = models.CharField(max_length=10)
@@ -134,6 +141,9 @@ class LFT(models.Model):
         db_table = 'lft'
         
 class CholesterolTest(models.Model):
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE,null=True,blank=True,default=None)
+    price = models.IntegerField()
+    is_completed = models.BooleanField(default=False)
     investigation = models.CharField(
         max_length=255,
         default='Total Cholesterol, LDL Cholesterol (Low-Density Lipoprotein), HDL Cholesterol (High-Density Lipoprotein), Triglycerides'
@@ -156,6 +166,7 @@ class CholesterolTest(models.Model):
         return self.investigation
     
 class CT(models.Model):
+
     investigation = models.CharField(max_length=50)
     reference_value = models.CharField(max_length=20)
     unit = models.CharField(max_length=10)
@@ -164,6 +175,9 @@ class CT(models.Model):
         db_table = 'ct'
         
 class KidneyFunctionTest(models.Model):
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, null=True, blank=True,default=None)
+    price = models.IntegerField()
+    is_completed = models.BooleanField(default=False)
     investigation = models.CharField(
         max_length=255,
         default='Urea, Creatinine, Uric Acid, Calcium, Total, Phosphorus, Alkaline Phosphatase (ALP), Total Protein, Albumin, Sodium, Potassium, Chloride'
@@ -205,9 +219,8 @@ class LabReport(models.Model):
     ]
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
-    category = models.CharField(max_length=100,choices=CATEGORY_CHOICES)
-    date = models.DateField()
-    amount = models.CharField(max_length=50, default='pending')
+    date = models.DateField(auto_now_add=True)
+    amount = models.IntegerField(default=0)
     result = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

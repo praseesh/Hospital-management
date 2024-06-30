@@ -5,125 +5,185 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kidney Test</title>
     <style>
-        body {
-            background-color: #0d1117;
-            color: #c9d1d9;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
+        :root {
+            --bg-color: #0d1117;
+            --text-color: #c9d1d9;
+            --border-color: #30363d;
+            --header-bg: #161b22;
+            --input-bg: #0d1117;
+            --input-border: #30363d;
+            --button-bg: #238636;
+            --button-hover: #2ea043;
         }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.5;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .patient-select {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: var(--header-bg);
+            border-radius: 6px;
+        }
+
+        select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid var(--input-border);
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            border-radius: 6px;
+        }
+
         table {
             width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-bottom: 20px;
         }
+
         th, td {
-            border: 1px solid #30363d;
+            border: 1px solid var(--border-color);
             padding: 12px;
             text-align: left;
         }
+
         th {
-            background-color: #161b22;
-            color: #8b949e;
+            background-color: var(--header-bg);
+            font-weight: 600;
         }
-        td {
-            background-color: #0d1117;
+
+        input[type="text"], input[type="number"] {
+            width: 94%;
+            padding: 8px;
+            border: 1px solid var(--input-border);
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            border-radius: 6px;
         }
-        form {
-            padding: 20px;
-            max-width: 90%;
-            margin: auto;
-        }
+
         button {
-            background-color: #238636;
-            color: #ffffff;
+            background-color: var(--button-bg);
+            color: white;
             border: none;
             padding: 10px 20px;
             cursor: pointer;
-            font-size: 16px;
-            margin-top: 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
         }
+
         button:hover {
-            background-color: #2ea043;
+            background-color: var(--button-hover);
         }
-        button:active {
-            background-color: #238636;
-        }
+
         @media (max-width: 768px) {
-            table, th, td {
+            table, thead, tbody, th, td, tr {
                 display: block;
-                width: 100%;
             }
-            th {
-                display: none;
-            }
-            td {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding-left: 50%;
-                position: relative;
-            }
-            td:before {
-                content: attr(data-label);
+
+            thead tr {
                 position: absolute;
-                left: 10px;
+                top: -9999px;
+                left: -9999px;
+            }
+
+            tr {
+                margin-bottom: 15px;
+            }
+
+            td {
+                border: none;
+                position: relative;
+                padding-left: 50%;
+            }
+
+            td:before {
+                position: absolute;
+                top: 6px;
+                left: 6px;
                 width: 45%;
                 padding-right: 10px;
-                text-align: left;
+                white-space: nowrap;
+                content: attr(data-label);
                 font-weight: bold;
             }
         }
     </style>
 </head>
 <body>
-    <form method="post" action="{% url 'create_kidney_test' %}">
-        {% csrf_token %}
-        <table>
-            <thead>
-                <tr>
-                    <th>Investigation</th>
-                    <th>Result</th>
-                    <th>Reference</th>
-                    <th>Unit</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for kft in kft %}
+    <div class="container">
+        {% if error %}
+        <p class="error">{{ error }}</p>
+        {% endif %}
+        <form method="post" action="{% url 'create_kidney_test' %}">
+            {% csrf_token %}
+            <div class="patient-select">
+                <label for="patient">Select Patient:</label>
+                <select id="patient" name="patient" required>
+                    <option value="">-- Select a patient --</option>
+                    {% for patient in patients %}
+                        <option value="{{ patient.id }}">{{ patient.firstname }} {{ patient.lastname }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <table>
+                <thead>
                     <tr>
-                        <td data-label="Investigation">{{ kft.investigation }}</td>
-                        <td data-label="Result">
-                            {% if kft.investigation == 'Urea' %}
-                                {{ form.urea }}
-                            {% elif kft.investigation == 'Creatinine' %}
-                                {{ form.creatinine }}
-                            {% elif kft.investigation == 'Uric Acid' %}
-                                {{ form.uric_acid }}
-                            {% elif kft.investigation == 'Calcium Total' %}
-                                {{ form.calcium_total }}
-                            {% elif kft.investigation == 'Phosphorus' %}
-                                {{ form.phosphorus }}
-                            {% elif kft.investigation == 'Alkaline Phosphatase (ALP)' %}
-                                {{ form.alkaline_phosphatase }}
-                            {% elif kft.investigation == 'Total Protein' %}
-                                {{ form.total_protein }}
-                            {% elif kft.investigation == 'Albumin' %}
-                                {{ form.albumin }}
-                            {% elif kft.investigation == 'Sodium' %}
-                                {{ form.sodium }}
-                            {% elif kft.investigation == 'Potassium' %}
-                                {{ form.potassium }}
-                            {% elif kft.investigation == 'Chloride' %}
-                                {{ form.chloride }}
-                            {% endif %}
-                        </td>
-                        <td data-label="Reference">{{ kft.reference_value }}</td>
-                        <td data-label="Unit">{{ kft.unit }}</td>
+                        <th>Investigation</th>
+                        <th>Result</th>
+                        <th>Reference</th>
+                        <th>Unit</th>
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        <button type="submit" onclick="alert('Form submitted!')">Submit</button>
-    </form>
+                </thead>
+                <tbody>
+                    {% for kft in kft %}
+                        <tr>
+                            <td data-label="Investigation">{{ kft.investigation }}</td>
+                            <td data-label="Result">
+                                {% if kft.investigation == 'Urea' %}
+                                    {{ form.urea }}
+                                {% elif kft.investigation == 'Creatinine' %}
+                                    {{ form.creatinine }}
+                                {% elif kft.investigation == 'Uric Acid' %}
+                                    {{ form.uric_acid }}
+                                {% elif kft.investigation == 'Calcium Total' %}
+                                    {{ form.calcium_total }}
+                                {% elif kft.investigation == 'Phosphorus' %}
+                                    {{ form.phosphorus }}
+                                {% elif kft.investigation == 'Alkaline Phosphatase (ALP)' %}
+                                    {{ form.alkaline_phosphatase }}
+                                {% elif kft.investigation == 'Total Protein' %}
+                                    {{ form.total_protein }}
+                                {% elif kft.investigation == 'Albumin' %}
+                                    {{ form.albumin }}
+                                {% elif kft.investigation == 'Sodium' %}
+                                    {{ form.sodium }}
+                                {% elif kft.investigation == 'Potassium' %}
+                                    {{ form.potassium }}
+                                {% elif kft.investigation == 'Chloride' %}
+                                    {{ form.chloride }}
+                                {% endif %}
+                            </td>
+                            <td data-label="Reference">{{ kft.reference_value }}</td>
+                            <td data-label="Unit">{{ kft.unit }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <button type="submit" onclick="alert('Form submitted!')">Submit</button>
+        </form>
+    </div>
 </body>
 </html>

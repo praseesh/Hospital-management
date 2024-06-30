@@ -38,5 +38,5 @@ urlpatterns = [
     path('create_medicine_list', views.create_medicine_list, name="create_medicine_list"), 
     path('appointment', views.staff_appointment, name="staff_appointment"),
     path('patient/edit/<int:patient_id>', views.staff_patient_edit, name="staff_patient_edit"),
-
+    path('test',views.test, name="test"),
 ]

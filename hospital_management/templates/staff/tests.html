@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab Tests</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --card-bg: #161b22;
+            --text-color: #c9d1d9;
+            --heading-color: #58a6ff;
+            --button-bg: #238636;
+            --button-hover: #2ea043;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .content-wrapper {
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: none;
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-title {
+            color: var(--heading-color);
+        }
+
+        .btn-primary {
+            background-color: var(--button-bg);
+            border-color: var(--button-bg);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--button-hover);
+            border-color: var(--button-hover);
+        }
+    </style>
+</head>
+<body>
+    <div class="container content-wrapper">
+        <h2>Tests</h2>
+        <div class="row">
+            <div class="col-lg-6 col-md-6 mb-4">
+                <div class="card h-100" onclick="window.location='{% url 'create_cholesterol_test' %}'">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">Cholesterol Test</h5>
+                        <p class="card-text flex-grow-1">A cholesterol test, also known as a lipid panel or lipid profile, is a blood test that measures the levels of various types of cholesterol and other fats in the blood. It helps assess an individual's risk of cardiovascular diseases, including heart disease and stroke.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-6 mb-4">
+                <div class="card h-100" onclick="window.location='{% url 'create_kidney_test' %}'">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">Kidney Test</h5>
+                        <p class="card-text flex-grow-1">A kidney function test is a group of tests that measure how well your kidneys are working. These tests typically assess levels of waste products in your blood, such as creatinine and urea, and may also check for proteins in your urine. They help diagnose kidney diseases and monitor kidney function.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-6 mb-4">
+                <div class="card h-100" onclick="window.location='{% url 'create_sugar_test' %}'">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">Sugar Test</h5>
+                        <p class="card-text flex-grow-1">A blood sugar test measures the amount of glucose in your blood. It's used to diagnose and monitor diabetes, as well as to check for prediabetes. Common tests include fasting blood sugar, random blood sugar, and the A1C test, which provides an average of your blood sugar levels over the past 2-3 months.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-6 mb-4">
+                <div class="card h-100" onclick="window.location='{% url 'create_liver_test' %}'">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">Liver Test</h5>
+                        <p class="card-text flex-grow-1">A liver function test is a blood test that measures various enzymes, proteins, and other substances made by the liver. It helps evaluate how well the liver is working and can detect liver damage or disease. Common tests include ALT, AST, ALP, albumin, and bilirubin levels.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

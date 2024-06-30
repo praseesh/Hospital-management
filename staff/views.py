@@ -164,30 +164,14 @@ def staff_labreport_create(request):
         form = LabReportCreation()
     return render(request, 'staff/lab_report_create.html', {'form':form}) 
 
-
-
-def create_cholesterol_test(request):
-    if request.method == 'POST':
-        form = CholesterolTestForm(request.POST)
-        if form.is_valid():
-            total_cholesterol = form.cleaned_data.get('total_cholesterol')
-            ldl_cholesterol = form.cleaned_data.get('ldl_cholesterol')
-            hdl_cholesterol = form.cleaned_data.get('hdl_cholesterol')
-            triglycerides = form.cleaned_data.get('triglycerides')
-            concatenated_values = f'{total_cholesterol}, {ldl_cholesterol}, {hdl_cholesterol}, {triglycerides}'
-            new_cholesterol_test = CholesterolTest.objects.create(result=concatenated_values)
-            new_cholesterol_test.save()
-            return redirect('staff_lab_report')
-        return render(request, 'staff/cholesterol_test.html', {'form': form})
-    else:
-        form = CholesterolTestForm()
-        ct = CT.objects.all()
-        return render(request, 'staff/cholesterol_test.html', {'form': form, 'ct': ct})
+'''--------------------------------------TESTS----------------------------------------------------'''
 
 def create_kidney_test(request):
     if request.method == 'POST':
         form = KidneyTestForm(request.POST)
-        if form.is_valid():
+        patient_id = request.POST.get('patient')
+        if form.is_valid() and patient_id:
+            patient = get_object_or_404(Patient, id=patient_id)
             urea_value = form.cleaned_data.get('urea')
             creatinine_value = form.cleaned_data.get('creatinine')
             uric_acid_value = form.cleaned_data.get('uric_acid')
@@ -200,64 +184,118 @@ def create_kidney_test(request):
             potassium_value = form.cleaned_data.get('potassium')
             chloride_value = form.cleaned_data.get('chloride')
             
-            concatenated_values = f" { urea_value }, { creatinine_value }, { uric_acid_value }, { calcium_total_value }, { phosphorus_value }, { alkaline_phosphatase_value }, { total_protein_value }, { albumin_value }, { sodium_value }, { potassium_value }, { chloride_value } "
-            new_kidney_test = KidneyFunctionTest.objects.create(result = concatenated_values)
+            concatenated_values = f"{urea_value}, {creatinine_value}, {uric_acid_value}, {calcium_total_value}, {phosphorus_value}, {alkaline_phosphatase_value}, {total_protein_value}, {albumin_value}, {sodium_value}, {potassium_value}, {chloride_value}"
+            new_kidney_test = KidneyFunctionTest.objects.create(
+                patient=patient,
+                result=concatenated_values,
+            )
             new_kidney_test.save()
             return redirect('staff_lab_report')
-        
-        return render(request, 'staff/kidney_test.html')
+        else:
+
+            error_message = 'Please select a patient and fill all required fields.' if not patient_id else 'Please fill all required fields.'
+            patients = Patient.objects.all()
+            kft = KFT.objects.all()
+            return render(request, 'staff/kidney_test.html', {'form': form, 'kft': kft, 'patients': patients, 'error': error_message})
     else:
         form = KidneyTestForm()
         kft = KFT.objects.all()
-        return render(request, 'staff/kidney_test.html', {'form': form, 'kft': kft})
-    
+        patients = Patient.objects.all()
+        return render(request, 'staff/kidney_test.html', {'form': form, 'kft': kft, 'patients': patients})
+
+
+def create_cholesterol_test(request):
+    if request.method == 'POST':
+        form = CholesterolTestForm(request.POST)
+        patient_id = request.POST.get('patient')
+        if form.is_valid() and patient_id:
+            patient = get_object_or_404(Patient, id=patient_id)
+            total_cholesterol = form.cleaned_data.get('total_cholesterol')
+            ldl_cholesterol = form.cleaned_data.get('ldl_cholesterol')
+            hdl_cholesterol = form.cleaned_data.get('hdl_cholesterol')
+            triglycerides = form.cleaned_data.get('triglycerides')
+            concatenated_values = f'{total_cholesterol}, {ldl_cholesterol}, {hdl_cholesterol}, {triglycerides}'
+            new_cholesterol_test = CholesterolTest.objects.create(
+                result=concatenated_values,
+                patient=patient,
+            )
+            new_cholesterol_test.save()
+            return redirect('staff_lab_report')
+        else:
+            error_message = 'Please select a patient and fill all required fields.' if not patient_id else 'Please fill all required fields.'
+            patients = Patient.objects.all()
+            ct = CT.objects.all()
+            return render(request, 'staff/cholesterol_test.html', {'form': form, 'ct': ct, 'patients': patients, 'error': error_message})
+    else:
+        form = CholesterolTestForm()
+        ct = CT.objects.all()
+        patients = Patient.objects.all()
+        return render(request, 'staff/cholesterol_test.html', {'form': form, 'ct': ct, 'patients': patients})
 
 
 def create_sugar_test(request):
- if request.method =='POST':
-    form = SugarTestForm(request.POST)
-    if form.is_valid():
-        fbs_value = form.cleaned_data.get('fbs')
-        pbs_value = form.cleaned_data.get('pbs')
-        rbs_value = form.cleaned_data.get('rbs')
-        hba1c_value = form.cleaned_data.get('hba1c')
-        ogtt_value = form.cleaned_data.get('ogtt')
-        concatenated_values = f'{fbs_value}, {pbs_value}, {rbs_value}, {hba1c_value}, {ogtt_value}'
-        new_sugar_test = SugarTest.objects.create(result=concatenated_values,)
-        new_sugar_test.save()
-        return redirect('staff_lab_report')
-
-    return render(request,'staff/sugar_test.html')
- else:
+    if request.method == 'POST':
+        form = SugarTestForm(request.POST)
+        patient_id = request.POST.get('patient')
+        if form.is_valid() and patient_id:
+            patient = get_object_or_404(Patient, id=patient_id)
+            fbs_value = form.cleaned_data.get('fbs')
+            pbs_value = form.cleaned_data.get('pbs')
+            rbs_value = form.cleaned_data.get('rbs')
+            hba1c_value = form.cleaned_data.get('hba1c')
+            ogtt_value = form.cleaned_data.get('ogtt')
+            concatenated_values = f'{fbs_value}, {pbs_value}, {rbs_value}, {hba1c_value}, {ogtt_value}'
+            new_sugar_test = SugarTest.objects.create(
+                patient=patient,
+                result=concatenated_values,
+            )
+            new_sugar_test.save()
+            return redirect('staff_lab_report')
+        else:
+            error_message = 'Please select a patient and fill all required fields.' if not patient_id else 'Please fill all required fields.'
+            st = ST.objects.all()
+            patients = Patient.objects.all()
+            return render(request, 'staff/sugar_test.html', {'form': form, 'st': st, 'patients': patients, 'error': error_message})
+    else:
         form = SugarTestForm()
         st = ST.objects.all()
-        return render(request, 'staff/sugar_test.html', {'form':form,'st':st}) 
+        patients = Patient.objects.all()
+        return render(request, 'staff/sugar_test.html', {'form': form, 'st': st, 'patients': patients})
+
 
 def create_liver_test(request):
-    if request.method =='POST':
+    if request.method == 'POST':
         form = LiverTestForm(request.POST)
-        if form.is_valid():
+        patient_id = request.POST.get('patient')
+        if form.is_valid() and patient_id:
+            patient = get_object_or_404(Patient, id=patient_id)
             total_bilirubin = form.cleaned_data.get('total_bilirubin')
             direct_bilirubin = form.cleaned_data.get('direct_bilirubin')
             indirect_bilirubin = form.cleaned_data.get('indirect_bilirubin')
-            ast_sgot= form.cleaned_data.get('ast_sgot')
+            ast_sgot = form.cleaned_data.get('ast_sgot')
             alt_sgot = form.cleaned_data.get('alt_sgpt')
-            alp= form.cleaned_data.get('alp')
-            total_protein= form.cleaned_data.get('total_protein')
-            albumin= form.cleaned_data.get('albumin')
+            alp = form.cleaned_data.get('alp')
+            total_protein = form.cleaned_data.get('total_protein')
+            albumin = form.cleaned_data.get('albumin')
             globulin = form.cleaned_data.get('globulin')
             albumin_globulin_ratio = form.cleaned_data.get('albumin_globulin_ratio')
-            
-            concatenated_values = f"{ total_bilirubin }, {direct_bilirubin}, { indirect_bilirubin }, { ast_sgot }, {alt_sgot}, { alp }, { total_protein }, { albumin }, { globulin } { albumin_globulin_ratio }"
-            new_lft = LiverFunctionTest.objects.create(result = concatenated_values)
+            concatenated_values = f'{total_bilirubin}, {direct_bilirubin}, {indirect_bilirubin}, {ast_sgot}, {alt_sgot}, {alp}, {total_protein}, {albumin}, {globulin}, {albumin_globulin_ratio}'
+            new_lft = LiverFunctionTest.objects.create(
+                result=concatenated_values,
+                patient=patient,
+            )
             new_lft.save()
             return redirect('staff_lab_report')
-        return render(request,'staff/liver_test.html')
+        else:
+            error_message = 'Please select a patient and fill all required fields.' if not patient_id else 'Please fill all required fields.'
+            lft = LFT.objects.all()
+            patients = Patient.objects.all()
+            return render(request, 'staff/liver_test.html', {'form': form, 'lft': lft, 'patients': patients, 'error': error_message})
     else:
         form = LiverTestForm()
         lft = LFT.objects.all()
-        return render(request, 'staff/liver_test.html', {'form': form, 'lft':lft})
-    
+        patients = Patient.objects.all()
+        return render(request, 'staff/liver_test.html', {'form': form, 'lft': lft, 'patients': patients})    
 
 
 #<----------------------------------------------ROOMS----------------------------------------------->
@@ -397,7 +435,13 @@ def staff_invoice(request):
         if form.is_valid():
             invoice = form.save(commit=False)  
             patient = invoice.patient_id
-
+        
+            old_invoice = Invoice.objects.filter(patient_id=invoice.patient_id, status='pending').first()
+            if old_invoice:
+                msg = 'Invoice already Created'
+                invoice_id = old_invoice.id
+                return render(request, 'staff/invoice.html', {'msg':msg, 'invoice_id':invoice_id} )
+            
             if patient.room_id:
                 today = date.today()
                 duration = (today - patient.admission_date).days
@@ -421,14 +465,17 @@ def staff_invoice(request):
             return redirect(url)
     else:
         form = InvoiceForm()
-
-
     return render(request, 'staff/invoice.html', {'form': form})
 
 def invoice_delete(request, invoice_id):
     invoice =get_object_or_404(Invoice,id=invoice_id)
     invoice.delete()
-    return redirect('invoice_list')    
+    return redirect('invoice_list')  
+
+def test(request):
+    kidney_test = KidneyFunctionTest.objects.all()
+    
+    return render(request, 'staff/tests.html',{'kidney_test':kidney_test})
 
 #<----------------------------------------------PAYMENT----------------------------------------------->
 

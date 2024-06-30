@@ -28,21 +28,15 @@ class LabReportCreation(forms.ModelForm):
     #     }
     class Meta:
         model = LabReport
-        fields = ['category', 'patient', 'doctor', 'date', 'amount', 'result', 'kidney_test', 'liver_test', 'sugar_test', 'cholesterol_test']
+        fields = ['patient', 'doctor', 'amount', 'result']
         widgets = {
             'date': forms.DateInput(attrs={'type': 'date'}),
         }
         labels = {
-            'category': 'Category',
             'patient': 'Patient',
             'doctor': 'Doctor',
-            'date': 'Date',
             'amount': 'Amount',
             'result': 'Result',
-            'kidney_test': 'Kidney Test',
-            'liver_test': 'Liver Test',
-            'sugar_test': 'Sugar Test',
-            'cholesterol_test': 'Cholesterol Test',
         }
 
     def clean_date(self):
@@ -91,6 +85,7 @@ class CholesterolTestForm(forms.Form):
         fields = ['result']
         
 class LiverTestForm(forms.Form):
+    
     total_bilirubin        = forms.CharField(max_length=50)
     direct_bilirubin       = forms.CharField(max_length=50)
     indirect_bilirubin     = forms.CharField(max_length=50)
