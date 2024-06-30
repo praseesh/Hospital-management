@@ -97,7 +97,7 @@ class SugarTest(models.Model):
     result = models.CharField(max_length=255)
     reference_value = models.CharField(max_length=255, default='70 - 100, 70 - 140, 70 - 140, 4.0 - 5.6, 140 - 199')
     unit = models.CharField(max_length=255, default='mg/dL, mg/dL, mg/dL, %, mg/dL')
-    price = models.IntegerField()
+    price = models.IntegerField(default=150)
     is_completed = models.BooleanField(default=False)
     
 
@@ -117,7 +117,7 @@ class ST(models.Model):
 
 class LiverFunctionTest(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE,null=True,blank=True,default=None)
-    price = models.IntegerField()
+    price = models.IntegerField(default=670)
     is_completed = models.BooleanField(default=False)
     investigation = models.CharField(max_length=255,default='Total Bilirubin, Direct Bilirubin, Indirect Bilirubin, Aspartate Aminotransferase (AST/SGOT), Alanine Aminotransferase (ALT/SGPT), Alkaline Phosphatase (ALP), Total Protein, Albumin, Globulin, Albumin/Globulin Ratio')
     result =models.CharField(max_length=255)
@@ -142,12 +142,13 @@ class LFT(models.Model):
         
 class CholesterolTest(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE,null=True,blank=True,default=None)
-    price = models.IntegerField()
+    price = models.IntegerField(default=450)
     is_completed = models.BooleanField(default=False)
     investigation = models.CharField(
         max_length=255,
         default='Total Cholesterol, LDL Cholesterol (Low-Density Lipoprotein), HDL Cholesterol (High-Density Lipoprotein), Triglycerides'
     )
+    result =models.CharField(max_length=255)
     reference_value = models.CharField(
         max_length=255,
         default='< 200, < 100, > 40, < 150'
@@ -156,7 +157,7 @@ class CholesterolTest(models.Model):
         max_length=255,
         default='mg/dL, mg/dL, mg/dL, mg/dL'
     )
-    price = models.CharField(max_length=100, default='')
+    price = models.IntegerField(default=450)
     
 
     class Meta:
@@ -176,7 +177,7 @@ class CT(models.Model):
         
 class KidneyFunctionTest(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE, null=True, blank=True,default=None)
-    price = models.IntegerField()
+    price = models.IntegerField(default=935)
     is_completed = models.BooleanField(default=False)
     investigation = models.CharField(
         max_length=255,
@@ -186,11 +187,12 @@ class KidneyFunctionTest(models.Model):
         max_length=255,
         default='13 - 43, 0.7 - 1.3, 3.5 - 7.2, 8.7 - 10.4, 2.4 - 5.1, 30 - 120, 5.7 - 8.2, 3.2 - 4.8, 136 - 145, 3.5 - 5.1, 98 - 107'
     )
+    result =models.CharField(max_length=255)
     unit = models.CharField(
         max_length=255,
         default='mg/dL, mg/dL, mg/dL, mg/dL, mg/dL, U/L, g/dL, g/dL, mEq/L, mEq/L, mEq/L'
     )
-    price = models.CharField(max_length=100, default='')
+    price = models.CharField(max_length=100, default='150')
     
     class Meta:
         db_table = 'kidney_function_test'
