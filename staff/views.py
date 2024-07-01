@@ -3,7 +3,7 @@ from django.core.paginator import Paginator
 from django.shortcuts import render,redirect, get_object_or_404
 from django.contrib import messages
 from doctor.models import Doctor
-from .models import StaffAction, Staff, StaffActionRoles, Invoice, Prescription,ST,SugarTest,CholesterolTest,CT,LiverFunctionTest,LFT,KidneyFunctionTest,KFT, Medicine,PatientBills
+from .models import LabReport, StaffAction, Staff, StaffActionRoles, Invoice, Prescription,ST,SugarTest,CholesterolTest,CT,LiverFunctionTest,LFT,KidneyFunctionTest,KFT, Medicine,PatientBills
 from django.contrib.auth.hashers import check_password
 from .forms import AppointmentCreationForm, LabReportCreation, InvoiceCreationForm, MedicineBillCreationForm, PrescriptionForm,SugarTestForm,CholesterolTestForm,KidneyTestForm, LiverTestForm,CreateRoomForm
 from patient.forms import CustomPatientCreationForm,CustomPatientModification, InvoiceForm
@@ -155,7 +155,6 @@ def staff_lab_report(request, liver_test_id=None, kidney_test_id=None, sugar_tes
     return render(request, 'staff/lab_report.html',{'form':form})
 
 def staff_labreport_create(request):
-    print(f"Request Path: {request.path}")
     if request.method == 'POST':
         form = LabReportCreation(request.POST)
         print('Form Data:', request.POST)
@@ -164,15 +163,90 @@ def staff_labreport_create(request):
         if form.is_valid():
             patient = form.cleaned_data.get('patient')
             patient_id = patient.id
-            st = SugarTest.objects.get(patient=patient_id, is_completed=False)
-            print('SugarTest:', st)
-            # form.save()
+            doctor = form.cleaned_data.get('doctor')
+            result = form.cleaned_data.get('result')
+            
+            # Create a new LabReport instance
+            lab_report = LabReport.objects.create(
+                patient=patient,
+                doctor=doctor,
+                result=result
+            )
+            amount = 0
+            # Check and assign the SugarTest
+            st = SugarTest.objects.filter(patient=patient_id, is_completed=False).first()
+            if st is not None:
+                lab_report.sugar_test = st
+                amount += st.price
+            
+            # Check and assign the LiverFunctionTest
+            lt = LiverFunctionTest.objects.filter(patient=patient_id, is_completed=False).first()
+            if lt is not None:
+                lab_report.liver_test = lt
+                amount += lt.price
+            
+            # Check and assign the CholesterolTest
+            ct = CholesterolTest.objects.filter(patient=patient_id, is_completed=False).first()
+            if ct is not None:
+                lab_report.cholesterol_test = ct
+                amount += ct.price
+            
+            # Check and assign the KidneyFunctionTest
+            kt = KidneyFunctionTest.objects.filter(patient=patient_id, is_completed=False).first()
+            if kt is not None:
+                lab_report.kidney_test = kt
+                amount += kt.price
+            
+            # Save the lab report
+            lab_report.amount=amount
+            lab_report.save()
+            
+            # Redirect to the lab report list page
             return redirect('staff_lab_report')
     else:
         form = LabReportCreation()
-    return render(request, 'staff/lab_report.html', {'form': form})
+    
+    return render(request, 'staff/lab_report_create.html', {'form': form})
 
 '''--------------------------------------TESTS----------------------------------------------------'''
+
+
+
+# from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponse
+from reportlab.pdfgen import canvas
+from .models import LabReport  # Import your LabReport model
+
+def generate_pdf_lab_report(request, report_id):
+    lab_report = get_object_or_404(LabReport, id=report_id)
+    
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="lab_report_{report_id}.pdf"'
+    
+    # Create a canvas for PDF generation
+    p = canvas.Canvas(response)
+
+    # Write your lab report data to the PDF
+    p.drawString(100, 800, f"Lab Report ID: {lab_report.id}")
+    p.drawString(100, 780, f"Patient: {lab_report.patient}")
+    p.drawString(100, 760, f"Doctor: {lab_report.doctor}")
+    p.drawString(100, 740, f"Result: {lab_report.result}")
+    p.drawString(100, 720, f"Amount: {lab_report.amount}")
+    
+    # Additional tests if available
+    if lab_report.sugar_test:
+        p.drawString(100, 700, f"Sugar Test: {lab_report.sugar_test}")
+    if lab_report.liver_test:
+        p.drawString(100, 680, f"Liver Function Test: {lab_report.liver_test}")
+    if lab_report.cholesterol_test:
+        p.drawString(100, 660, f"Cholesterol Test: {lab_report.cholesterol_test}")
+    if lab_report.kidney_test:
+        p.drawString(100, 640, f"Kidney Function Test: {lab_report.kidney_test}")
+
+    p.showPage()
+    p.save()
+    
+    return response
 
 def create_kidney_test(request):
     if request.method == 'POST':
@@ -180,7 +254,6 @@ def create_kidney_test(request):
         patient_id = request.POST.get('patient')
         print('############',request.POST)
         if form.is_valid():
-            print('@@@@@@@@@@@@@@@@')
             patient = get_object_or_404(Patient, id=patient_id)
             urea_value = form.cleaned_data.get('urea')
             creatinine_value = form.cleaned_data.get('creatinine')
