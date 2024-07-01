@@ -1,32 +1,27 @@
 from decimal import Decimal
-from django.core.mail import EmailMessage
 import os
-from django.core.paginator import Paginator
-from django.shortcuts import render,redirect, get_object_or_404
+from django.conf import settings
+from django.core.mail import EmailMessage, send_mail
+from django.http import HttpResponse
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from doctor.models import Doctor
-from django.conf import settings
-from .models import LabReport, StaffAction, Staff, StaffActionRoles, Invoice, Prescription,ST,SugarTest,CholesterolTest,CT,LiverFunctionTest,LFT,KidneyFunctionTest,KFT, Medicine,PatientBills
+from .models import LabReport, StaffAction, Staff, StaffActionRoles, Invoice, Prescription, ST, SugarTest, CholesterolTest, CT, LiverFunctionTest, LFT, KidneyFunctionTest, KFT, Medicine, PatientBills
 from django.contrib.auth.hashers import check_password
-from .forms import AppointmentCreationForm, LabReportCreation, InvoiceCreationForm, MedicineBillCreationForm, OTPForm, PrescriptionForm,SugarTestForm,CholesterolTestForm,KidneyTestForm, LiverTestForm,CreateRoomForm
-from patient.forms import CustomPatientCreationForm,CustomPatientModification, InvoiceForm
+from .forms import AppointmentCreationForm, LabReportCreation, InvoiceCreationForm, MedicineBillCreationForm, OTPForm, PrescriptionForm, SugarTestForm, CholesterolTestForm, KidneyTestForm, LiverTestForm, CreateRoomForm
+from patient.forms import CustomPatientCreationForm, CustomPatientModification, InvoiceForm
 from patient.models import Patient, Room
-from datetime import date
-from .helper import generate_random_string,generate_otp
+from .helper import generate_random_string, generate_otp
 from django.urls import reverse
-from django.conf import settings
 import razorpay
 from django.views.decorators.csrf import csrf_exempt
 from .paypal_config import *
-from django.http import HttpResponse
 from reportlab.pdfgen import canvas
-from django.core.mail import send_mail
-
-from django.shortcuts import render, redirect
 from .forms import OTPValidationForm
 from .models import UserOTP
 from django.utils import timezone
-from datetime import timedelta
+from datetime import date, timedelta
+from django.core.paginator import Paginator
 
 def send_otp_email(request):
     if request.method == 'POST':
@@ -71,58 +66,6 @@ def validate_otp(request):
     return render(request, 'staff/validate_otp.html', {'form': form})
 
 
-# def send_lab_report_email(patient_email, pdf_path):
-#     subject = 'Your Lab Report'
-#     email_from = settings.EMAIL_HOST_USER
-#     recipient_list = [patient_email]
-    
-#     # Read the PDF file as an attachment
-#     with open(pdf_path, 'rb') as file:
-#         pdf_data = file.read()
-    
-#     # Create EmailMessage object
-#     email = EmailMessage()
-#     email.subject = subject
-#     email.body = 'Please find attached your lab report.'
-#     email.from_email = email_from
-#     email.to = recipient_list
-    
-#     # Attach the PDF file
-#     email.attach(filename=os.path.basename(pdf_path), content=pdf_data, mimetype='application/pdf')
-    
-#     # Send email
-#     email.send()
-
-
-# def save_pdf_lab_report(lab_report):
-#     report_id = lab_report.id
-#     file_path = os.path.join('docs', f'lab_report_{report_id}.pdf')
-
-#     # Create the directory if it doesn't exist
-#     os.makedirs(os.path.dirname(file_path), exist_ok=True)
-
-#     # Create a canvas for PDF generation
-#     p = canvas.Canvas(file_path)
-
-#     # Write your lab report data to the PDF
-#     p.drawString(100, 800, f"Lab Report ID: {lab_report.id}")
-#     p.drawString(100, 780, f"Patient: {lab_report.patient}")
-#     p.drawString(100, 760, f"Doctor: {lab_report.doctor}")
-#     p.drawString(100, 740, f"Result: {lab_report.result}")
-#     p.drawString(100, 720, f"Amount: {lab_report.amount}")
-    
-#     # Additional tests if available
-#     if lab_report.sugar_test:
-#         p.drawString(100, 700, f"Sugar Test: {lab_report.sugar_test}")
-#     if lab_report.liver_test:
-#         p.drawString(100, 680, f"Liver Function Test: {lab_report.liver_test}")
-#     if lab_report.cholesterol_test:
-#         p.drawString(100, 660, f"Cholesterol Test: {lab_report.cholesterol_test}")
-#     if lab_report.kidney_test:
-#         p.drawString(100, 640, f"Kidney Function Test: {lab_report.kidney_test}")
-
-#     p.showPage()
-#     p.save()
 
 
 
@@ -182,37 +125,17 @@ def save_pdf_lab_report(lab_report):
 
     return file_path
 
-# def send_lab_report_email(patient_email, pdf_path):
-#     subject = 'Your Lab Report'
-#     email_from = settings.EMAIL_HOST_USER
-#     recipient_list = [patient_email]
-    
-#     email = EmailMessage(
-#         subject=subject,
-#         body='Please find attached your lab report.',
-#         from_email=email_from,
-#         to=recipient_list,
-#     )
-
-#     with open(pdf_path, 'rb') as f:
-#         email.attach(os.path.basename(pdf_path), f.read(), 'application/pdf')
-
-#     email.send()
-
 def send_lab_report_email(patient_email, pdf_path):
     subject = 'Your Lab Report'
     email_from = settings.EMAIL_HOST_USER
     recipient_list = [patient_email]
 
-    # Create EmailMessage object
     email = EmailMessage(
         subject=subject,
         body='Please find attached your lab report.',
         from_email=email_from,
         to=recipient_list,
     )
-
-    # Attach the PDF file
     try:
         with open(pdf_path, 'rb') as f:
             email.attach(os.path.basename(pdf_path), f.read(), 'application/pdf')
@@ -220,12 +143,12 @@ def send_lab_report_email(patient_email, pdf_path):
         print(f"Error attaching file: {e}")
         return
 
-    # Send email
     try:
         email.send()
         print("Email sent successfully.")
     except Exception as e:
         print(f"Error sending email: {e}")
+        
 #<-----------------------------------------STAFF---------------------------------------------------->
 
 def staff(request):
