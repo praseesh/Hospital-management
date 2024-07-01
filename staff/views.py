@@ -1,9 +1,11 @@
 from decimal import Decimal
+from django.core.mail import EmailMessage
 import os
 from django.core.paginator import Paginator
 from django.shortcuts import render,redirect, get_object_or_404
 from django.contrib import messages
 from doctor.models import Doctor
+from django.conf import settings
 from .models import LabReport, StaffAction, Staff, StaffActionRoles, Invoice, Prescription,ST,SugarTest,CholesterolTest,CT,LiverFunctionTest,LFT,KidneyFunctionTest,KFT, Medicine,PatientBills
 from django.contrib.auth.hashers import check_password
 from .forms import AppointmentCreationForm, LabReportCreation, InvoiceCreationForm, MedicineBillCreationForm, OTPForm, PrescriptionForm,SugarTestForm,CholesterolTestForm,KidneyTestForm, LiverTestForm,CreateRoomForm
@@ -32,13 +34,12 @@ def send_otp_email(request):
         if form.is_valid():
             email = form.cleaned_data.get('email')
             otp = generate_otp()
-            
-            # Save OTP in the database
+        
             user_otp = UserOTP(email=email, otp=otp)
             user_otp.save()
 
-            subject = 'Your OTP Code'
-            message = f'Your OTP code is {otp}'
+            subject = 'Your Lab Report'
+            message = f'Please find attached your lab report.'
             email_from = settings.EMAIL_HOST_USER
             recipient_list = [email]
             send_mail(subject, message, email_from, recipient_list)
@@ -61,8 +62,6 @@ def validate_otp(request):
             user_otp = UserOTP.objects.filter(email=email, otp=otp, created_at__gte=valid_time).first()
             
             if user_otp:
-                # OTP is valid
-                # Perform your logic here (e.g., user authentication)
                 return HttpResponse('OTP is valid')
             else:
                 return HttpResponse('Invalid OTP or OTP has expired')
@@ -71,6 +70,162 @@ def validate_otp(request):
     
     return render(request, 'staff/validate_otp.html', {'form': form})
 
+
+# def send_lab_report_email(patient_email, pdf_path):
+#     subject = 'Your Lab Report'
+#     email_from = settings.EMAIL_HOST_USER
+#     recipient_list = [patient_email]
+    
+#     # Read the PDF file as an attachment
+#     with open(pdf_path, 'rb') as file:
+#         pdf_data = file.read()
+    
+#     # Create EmailMessage object
+#     email = EmailMessage()
+#     email.subject = subject
+#     email.body = 'Please find attached your lab report.'
+#     email.from_email = email_from
+#     email.to = recipient_list
+    
+#     # Attach the PDF file
+#     email.attach(filename=os.path.basename(pdf_path), content=pdf_data, mimetype='application/pdf')
+    
+#     # Send email
+#     email.send()
+
+
+# def save_pdf_lab_report(lab_report):
+#     report_id = lab_report.id
+#     file_path = os.path.join('docs', f'lab_report_{report_id}.pdf')
+
+#     # Create the directory if it doesn't exist
+#     os.makedirs(os.path.dirname(file_path), exist_ok=True)
+
+#     # Create a canvas for PDF generation
+#     p = canvas.Canvas(file_path)
+
+#     # Write your lab report data to the PDF
+#     p.drawString(100, 800, f"Lab Report ID: {lab_report.id}")
+#     p.drawString(100, 780, f"Patient: {lab_report.patient}")
+#     p.drawString(100, 760, f"Doctor: {lab_report.doctor}")
+#     p.drawString(100, 740, f"Result: {lab_report.result}")
+#     p.drawString(100, 720, f"Amount: {lab_report.amount}")
+    
+#     # Additional tests if available
+#     if lab_report.sugar_test:
+#         p.drawString(100, 700, f"Sugar Test: {lab_report.sugar_test}")
+#     if lab_report.liver_test:
+#         p.drawString(100, 680, f"Liver Function Test: {lab_report.liver_test}")
+#     if lab_report.cholesterol_test:
+#         p.drawString(100, 660, f"Cholesterol Test: {lab_report.cholesterol_test}")
+#     if lab_report.kidney_test:
+#         p.drawString(100, 640, f"Kidney Function Test: {lab_report.kidney_test}")
+
+#     p.showPage()
+#     p.save()
+
+
+
+def generate_pdf_lab_report(request, report_id):
+    lab_report = get_object_or_404(LabReport, id=report_id)
+    
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="lab_report_{report_id}.pdf"'
+
+    p = canvas.Canvas(response)
+
+    p.drawString(100, 800, f"Lab Report ID: {lab_report.id}")
+    p.drawString(100, 780, f"Patient: {lab_report.patient}")
+    p.drawString(100, 760, f"Doctor: {lab_report.doctor}")
+    p.drawString(100, 740, f"Result: {lab_report.result}")
+    p.drawString(100, 720, f"Amount: {lab_report.amount}")
+    
+    if lab_report.sugar_test:
+        p.drawString(100, 700, f"Sugar Test: {lab_report.sugar_test}")
+    if lab_report.liver_test:
+        p.drawString(100, 680, f"Liver Function Test: {lab_report.liver_test}")
+    if lab_report.cholesterol_test:
+        p.drawString(100, 660, f"Cholesterol Test: {lab_report.cholesterol_test}")
+    if lab_report.kidney_test:
+        p.drawString(100, 640, f"Kidney Function Test: {lab_report.kidney_test}")
+
+    p.showPage()
+    p.save()
+    
+    return response
+
+def save_pdf_lab_report(lab_report):
+    report_id = lab_report.id
+    file_path = os.path.join('docs', f'lab_report_{report_id}.pdf')
+
+    os.makedirs(os.path.dirname(file_path), exist_ok=True)
+
+    p = canvas.Canvas(file_path)
+
+    p.drawString(100, 800, f"Lab Report ID: {lab_report.id}")
+    p.drawString(100, 780, f"Patient: {lab_report.patient}")
+    p.drawString(100, 760, f"Doctor: {lab_report.doctor}")
+    p.drawString(100, 740, f"Result: {lab_report.result}")
+    p.drawString(100, 720, f"Amount: {lab_report.amount}")
+
+    if lab_report.sugar_test:
+        p.drawString(100, 700, f"Sugar Test: {lab_report.sugar_test}")
+    if lab_report.liver_test:
+        p.drawString(100, 680, f"Liver Function Test: {lab_report.liver_test}")
+    if lab_report.cholesterol_test:
+        p.drawString(100, 660, f"Cholesterol Test: {lab_report.cholesterol_test}")
+    if lab_report.kidney_test:
+        p.drawString(100, 640, f"Kidney Function Test: {lab_report.kidney_test}")
+
+    p.showPage()
+    p.save()
+
+    return file_path
+
+# def send_lab_report_email(patient_email, pdf_path):
+#     subject = 'Your Lab Report'
+#     email_from = settings.EMAIL_HOST_USER
+#     recipient_list = [patient_email]
+    
+#     email = EmailMessage(
+#         subject=subject,
+#         body='Please find attached your lab report.',
+#         from_email=email_from,
+#         to=recipient_list,
+#     )
+
+#     with open(pdf_path, 'rb') as f:
+#         email.attach(os.path.basename(pdf_path), f.read(), 'application/pdf')
+
+#     email.send()
+
+def send_lab_report_email(patient_email, pdf_path):
+    subject = 'Your Lab Report'
+    email_from = settings.EMAIL_HOST_USER
+    recipient_list = [patient_email]
+
+    # Create EmailMessage object
+    email = EmailMessage(
+        subject=subject,
+        body='Please find attached your lab report.',
+        from_email=email_from,
+        to=recipient_list,
+    )
+
+    # Attach the PDF file
+    try:
+        with open(pdf_path, 'rb') as f:
+            email.attach(os.path.basename(pdf_path), f.read(), 'application/pdf')
+    except Exception as e:
+        print(f"Error attaching file: {e}")
+        return
+
+    # Send email
+    try:
+        email.send()
+        print("Email sent successfully.")
+    except Exception as e:
+        print(f"Error sending email: {e}")
 #<-----------------------------------------STAFF---------------------------------------------------->
 
 def staff(request):
@@ -210,26 +365,24 @@ def staff_lab_report(request, liver_test_id=None, kidney_test_id=None, sugar_tes
         form = LabReportCreation()
     return render(request, 'staff/lab_report.html',{'form':form})
 
+
+
 def staff_labreport_create(request):
     if request.method == 'POST':
         form = LabReportCreation(request.POST)
-        print('Form Data:', request.POST)
-        print('Form:', form)
         
         if form.is_valid():
             patient = form.cleaned_data.get('patient')
             patient_id = patient.id
             doctor = form.cleaned_data.get('doctor')
             result = form.cleaned_data.get('result')
-            
-            # Create a new LabReport instance
+
             lab_report = LabReport.objects.create(
                 patient=patient,
                 doctor=doctor,
                 result=result
             )
             amount = 0
-            # Check and assign the SugarTest
             st = SugarTest.objects.filter(patient=patient_id, is_completed=False).first()
             if st is not None:
                 lab_report.sugar_test = st
@@ -250,11 +403,24 @@ def staff_labreport_create(request):
                 lab_report.kidney_test = kt
                 amount += kt.price
             
-            lab_report.amount=amount
+            lab_report.amount = amount
             lab_report.save()
-            save_pdf_lab_report(lab_report)
 
-            return redirect('staff_lab_report')
+            try:
+                BASE_DIR = settings.BASE_DIR
+                
+                pdf_filename = f'lab_report_{lab_report.id}.pdf'
+                pdf_path = os.path.join(BASE_DIR, 'docs', pdf_filename)
+                print('@@@@@@@@@@@@@@@',pdf_path)
+                patient_email = patient.email
+                print('##############',patient_email)
+                save_pdf_lab_report(lab_report)
+                send_lab_report_email(patient_email, pdf_path)
+                
+            except Exception as e:
+                print(f"Error: {e}")
+
+            return redirect('staff_home')
     else:
         form = LabReportCreation()
     
@@ -262,69 +428,6 @@ def staff_labreport_create(request):
 
 '''--------------------------------------TESTS----------------------------------------------------'''
 
-
-def save_pdf_lab_report(lab_report):
-    report_id = lab_report.id
-    file_path = os.path.join('docs', f'lab_report_{report_id}.pdf')
-
-    # Create the directory if it doesn't exist
-    os.makedirs(os.path.dirname(file_path), exist_ok=True)
-
-    # Create a canvas for PDF generation
-    p = canvas.Canvas(file_path)
-
-    # Write your lab report data to the PDF
-    p.drawString(100, 800, f"Lab Report ID: {lab_report.id}")
-    p.drawString(100, 780, f"Patient: {lab_report.patient}")
-    p.drawString(100, 760, f"Doctor: {lab_report.doctor}")
-    p.drawString(100, 740, f"Result: {lab_report.result}")
-    p.drawString(100, 720, f"Amount: {lab_report.amount}")
-    
-    # Additional tests if available
-    if lab_report.sugar_test:
-        p.drawString(100, 700, f"Sugar Test: {lab_report.sugar_test}")
-    if lab_report.liver_test:
-        p.drawString(100, 680, f"Liver Function Test: {lab_report.liver_test}")
-    if lab_report.cholesterol_test:
-        p.drawString(100, 660, f"Cholesterol Test: {lab_report.cholesterol_test}")
-    if lab_report.kidney_test:
-        p.drawString(100, 640, f"Kidney Function Test: {lab_report.kidney_test}")
-
-    p.showPage()
-    p.save()
-
-
-
-def generate_pdf_lab_report(request, report_id):
-    lab_report = get_object_or_404(LabReport, id=report_id)
-    
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="lab_report_{report_id}.pdf"'
-    
-    # Create a canvas for PDF generation
-    p = canvas.Canvas(response)
-
-    # Write your lab report data to the PDF
-    p.drawString(100, 800, f"Lab Report ID: {lab_report.id}")
-    p.drawString(100, 780, f"Patient: {lab_report.patient}")
-    p.drawString(100, 760, f"Doctor: {lab_report.doctor}")
-    p.drawString(100, 740, f"Result: {lab_report.result}")
-    p.drawString(100, 720, f"Amount: {lab_report.amount}")
-    
-    # Additional tests if available
-    if lab_report.sugar_test:
-        p.drawString(100, 700, f"Sugar Test: {lab_report.sugar_test}")
-    if lab_report.liver_test:
-        p.drawString(100, 680, f"Liver Function Test: {lab_report.liver_test}")
-    if lab_report.cholesterol_test:
-        p.drawString(100, 660, f"Cholesterol Test: {lab_report.cholesterol_test}")
-    if lab_report.kidney_test:
-        p.drawString(100, 640, f"Kidney Function Test: {lab_report.kidney_test}")
-
-    p.showPage()
-    p.save()
-    
-    return response
 
 def create_kidney_test(request):
     if request.method == 'POST':
