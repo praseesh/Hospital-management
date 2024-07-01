@@ -36,8 +36,7 @@ def send_otp_email(request):
             # Save OTP in the database
             user_otp = UserOTP(email=email, otp=otp)
             user_otp.save()
-            
-            # Send OTP via email
+
             subject = 'Your OTP Code'
             message = f'Your OTP code is {otp}'
             email_from = settings.EMAIL_HOST_USER
