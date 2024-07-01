@@ -28,7 +28,7 @@ class LabReportCreation(forms.ModelForm):
     #     }
     class Meta:
         model = LabReport
-        fields = ['patient', 'doctor', 'amount', 'result']
+        fields = ['patient', 'doctor', 'result']
         widgets = {
             'date': forms.DateInput(attrs={'type': 'date'}),
         }

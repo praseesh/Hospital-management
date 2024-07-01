@@ -155,14 +155,22 @@ def staff_lab_report(request, liver_test_id=None, kidney_test_id=None, sugar_tes
     return render(request, 'staff/lab_report.html',{'form':form})
 
 def staff_labreport_create(request):
-    if request.method =='POST':
+    print(f"Request Path: {request.path}")
+    if request.method == 'POST':
         form = LabReportCreation(request.POST)
+        print('Form Data:', request.POST)
+        print('Form:', form)
+        
         if form.is_valid():
-            form.save()
+            patient = form.cleaned_data.get('patient')
+            patient_id = patient.id
+            st = SugarTest.objects.get(patient=patient_id, is_completed=False)
+            print('SugarTest:', st)
+            # form.save()
             return redirect('staff_lab_report')
     else:
         form = LabReportCreation()
-    return render(request, 'staff/lab_report_create.html', {'form':form}) 
+    return render(request, 'staff/lab_report.html', {'form': form})
 
 '''--------------------------------------TESTS----------------------------------------------------'''
 
@@ -170,7 +178,9 @@ def create_kidney_test(request):
     if request.method == 'POST':
         form = KidneyTestForm(request.POST)
         patient_id = request.POST.get('patient')
-        if form.is_valid() and patient_id:
+        print('############',request.POST)
+        if form.is_valid():
+            print('@@@@@@@@@@@@@@@@')
             patient = get_object_or_404(Patient, id=patient_id)
             urea_value = form.cleaned_data.get('urea')
             creatinine_value = form.cleaned_data.get('creatinine')
@@ -189,8 +199,9 @@ def create_kidney_test(request):
                 patient=patient,
                 result=concatenated_values,
             )
+            print('@@@@@@@@@@@@@@@@@', patient, concatenated_values, new_kidney_test)
             new_kidney_test.save()
-            return redirect('staff_lab_report')
+            return redirect('test')
         else:
 
             error_message = 'Please select a patient and fill all required fields.' if not patient_id else 'Please fill all required fields.'
@@ -220,7 +231,7 @@ def create_cholesterol_test(request):
                 patient=patient,
             )
             new_cholesterol_test.save()
-            return redirect('staff_lab_report')
+            return redirect('test')
         else:
             error_message = 'Please select a patient and fill all required fields.' if not patient_id else 'Please fill all required fields.'
             patients = Patient.objects.all()
@@ -250,7 +261,7 @@ def create_sugar_test(request):
                 result=concatenated_values,
             )
             new_sugar_test.save()
-            return redirect('staff_lab_report')
+            return redirect('test')
         else:
             error_message = 'Please select a patient and fill all required fields.' if not patient_id else 'Please fill all required fields.'
             st = ST.objects.all()
@@ -285,7 +296,7 @@ def create_liver_test(request):
                 patient=patient,
             )
             new_lft.save()
-            return redirect('staff_lab_report')
+            return redirect('test')
         else:
             error_message = 'Please select a patient and fill all required fields.' if not patient_id else 'Please fill all required fields.'
             lft = LFT.objects.all()

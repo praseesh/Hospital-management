@@ -110,10 +110,6 @@
     </style>
 </head>
 <body>
-    <div class="sidebar" id="sidebar">
-        <a href="#" class="active">Lab Report</a>
-        <!-- Add more sidebar links as needed -->
-    </div>
     <div class="main-content">
         <div class="header">
             <button class="menu-toggle" id="menu-toggle">☰</button>
@@ -121,21 +117,7 @@
         </div>
         <div class="content-wrapper">
             <div class="row">
-                <div class="col-md-3 col-sm-6 mb-3">
-                    <a href="{% url 'create_liver_test' %}" class="btn btn-primary btn-block">Create Liver test</a>
-                </div>
-                <div class="col-md-3 col-sm-6 mb-3">
-                    <a href="{% url 'create_kidney_test' %}" class="btn btn-primary btn-block">Create Kidney test</a>
-                </div>
-                <div class="col-md-3 col-sm-6 mb-3">
-                    <a href="{% url 'create_sugar_test' %}" class="btn btn-primary btn-block">Create Sugar test</a>
-                </div>
-                <div class="col-md-3 col-sm-6 mb-3">
-                    <a href="{% url 'create_cholesterol_test' %}" class="btn btn-primary btn-block">Create Cholesterol test</a>
-                </div>
-            </div>
-
-            <form action="{% url 'staff_lab_report' %}" method="post">
+            <form action="{% url 'lab_report_create' %}" method="post">
                 {% csrf_token %}
                 {{ form.as_p }}
                 <button type="submit" class="btn btn-success">Submit</button>

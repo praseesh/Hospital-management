@@ -123,9 +123,9 @@ def staff_edit(request, staff_id):
         form = CustomStaffModification(request.POST, instance=staff)
         if form.is_valid():
             form.save()
-            return redirect('staff_list', staff_id=staff_id)
+            return redirect('staff_detail', staff_id=staff_id)
     else:
-        form = CustomStaffModification()
+        form = CustomStaffModification(instance=staff)
     return render(request, 'hospital_admins/staff_edit.html', {'form':form})
 
 def staff_delete(request,staff_id):
