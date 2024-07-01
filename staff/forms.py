@@ -60,17 +60,17 @@ class SugarTestForm(forms.Form):
 
 
 class KidneyTestForm(forms.Form):
-    urea                 = forms.CharField(max_length=50)
-    creatinine           = forms.CharField(max_length=50)
-    uric_acid            = forms.CharField(max_length=50)
-    calcium_total        = forms.CharField(max_length=50)
-    phosphorus           = forms.CharField(max_length=50)
-    alkaline_phosphatase = forms.CharField(max_length=50)
-    total_protein        = forms.CharField(max_length=50)
-    albumin              = forms.CharField(max_length=50)
-    sodium               = forms.CharField(max_length=50)
-    potassium            = forms.CharField(max_length=50)
-    chloride             = forms.CharField(max_length=50)
+    urea = forms.CharField(max_length=10, required=True)
+    creatinine = forms.CharField(max_length=10, required=True)
+    uric_acid = forms.CharField(max_length=10, required=True)
+    calcium_total = forms.CharField(max_length=10, required=True)
+    phosphorus = forms.CharField(max_length=10, required=True)
+    alkaline_phosphatase = forms.CharField(max_length=10, required=True)
+    total_protein = forms.CharField(max_length=10, required=True)
+    albumin = forms.CharField(max_length=10, required=True)
+    sodium = forms.CharField(max_length=10, required=True)
+    potassium = forms.CharField(max_length=10, required=True)
+    chloride = forms.CharField(max_length=10, required=True)
 
     class Meta:
         fields = ['result']

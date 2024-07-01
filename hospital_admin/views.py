@@ -123,7 +123,7 @@ def staff_edit(request, staff_id):
         form = CustomStaffModification(request.POST, instance=staff)
         if form.is_valid():
             form.save()
-            return redirect('staff_list')
+            return redirect('staff_list', staff_id=staff_id)
     else:
         form = CustomStaffModification()
     return render(request, 'hospital_admins/staff_edit.html', {'form':form})
@@ -153,7 +153,7 @@ def patient_edit(request, patient_id):
         form = CustomPatientModification(request.POST, instance=patient)
         if form.is_valid():
             form.save()
-            return redirect('patient_details', patient_id=patient_id)
+            return redirect('patient_detail', patient_id=patient_id)
     else:
         form = CustomPatientModification(instance=patient)
     return render(request, 'hospital_admins/patient_edit.html', {'form': form, 'patient_id': patient_id})
