@@ -45,4 +45,7 @@ urlpatterns = [
     path('create_medicine_list', views.create_medicine_list, name="create_medicine_list"), 
     path('appointment', views.staff_appointment, name="staff_appointment"),
     path('test',views.test, name="test"),
+    
+    path('send-otp/', views.send_otp_email, name='send_otp'),
+    path('validate-otp/', views.validate_otp, name='validate_otp'),
 ]

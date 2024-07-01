@@ -3,9 +3,16 @@ import string
 from django.core.mail import send_mail
 from django.conf import settings
 
-def generate_otp():
-    """Generate a 6-digit OTP."""
-    return str(random.randint(100000, 999999))
+
+
+
+import random
+import string
+
+def generate_otp(length=6):
+    digits = string.digits
+    otp = ''.join(random.choices(digits, k=length))
+    return otp
 
 def send_otp_email(email, otp):
     """Send an OTP email using Django's email backend."""
@@ -20,6 +27,7 @@ def send_otp_email(email, otp):
         print(e)
         return False
     
+
 
 
 def generate_random_string(length=10):

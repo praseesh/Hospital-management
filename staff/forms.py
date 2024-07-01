@@ -3,6 +3,14 @@ from patient.models import Patient, Room,Appointment
 from django import forms
 from django.contrib.auth.hashers import make_password
 
+class OTPValidationForm(forms.Form):
+    email = forms.EmailField()
+    otp = forms.CharField(max_length=6)
+
+class OTPForm(forms.Form):
+    email = forms.EmailField()
+
+
 class CustomStaffCreation(forms.ModelForm):
     class Meta:
         model = Staff
@@ -13,6 +21,7 @@ class CustomStaffCreation(forms.ModelForm):
         if commit:
             staff.save()
         return staff
+        
         
 class CustomStaffModification(forms.ModelForm):
     class Meta:

@@ -1,20 +1,77 @@
 from decimal import Decimal
+import os
 from django.core.paginator import Paginator
 from django.shortcuts import render,redirect, get_object_or_404
 from django.contrib import messages
 from doctor.models import Doctor
 from .models import LabReport, StaffAction, Staff, StaffActionRoles, Invoice, Prescription,ST,SugarTest,CholesterolTest,CT,LiverFunctionTest,LFT,KidneyFunctionTest,KFT, Medicine,PatientBills
 from django.contrib.auth.hashers import check_password
-from .forms import AppointmentCreationForm, LabReportCreation, InvoiceCreationForm, MedicineBillCreationForm, PrescriptionForm,SugarTestForm,CholesterolTestForm,KidneyTestForm, LiverTestForm,CreateRoomForm
+from .forms import AppointmentCreationForm, LabReportCreation, InvoiceCreationForm, MedicineBillCreationForm, OTPForm, PrescriptionForm,SugarTestForm,CholesterolTestForm,KidneyTestForm, LiverTestForm,CreateRoomForm
 from patient.forms import CustomPatientCreationForm,CustomPatientModification, InvoiceForm
 from patient.models import Patient, Room
 from datetime import date
-from .helper import generate_random_string
+from .helper import generate_random_string,generate_otp
 from django.urls import reverse
 from django.conf import settings
 import razorpay
 from django.views.decorators.csrf import csrf_exempt
 from .paypal_config import *
+from django.http import HttpResponse
+from reportlab.pdfgen import canvas
+from django.core.mail import send_mail
+
+from django.shortcuts import render, redirect
+from .forms import OTPValidationForm
+from .models import UserOTP
+from django.utils import timezone
+from datetime import timedelta
+
+def send_otp_email(request):
+    if request.method == 'POST':
+        form = OTPForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data.get('email')
+            otp = generate_otp()
+            
+            # Save OTP in the database
+            user_otp = UserOTP(email=email, otp=otp)
+            user_otp.save()
+            
+            # Send OTP via email
+            subject = 'Your OTP Code'
+            message = f'Your OTP code is {otp}'
+            email_from = settings.EMAIL_HOST_USER
+            recipient_list = [email]
+            send_mail(subject, message, email_from, recipient_list)
+            
+            return redirect('validate_otp')  # Redirect to the OTP validation view
+    else:
+        form = OTPForm()
+    
+    return render(request, 'staff/send_otp.html', {'form': form})
+
+def validate_otp(request):
+    if request.method == 'POST':
+        form = OTPValidationForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data.get('email')
+            otp = form.cleaned_data.get('otp')
+            
+            # Validate the OTP
+            valid_time = timezone.now() - timedelta(minutes=10)  # OTP valid for 10 minutes
+            user_otp = UserOTP.objects.filter(email=email, otp=otp, created_at__gte=valid_time).first()
+            
+            if user_otp:
+                # OTP is valid
+                # Perform your logic here (e.g., user authentication)
+                return HttpResponse('OTP is valid')
+            else:
+                return HttpResponse('Invalid OTP or OTP has expired')
+    else:
+        form = OTPValidationForm()
+    
+    return render(request, 'staff/validate_otp.html', {'form': form})
+
 #<-----------------------------------------STAFF---------------------------------------------------->
 
 def staff(request):
@@ -179,29 +236,25 @@ def staff_labreport_create(request):
                 lab_report.sugar_test = st
                 amount += st.price
             
-            # Check and assign the LiverFunctionTest
             lt = LiverFunctionTest.objects.filter(patient=patient_id, is_completed=False).first()
             if lt is not None:
                 lab_report.liver_test = lt
                 amount += lt.price
             
-            # Check and assign the CholesterolTest
             ct = CholesterolTest.objects.filter(patient=patient_id, is_completed=False).first()
             if ct is not None:
                 lab_report.cholesterol_test = ct
                 amount += ct.price
             
-            # Check and assign the KidneyFunctionTest
             kt = KidneyFunctionTest.objects.filter(patient=patient_id, is_completed=False).first()
             if kt is not None:
                 lab_report.kidney_test = kt
                 amount += kt.price
             
-            # Save the lab report
             lab_report.amount=amount
             lab_report.save()
-            
-            # Redirect to the lab report list page
+            save_pdf_lab_report(lab_report)
+
             return redirect('staff_lab_report')
     else:
         form = LabReportCreation()
@@ -211,11 +264,37 @@ def staff_labreport_create(request):
 '''--------------------------------------TESTS----------------------------------------------------'''
 
 
+def save_pdf_lab_report(lab_report):
+    report_id = lab_report.id
+    file_path = os.path.join('docs', f'lab_report_{report_id}.pdf')
 
-# from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse
-from reportlab.pdfgen import canvas
-from .models import LabReport  # Import your LabReport model
+    # Create the directory if it doesn't exist
+    os.makedirs(os.path.dirname(file_path), exist_ok=True)
+
+    # Create a canvas for PDF generation
+    p = canvas.Canvas(file_path)
+
+    # Write your lab report data to the PDF
+    p.drawString(100, 800, f"Lab Report ID: {lab_report.id}")
+    p.drawString(100, 780, f"Patient: {lab_report.patient}")
+    p.drawString(100, 760, f"Doctor: {lab_report.doctor}")
+    p.drawString(100, 740, f"Result: {lab_report.result}")
+    p.drawString(100, 720, f"Amount: {lab_report.amount}")
+    
+    # Additional tests if available
+    if lab_report.sugar_test:
+        p.drawString(100, 700, f"Sugar Test: {lab_report.sugar_test}")
+    if lab_report.liver_test:
+        p.drawString(100, 680, f"Liver Function Test: {lab_report.liver_test}")
+    if lab_report.cholesterol_test:
+        p.drawString(100, 660, f"Cholesterol Test: {lab_report.cholesterol_test}")
+    if lab_report.kidney_test:
+        p.drawString(100, 640, f"Kidney Function Test: {lab_report.kidney_test}")
+
+    p.showPage()
+    p.save()
+
+
 
 def generate_pdf_lab_report(request, report_id):
     lab_report = get_object_or_404(LabReport, id=report_id)
