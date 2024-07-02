@@ -146,6 +146,5 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'prasee5264@gmail.com'
 EMAIL_HOST_PASSWORD = 'ixxv hbxu dtnv tiex'
 
-
 RAZORPAY_KEY_ID  = 'rzp_test_cdD68077R7SXLJ'
 RAZORPAY_KEY_SECRET  = 'pg0KqtzxNBo1xEwLoh7Q7ZsD'

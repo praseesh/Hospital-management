@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Availability</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Create Doctor Availability</h1>
+        <form method="post" id="availabilityForm">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary">Create Availability</button>
+        </form>
+        
+        <h2>Doctor Availability</h2>
+        <div id="doctorAvailability"></div>
+    </div>
+    
+    <script>
+        $(document).ready(function() {
+            $('#id_doctor').change(function() {
+                var doctorId = $(this).val();
+                if (doctorId) {
+                    $.ajax({
+                        url: '/get_doctor_availability/' + doctorId + '/',
+                        type: 'GET',
+                        success: function(data) {
+                            var availability = data.availability;
+                            var html = '<ul>';
+                            for (var i = 0; i < availability.length; i++) {
+                                html += '<li>Date: ' + availability[i].date + ', Time Slot: ' + availability[i].timeslot + '</li>';
+                            }
+                            html += '</ul>';
+                            $('#doctorAvailability').html(html);
+                        }
+                    });
+                } else {
+                    $('#doctorAvailability').html('');
+                }
+            });
+        });
+    </script>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</body>
+</html>

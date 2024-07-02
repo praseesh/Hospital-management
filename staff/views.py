@@ -2,15 +2,15 @@ from decimal import Decimal
 import os
 from django.conf import settings
 from django.core.mail import EmailMessage, send_mail
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from doctor.models import Doctor
 from .models import LabReport, StaffAction, Staff, StaffActionRoles, Invoice, Prescription, ST, SugarTest, CholesterolTest, CT, LiverFunctionTest, LFT, KidneyFunctionTest, KFT, Medicine, PatientBills
 from django.contrib.auth.hashers import check_password
-from .forms import AppointmentCreationForm, LabReportCreation, InvoiceCreationForm, MedicineBillCreationForm, OTPForm, PrescriptionForm, SugarTestForm, CholesterolTestForm, KidneyTestForm, LiverTestForm, CreateRoomForm
+from .forms import AppointmentCreationForm, DoctorAvailabilityCreationForm, LabReportCreation, InvoiceCreationForm, MedicineBillCreationForm, OTPForm, PrescriptionForm, SugarTestForm, CholesterolTestForm, KidneyTestForm, LiverTestForm, CreateRoomForm
 from patient.forms import CustomPatientCreationForm, CustomPatientModification, InvoiceForm
-from patient.models import Patient, Room
+from patient.models import Appointment, DoctorAvailability, Patient, Room
 from .helper import generate_random_string, generate_otp
 from django.urls import reverse
 import razorpay
@@ -599,7 +599,51 @@ def staff_appointment(request):
     
     return render(request, 'staff/appointment.html', {'form': form})
 
+def select_doctor(request):
+    if request.method=='POST':
+        doctor = Doctor.objects.all()
+        
+    doctor = Doctor.objects.all()
+    return render(request, 'staff/select_doctor.html', {'doctors':doctor})
 
+def create_availability(request):
+    if request.method == 'POST':
+        form = DoctorAvailabilityCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('staff_home')
+    else:
+        form = DoctorAvailabilityCreationForm()
+        
+    return render(request, 'staff/create_availability.html', {'form': form})
+
+def doctor_availability(request, doctor_id):
+    doctor = get_object_or_404(Doctor, id=doctor_id)
+    availability = DoctorAvailability.objects.filter(doctor=doctor).values('date', 'timeslot')
+    if request.method == 'POST':
+        appointment_date = request.POST.get('appointment_date')
+        timeslot = request.POST.get('timeslot')
+        patient_id = request.POST.get('patient_id')
+        if appointment_date and timeslot and patient_id:
+            if DoctorAvailability.objects.filter(doctor=doctor, date=appointment_date, timeslot=timeslot).exists():
+                appointment = Appointment(
+                    appointment_id=generate_random_string(),
+                    patient_id=patient_id,
+                    doctor=doctor,
+                    appointment_date=appointment_date,
+                    timeslot=timeslot,
+                    status='scheduled',
+                    reason_for_visit='other'
+                )
+                appointment.save()
+                messages.success(request, "Appointment created successfully!")
+                return redirect('staff_home')
+            else:
+                messages.error(request, "The selected time slot is not available.")
+        else:
+            messages.error(request, "Please provide all the required details.")
+
+    return render(request, 'staff/doctor_availability.html', {'doctor': doctor, 'availability': availability})
 #<------------------------------------------INVOICE----------------------------------------------->
 def invoice_list(request):
     if request.method == 'GET':

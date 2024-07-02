@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class Admin(models.Model):
     name = models.CharField(max_length=255, blank=False, null=False)
     email = models.EmailField(max_length=255, blank=False, null=False)

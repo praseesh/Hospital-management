@@ -1,7 +1,8 @@
 from .models import Medicine, PatientBills, Staff, LabReport, Prescription,SugarTest,Invoice
-from patient.models import Patient, Room,Appointment
+from patient.models import Patient, Room,Appointment, DoctorAvailability
 from django import forms
 from django.contrib.auth.hashers import make_password
+
 
 class OTPValidationForm(forms.Form):
     email = forms.EmailField()
@@ -29,12 +30,6 @@ class CustomStaffModification(forms.ModelForm):
         fields = ['firstname', 'lastname','role', 'contact','email'] 
         
 class LabReportCreation(forms.ModelForm):
-    # class Meta:
-    #     model = LabReport
-    #     fields = ['category','patient', 'doctor', 'date', 'amount', 'result', 'kidney_test', 'liver_test', 'sugar_test', 'cholesterol_test']
-    #     widgets = {
-    #         'date': forms.DateInput(attrs={'type': 'date'}),
-    #     }
     class Meta:
         model = LabReport
         fields = ['patient', 'doctor', 'result']
@@ -136,7 +131,15 @@ class MedicineBillCreationForm(forms.ModelForm):
 class AppointmentCreationForm(forms.ModelForm):
     class Meta:
         model = Appointment
-        fields = ['patient', 'doctor', 'appointment_date', 'reason_for_visit']
+        fields = ['patient', 'doctor', 'appointment_date', 'timeslot', 'reason_for_visit']
         widgets = {
             'appointment_date': forms.DateInput(attrs={'type': 'date'}),
+        }
+        
+class DoctorAvailabilityCreationForm(forms.ModelForm):
+    class Meta:
+        model = DoctorAvailability
+        fields = ['doctor', 'date', 'timeslot']
+        widgets = {
+            'date': forms.DateInput(attrs={'type': 'date'}),
         }

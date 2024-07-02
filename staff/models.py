@@ -35,7 +35,7 @@ class Staff(models.Model):
     email = models.CharField(max_length=255, blank=False, null=True, unique=True)
     password = models.CharField(max_length=255, blank=False, null=False, default='')
     is_deleted = models.BooleanField(default=False)
- 
+
     objects = StaffManager()
     all_objects = AllObjectsManager()
     deleted_objects = DeletedStaffManager()
