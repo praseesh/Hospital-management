@@ -50,7 +50,7 @@ urlpatterns = [
     path('validate-otp/', views.validate_otp, name='validate_otp'),
     
     path('create_availability', views.create_availability, name="create_availability"),
-    
-    path('doctor_availability/<int:doctor_id>/', views.doctor_availability, name='doctor_availability'),
+    path('select_date/<int:doctor_id>/', views.select_date, name='select_date'),
+    path('doctor_availability/<int:doctor_id>/<str:date>/', views.doctor_availability, name='doctor_availability'),
     path('select_doctor', views.select_doctor,name="select_doctor")
 ]

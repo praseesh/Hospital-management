@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Select Date</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css"/>
+</head>
+<body>
+    <div class="container">
+        <h1>Select Date for Dr. {{ doctor.name }}</h1>
+        <form id="dateForm" method="post" action="">
+            {% csrf_token %}
+            <input type="hidden" name="doctor_id" value="{{ doctor.id }}">
+            <div class="form-group">
+                <label for="appointment_date">Select Appointment Date:</label>
+                <input type="text" id="appointment_date" name="appointment_date" class="form-control" readonly>
+            </div>
+            <button type="submit" class="btn btn-primary">Next</button>
+        </form>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            var availableDates = {{ available_dates_json|safe }};
+            
+            $('#appointment_date').datepicker({
+                dateFormat: 'yy-mm-dd', // Set the date format to match your input
+                beforeShowDay: function(date) {
+                    var dateString = $.datepicker.formatDate('yy-mm-dd', date);
+                    return [availableDates.includes(dateString)];
+                },
+                onSelect: function(dateText) {
+                    var formattedDate = $.datepicker.formatDate('yy-mm-dd', new Date(dateText));
+                    var doctorId = '{{ doctor.id }}';  // Replace with your actual way of getting doctor id
+                    var form = $('#dateForm');
+                    form.attr('action', '/staff/doctor_availability/' + doctorId + '/' + formattedDate + '/');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

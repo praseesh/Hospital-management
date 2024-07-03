@@ -6,19 +6,15 @@
 </head>
 <body>
     <div class="container">
-        <h1>Doctor Availability for {{ doctor.name }}</h1>
-        <form method="post" action="{% url 'doctor_availability' doctor.pk %}">
+        <h1>Doctor Availability for {{ doctor.firstname }} {{ doctor.lastname }} </h1>
+        <form method="post" action="{% url 'doctor_availability' doctor.id date %}">
             {% csrf_token %}
-            <div class="form-group">
-                <label for="appointment_date">Select Date:</label>
-                <input type="date" class="form-control" id="appointment_date" name="appointment_date" required>
-            </div>
             <div class="form-group">
                 <label for="timeslot">Select Time Slot:</label>
                 <select class="form-control" id="timeslot" name="timeslot" required>
                     <option value="">Select a time slot</option>
                     {% for slot in availability %}
-                        <option value="{{ slot.timeslot }}">Date: {{ slot.date }} - Time Slot: {{ slot.timeslot }}</option>
+                        <option value="{{ slot.timeslot }}">Time Slot: {{ slot.timeslot }}</option>
                     {% endfor %}
                 </select>
             </div>
@@ -28,15 +24,6 @@
             </div>
             <button type="submit" class="btn btn-primary">Create Appointment</button>
         </form>
-
-        <h2>Available Slots</h2>
-        <ul>
-            {% for slot in availability %}
-                <li>Date: {{ slot.date }} - Time Slot: {{ slot.timeslot }}</li>
-            {% empty %}
-                <li>No available slots.</li>
-            {% endfor %}
-        </ul>
     </div>
 </body>
 </html>

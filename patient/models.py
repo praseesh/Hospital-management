@@ -63,7 +63,6 @@ class Patient(models.Model):
 class Appointment(models.Model):
     APPOINTMENT_STATUS_CHOICES = [
         ('scheduled', 'Scheduled'),
-        ('completed', 'Completed'),
         ('canceled', 'Canceled'),
     ]
     DISEASE_CHOICES = [
@@ -85,21 +84,21 @@ class Appointment(models.Model):
         ('other', 'Other'),
     ]
     TIMESLOT_LIST = (
-        (0, '09:00 - 09:30'),
-        (1, '10:00 - 10:30'),
-        (2, '11:00 - 11:30'),
-        (3, '12:00 - 12:30'),
-        (4, '13:00 - 13:30'),
-        (5, '14:00 - 14:30'),
-        (6, '15:00 - 15:30'),
-        (7, '16:00 - 16:30'),
-        (8, '17:00 - 17:30'),
+        ('09:00 - 09:30', '09:00 - 09:30'),
+        ('10:00 - 10:30', '10:00 - 10:30'),
+        ('11:00 - 11:30', '11:00 - 11:30'),
+        ('12:00 - 12:30', '12:00 - 12:30'),
+        ('13:00 - 13:30', '13:00 - 13:30'),
+        ('14:00 - 14:30', '14:00 - 14:30'),
+        ('15:00 - 15:30', '15:00 - 15:30'),
+        ('16:00 - 16:30', '16:00 - 16:30'),
+        ('17:00 - 17:30', '17:00 - 17:30'),
     )
     appointment_id = models.CharField(max_length=20, primary_key=True)
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE, null=False, blank=False)
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
     appointment_date = models.DateTimeField()
-    timeslot = models.IntegerField(choices=TIMESLOT_LIST, default=0)
+    timeslot = models.CharField(max_length=20,choices=TIMESLOT_LIST)
     status = models.CharField(max_length=50, choices=APPOINTMENT_STATUS_CHOICES, default='scheduled')
     reason_for_visit = models.TextField(choices=DISEASE_CHOICES, blank=False, null=False, default='Other')
     created_at = models.DateTimeField(auto_now_add=True)
@@ -115,10 +114,12 @@ class Appointment(models.Model):
         return f"Appointment {self.appointment_id} - {self.patient} with {self.doctor} on {self.appointment_date}"
 
     
+
 class DoctorAvailability(models.Model):
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
-    date = models.DateField(help_text="DD-MM-YYYY")
-    timeslot = models.IntegerField(choices=Appointment.TIMESLOT_LIST)
+    date = models.CharField(help_text="DD-MM-YYYY")
+    timeslot = models.CharField(max_length=20,choices=Appointment.TIMESLOT_LIST)
+    is_available = models.BooleanField(default=True)
 
     class Meta:
         db_table = 'doctor_availability'

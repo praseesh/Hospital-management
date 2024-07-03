@@ -43,10 +43,10 @@
     <h1>Select a Doctor for Check Availability</h1>
     <div class="grid">
         
-        {% for doc in doctors %}
+        {% for doctor in doctor %}
         <div class="card">
-            <a href="{% url 'doctor_availability' doc.pk %}">{{ doc.firstname }} {{ doc.lastname }}</a>
-            <p>{{ doc.specialty }}</p>
+            <a href="{% url 'select_date' doctor.pk %}">{{ doctor.firstname }} {{ doctor.lastname }}</a>
+            <p>{{ doctor.specialty }}</p>
         </div>
         {% endfor %}
     </div>

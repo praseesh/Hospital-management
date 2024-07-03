@@ -1,4 +1,5 @@
 from decimal import Decimal
+import json
 import os
 from django.conf import settings
 from django.core.mail import EmailMessage, send_mail
@@ -599,16 +600,26 @@ def staff_appointment(request):
     
     return render(request, 'staff/appointment.html', {'form': form})
 
+def select_date(request, doctor_id):
+    doctor = get_object_or_404(Doctor, id=doctor_id)
+    availability = DoctorAvailability.objects.filter(doctor=doctor).values('date', 'timeslot')
+
+    available_dates = list(availability.values_list('date', flat=True).distinct())
+    available_dates_json = json.dumps([str(date) for date in available_dates])
+    return render(request, 'staff/select_date.html', {'doctor': doctor, 'available_dates_json': available_dates_json})
+    
+
 def select_doctor(request):
     if request.method=='POST':
         doctor = Doctor.objects.all()
         
     doctor = Doctor.objects.all()
-    return render(request, 'staff/select_doctor.html', {'doctors':doctor})
+    return render(request, 'staff/select_doctor.html', {'doctor':doctor})
 
 def create_availability(request):
     if request.method == 'POST':
         form = DoctorAvailabilityCreationForm(request.POST)
+        print(request.POST)
         if form.is_valid():
             form.save()
             return redirect('staff_home')
@@ -617,33 +628,80 @@ def create_availability(request):
         
     return render(request, 'staff/create_availability.html', {'form': form})
 
-def doctor_availability(request, doctor_id):
+# def doctor_availability(request, doctor_id):
+#     doctor = get_object_or_404(Doctor, id=doctor_id)
+#     availability = DoctorAvailability.objects.filter(doctor=doctor).values('date', 'timeslot')
+#     if request.method == 'POST':
+#         appointment_date = request.POST.get('appointment_date')
+#         timeslot = request.POST.get('timeslot')
+#         patient_id = request.POST.get('patient_id')
+#         if appointment_date and timeslot and patient_id:
+#             if DoctorAvailability.objects.filter(doctor=doctor, date=appointment_date, timeslot=timeslot).exists():
+#                 appointment = Appointment(
+#                     appointment_id=generate_random_string(),
+#                     patient_id=patient_id,
+#                     doctor=doctor,
+#                     appointment_date=appointment_date,
+#                     timeslot=timeslot,
+#                     status='scheduled',
+#                     reason_for_visit='other'
+#                 )
+#                 appointment.save()
+#                 messages.success(request, "Appointment created successfully!")
+#                 return redirect('staff_home')
+#             else:
+#                 messages.error(request, "The selected time slot is not available.")
+#         else:
+#             messages.error(request, "Please provide all the required details.")
+
+#     return render(request, 'staff/doctor_availability.html', {'doctor': doctor, 'availability': availability})
+
+def doctor_availability(request, doctor_id, date):
+    if request.method == 'GET':
+        print(doctor_id,date)
     doctor = get_object_or_404(Doctor, id=doctor_id)
-    availability = DoctorAvailability.objects.filter(doctor=doctor).values('date', 'timeslot')
+    availability = DoctorAvailability.objects.filter(doctor=doctor, date=date,is_available=True).values('timeslot')
+
+# $$$$$$$$$$$$$$$$$$$$$$$$$$$ READ BELOW ##########################################
+
+#  DATE OR DOCTOR ID  IS NOT AVAILABLE> NOW REDIRICTING TO STAFF HOME,
+# CHANGE THE LOGIC TO GIVE ERROR MESSAGE IN DOCTOR AVAILABILITY PAGE ONLY.......
+
+    if availability.exists() is False:
+        return redirect('staff_home')
+    
+    
+    
     if request.method == 'POST':
-        appointment_date = request.POST.get('appointment_date')
         timeslot = request.POST.get('timeslot')
         patient_id = request.POST.get('patient_id')
-        if appointment_date and timeslot and patient_id:
-            if DoctorAvailability.objects.filter(doctor=doctor, date=appointment_date, timeslot=timeslot).exists():
-                appointment = Appointment(
+        if timeslot and patient_id:
+            appointment = Appointment(
                     appointment_id=generate_random_string(),
                     patient_id=patient_id,
                     doctor=doctor,
-                    appointment_date=appointment_date,
+                    appointment_date=date,
                     timeslot=timeslot,
                     status='scheduled',
                     reason_for_visit='other'
                 )
-                appointment.save()
-                messages.success(request, "Appointment created successfully!")
-                return redirect('staff_home')
-            else:
-                messages.error(request, "The selected time slot is not available.")
+            # MAKE FALSE ISAVAILABLE
+            
+            appointment.save()
+            
+        
+            
+            messages.success(request, "Appointment created successfully!")
+            return redirect('staff_home')
         else:
-            messages.error(request, "Please provide all the required details.")
-
-    return render(request, 'staff/doctor_availability.html', {'doctor': doctor, 'availability': availability})
+                messages.error(request, "The selected time slot is not available.")
+    else:
+        messages.error(request, "Please provide all the required details.")
+    return render(request, 'staff/doctor_availability.html', {
+        'doctor': doctor,
+        'date': date,
+        'availability': availability
+    })
 #<------------------------------------------INVOICE----------------------------------------------->
 def invoice_list(request):
     if request.method == 'GET':
