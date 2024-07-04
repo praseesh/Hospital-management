@@ -561,7 +561,6 @@ def assign_patient(request,room_id):
         return render(request, 'staff/assign_patient.html', {'message': error_message, 'room_id': room_id})
     return render(request, 'staff/assign_patient.html', {'room_id': room_id})
     
-
 '''______________________________________MEDICINE____________________________________________'''
 
 def create_medicine_list(request):
