@@ -3,11 +3,180 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Doctor List</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            background-color: #0d1117;
+            color: #c9d1d9;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        button {
+            background-color: #238636;
+            color: #ffffff;
+            border: 1px solid rgba(240,246,252,0.1);
+            border-radius: 6px;
+            padding: 5px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: #2ea043;
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        input[type="text"] {
+            background-color: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            color: #c9d1d9;
+            padding: 5px 12px;
+            font-size: 14px;
+        }
+
+        input[type="text"]:focus {
+            border-color: #58a6ff;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(17,88,199,0.4);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            padding: 8px 16px;
+            border: 1px solid #30363d;
+        }
+
+        th {
+            background-color: #161b22;
+            font-weight: 600;
+            text-align: left;
+        }
+
+        tr:nth-child(even) {
+            background-color: #161b22;
+        }
+
+        .pagination {
+            text-align: center;
+        }
+
+        .pagination a {
+            color: #58a6ff;
+            text-decoration: none;
+            padding: 5px 10px;
+        }
+
+        .pagination a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            button {
+                margin-top: 10px;
+                align-self: flex-end;
+            }
+
+            table {
+                font-size: 14px;
+            }
+
+            th, td {
+                padding: 6px 10px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>Hello world
-        
-    </h1>
+    <div class="container">
+        <header>
+            <h1>Doctor List</h1>
+            <button><a href="{% url 'create_availability'%}" style="color: white; text-decoration: none;">Create Availability</a></button>
+        </header>
+
+        <form method="GET" action="">
+            <input type="text" name="doc_name" placeholder="Search by name" value="{{ request.GET.doc_name }}">
+            <button type="submit">Search</button>
+        </form>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Doctor Name</th>
+                    <th>Specialization</th>
+                    <th>Contact</th>
+                    <th>Email</th>
+                    <th>Availability</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for doctor in page_obj %}
+                <tr>
+                    <td>{{ doctor.firstname }} {{ doctor.lastname }}</td>
+                    <td>{{ doctor.specialty }}</td>
+                    <td>{{ doctor.email }}</td>
+                    <td>{{ doctor.contact }}</td>
+                    <td>{{ doctor.availability }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="pagination">
+            <span class="step-links">
+                {% if page_obj.has_previous %}
+                    <a href="?page=1{% if request.GET.doc_name %}&doc_name={{ request.GET.doc_name }}{% endif %}">First</a>
+                    <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.doc_name %}&doc_name={{ request.GET.doc_name }}{% endif %}">Previous</a>
+                {% endif %}
+                <span class="current">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                </span>
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}{% if request.GET.doc_name %}&doc_name={{ request.GET.doc_name }}{% endif %}">Next</a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.doc_name %}&doc_name={{ request.GET.doc_name }}{% endif %}">Last</a>
+                {% endif %}
+            </span>
+        </div>
+    </div>
 </body>
 </html>

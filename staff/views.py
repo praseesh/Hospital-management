@@ -3,7 +3,7 @@ import json
 import os
 from django.conf import settings
 from django.core.mail import EmailMessage, send_mail
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from doctor.models import Doctor
@@ -24,51 +24,157 @@ from django.utils import timezone
 from datetime import date, timedelta
 from django.core.paginator import Paginator
 
-def send_otp_email(request):
-    if request.method == 'POST':
-        form = OTPForm(request.POST)
-        if form.is_valid():
-            email = form.cleaned_data.get('email')
-            otp = generate_otp()
+
+
+"""<__________________________________________STAFF______________________________________________>"""
+
+def staff(request):
+    if 'staff_id' in request.session:
+        staff_id = request.session['staff_id']
+        staff = Staff.objects.get(id=staff_id)
         
-            user_otp = UserOTP(email=email, otp=otp)
-            user_otp.save()
-
-            subject = 'Your Lab Report'
-            message = f'Please find attached your lab report.'
-            email_from = settings.EMAIL_HOST_USER
-            recipient_list = [email]
-            send_mail(subject, message, email_from, recipient_list)
-            
-            return redirect('validate_otp')  # Redirect to the OTP validation view
-    else:
-        form = OTPForm()
+        if staff.role_id ==2:
+            actions = StaffAction.objects.all()
+        else:
+            action_ids = StaffActionRoles.objects.filter(role_id=staff.role_id).values_list('action_id', flat=True)
+            actions = StaffAction.objects.filter(id__in=action_ids)
+        if not actions.exists():
+            actions = StaffAction.objects.all()
+        return render(request, 'staff/home.html', {'actions': actions})
     
-    return render(request, 'staff/send_otp.html', {'form': form})
+    return render(request, 'staff/staff_login.html')
 
-def validate_otp(request):
-    if request.method == 'POST':
-        form = OTPValidationForm(request.POST)
-        if form.is_valid():
-            email = form.cleaned_data.get('email')
-            otp = form.cleaned_data.get('otp')
-            
-            # Validate the OTP
-            valid_time = timezone.now() - timedelta(minutes=10)  # OTP valid for 10 minutes
-            user_otp = UserOTP.objects.filter(email=email, otp=otp, created_at__gte=valid_time).first()
-            
-            if user_otp:
-                return HttpResponse('OTP is valid')
+
+def staff_login(request):
+    if request.method =="POST":
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        try:
+            staff = Staff.objects.get(email=email)
+            if staff is None or staff == '':
+                return render(request, 'staff/staff_login.html', {'msg': 'Invalid Email or Password'})
             else:
-                return HttpResponse('Invalid OTP or OTP has expired')
+                if check_password(password, staff.password):
+                    request.session['staff_id'] = staff.id
+                    return redirect('staff_home') 
+                else:
+                    return render(request, 'staff/staff_login.html', {'msg': 'Invalid Email or Password'})
+        except Staff.DoesNotExist:
+            return render(request, 'staff/staff_login.html', {'msg': 'Invalid Email or Password'})
+    return render(request, 'staff/staff_login.html')
+
+'''___________________________________STAFF_DOCTOR________________________________________________'''
+
+
+def staff_doctor_list(request):
+    doctors = Doctor.objects.all()
+    doc_name = request.GET.get('doc_name')
+    if doc_name:
+        doctors = doctors.filter(firstname__icontains=doc_name)
+        
+    paginator = Paginator(doctors, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    return render(request, 'staff/doctor_list.html', {'doctors':doctors, 'page_obj':page_obj})
+
+'''___________________________________STAFF_PATIENT________________________________________________'''
+
+def staff_patient_create(request):
+    if request.method =='POST':
+        form = CustomPatientCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('staff_patient_list')
     else:
-        form = OTPValidationForm()
+        form = CustomPatientCreationForm()
+    return render(request,'staff/patient_create.html', {'form':form})
+
+def staff_patient_list(request):
+    patient = Patient.objects.all()
+    patient_name = request.GET.get('patient_name')
+    if patient_name != '' and patient_name is not None:
+        patient = patient.filter(firstname__icontains = patient_name)
+    return render(request, 'staff/patient_list.html', {'patient':patient})
+
+def staff_patient_details(request, patient_id):
+    if 'staff_id' not in request.session:
+        return redirect('staff_login')
+    patient = get_object_or_404(Patient, id=patient_id)
+    return render (request, 'staff/patient_details.html', {'patient': patient})
+
+def staff_patient_delete(request, patient_id):
+    patient = get_object_or_404(Patient, id=patient_id)
+    patient.delete()
+    return redirect('staff_patient_list')
+
+def staff_patient_edit(request, patient_id):
+    patient = get_object_or_404(Patient, id=patient_id)
+    if request.method == "POST":
+        form = CustomPatientModification(request.POST, instance=patient)
+        if form.is_valid():
+            form.save()
+            return redirect('staff_patient_list')
+    else:
+        form = CustomPatientModification(instance=patient)
     
-    return render(request, 'staff/validate_otp.html', {'form': form})
+    return render(request, 'staff/patient_edit.html', {'form': form})
+
+
+'''______________________________________PRESCRIPTION____________________________________________'''
+
+def staff_prescription_create(request):
+    if 'staff_id' not in request.session:
+        return redirect('staff_login')
+
+    staff_id = request.session['staff_id']
+    
+    if request.method == 'POST':
+        form = PrescriptionForm(request.POST)
+        if form.is_valid():
+            prescription = form.save(commit=False)  
+            prescription.created_by = staff_id
+            prescription.save()
+            return redirect('staff_prescription')
+    else:
+        form = PrescriptionForm()
+    return render(request, 'staff/prescription.html', {'form': form})
+
+def staff_prescription(request):
+    if 'staff_id' not in request.session:
+        return redirect('staff_login')
+    staff_id = request.session['staff_id']
+    prescriptions = Prescription.objects.filter(created_by=staff_id).select_related('patient', 'doctor')
+    return render(request, 'staff/prescription_list.html', {'prescriptions': prescriptions})
+
+def delete_prescription(request, prescription_id):
+    prescription = get_object_or_404(Prescription,id=prescription_id)
+    prescription.delete()
+    return redirect('staff_prescription')
+    
+
+
+'''______________________________________DISCHARGE____________________________________________'''
+
+def staff_discharge(request):
+    return render(request, 'staff/discharge.html')
 
 
 
 
+'''______________________________________LAB_REPORT____________________________________________'''
+
+
+def staff_lab_report(request, liver_test_id=None, kidney_test_id=None, sugar_test_id=None, cholesterol_test_id=None):
+    if request.method == 'POST':
+        form = LabReportCreation(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('staff_home') 
+    else:
+        form = LabReportCreation()
+    return render(request, 'staff/lab_report.html',{'form':form})
+
+'''_______________________________________LAB_REPORT_PDF________________________________________________'''
 
 def generate_pdf_lab_report(request, report_id):
     lab_report = get_object_or_404(LabReport, id=report_id)
@@ -150,146 +256,6 @@ def send_lab_report_email(patient_email, pdf_path):
     except Exception as e:
         print(f"Error sending email: {e}")
         
-#<-----------------------------------------STAFF---------------------------------------------------->
-
-def staff(request):
-    if 'staff_id' in request.session:
-        staff_id = request.session['staff_id']
-        staff = Staff.objects.get(id=staff_id)
-        
-        if staff.role_id ==2:
-            actions = StaffAction.objects.all()
-        else:
-            action_ids = StaffActionRoles.objects.filter(role_id=staff.role_id).values_list('action_id', flat=True)
-            actions = StaffAction.objects.filter(id__in=action_ids)
-        if not actions.exists():
-            actions = StaffAction.objects.all()
-        return render(request, 'staff/home.html', {'actions': actions})
-    
-    return render(request, 'staff/staff_login.html')
-
-
-def staff_login(request):
-    if request.method =="POST":
-        email = request.POST.get('email')
-        password = request.POST.get('password')
-        try:
-            staff = Staff.objects.get(email=email)
-            if staff is None or staff == '':
-                return render(request, 'staff/staff_login.html', {'msg': 'Invalid Email or Password'})
-            else:
-                if check_password(password, staff.password):
-                    request.session['staff_id'] = staff.id
-                    return redirect('staff_home') 
-                else:
-                    return render(request, 'staff/staff_login.html', {'msg': 'Invalid Email or Password'})
-        except Staff.DoesNotExist:
-            return render(request, 'staff/staff_login.html', {'msg': 'Invalid Email or Password'})
-    return render(request, 'staff/staff_login.html')
-
-
-def staff_doctor_list(request):
-
-    return render(request, 'staff/doctor_list.html')
-
-#<-------------------------------------------STAFF PATIENT----------------------------------------------->
-
-def staff_patient_create(request):
-    if request.method =='POST':
-        form = CustomPatientCreationForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('staff_patient_list')
-    else:
-        form = CustomPatientCreationForm()
-    return render(request,'staff/patient_create.html', {'form':form})
-
-def staff_patient_list(request):
-    patient = Patient.objects.all()
-    patient_name = request.GET.get('patient_name')
-    if patient_name != '' and patient_name is not None:
-        patient = patient.filter(firstname__icontains = patient_name)
-    return render(request, 'staff/patient_list.html', {'patient':patient})
-
-def staff_patient_details(request, patient_id):
-    if 'staff_id' not in request.session:
-        return redirect('staff_login')
-    patient = get_object_or_404(Patient, id=patient_id)
-    return render (request, 'staff/patient_details.html', {'patient': patient})
-
-def staff_patient_delete(request, patient_id):
-    patient = get_object_or_404(Patient, id=patient_id)
-    patient.delete()
-    return redirect('staff_patient_list')
-
-def staff_patient_edit(request, patient_id):
-    patient = get_object_or_404(Patient, id=patient_id)
-    if request.method == "POST":
-        form = CustomPatientModification(request.POST, instance=patient)
-        if form.is_valid():
-            form.save()
-            return redirect('staff_patient_list')
-    else:
-        form = CustomPatientModification(instance=patient)
-    
-    return render(request, 'staff/patient_edit.html', {'form': form})
-
-
-#<------------------------------------------PRESCRIPTION----------------------------------------------->
-
-def staff_prescription_create(request):
-    if 'staff_id' not in request.session:
-        return redirect('staff_login')
-
-    staff_id = request.session['staff_id']
-    
-    if request.method == 'POST':
-        form = PrescriptionForm(request.POST)
-        if form.is_valid():
-            prescription = form.save(commit=False)  
-            prescription.created_by = staff_id
-            prescription.save()
-            return redirect('staff_prescription')
-    else:
-        form = PrescriptionForm()
-    return render(request, 'staff/prescription.html', {'form': form})
-
-def staff_prescription(request):
-    if 'staff_id' not in request.session:
-        return redirect('staff_login')
-    staff_id = request.session['staff_id']
-    prescriptions = Prescription.objects.filter(created_by=staff_id).select_related('patient', 'doctor')
-    return render(request, 'staff/prescription_list.html', {'prescriptions': prescriptions})
-
-def delete_prescription(request, prescription_id):
-    prescription = get_object_or_404(Prescription,id=prescription_id)
-    prescription.delete()
-    return redirect('staff_prescription')
-    
-
-
-#<----------------------------------------------DISCHARGE----------------------------------------------->
-
-def staff_discharge(request):
-    return render(request, 'staff/discharge.html')
-
-
-
-
-#<------------------------------------------LAB REPORT----------------------------------------------->
-
-
-def staff_lab_report(request, liver_test_id=None, kidney_test_id=None, sugar_test_id=None, cholesterol_test_id=None):
-    if request.method == 'POST':
-        form = LabReportCreation(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('staff_home') 
-    else:
-        form = LabReportCreation()
-    return render(request, 'staff/lab_report.html',{'form':form})
-
-
 
 def staff_labreport_create(request):
     if request.method == 'POST':
@@ -350,8 +316,7 @@ def staff_labreport_create(request):
     
     return render(request, 'staff/lab_report_create.html', {'form': form})
 
-'''--------------------------------------TESTS----------------------------------------------------'''
-
+'''______________________________________TESTS____________________________________________'''
 
 def create_kidney_test(request):
     if request.method == 'POST':
@@ -377,8 +342,13 @@ def create_kidney_test(request):
                 patient=patient,
                 result=concatenated_values,
             )
-            print('@@@@@@@@@@@@@@@@@', patient, concatenated_values, new_kidney_test)
             new_kidney_test.save()
+            bills = PatientBills.objects.filter(patient_id=patient_id, is_completed=False).first()
+            if bills.exists():
+                bills.lab_report_bill += 935
+                bills.save()
+            else:
+                PatientBills.objects.create(patient_id=patient_id,lab_report_bill= 935)
             return redirect('test')
         else:
 
@@ -409,6 +379,12 @@ def create_cholesterol_test(request):
                 patient=patient,
             )
             new_cholesterol_test.save()
+            bills = PatientBills.objects.filter(patient_id=patient_id, is_completed=False).first()
+            if bills.exists():
+                bills.lab_report_bill += 450
+                bills.save()
+            else:
+                PatientBills.objects.create(patient_id=patient_id,lab_report_bill= 450)
             return redirect('test')
         else:
             error_message = 'Please select a patient and fill all required fields.' if not patient_id else 'Please fill all required fields.'
@@ -439,6 +415,12 @@ def create_sugar_test(request):
                 result=concatenated_values,
             )
             new_sugar_test.save()
+            bills = PatientBills.objects.filter(patient_id=patient_id, is_completed=False).first()
+            if bills.exists():
+                bills.lab_report_bill += 175
+                bills.save()
+            else:
+                PatientBills.objects.create(patient_id=patient_id,lab_report_bill= 175)
             return redirect('test')
         else:
             error_message = 'Please select a patient and fill all required fields.' if not patient_id else 'Please fill all required fields.'
@@ -450,7 +432,6 @@ def create_sugar_test(request):
         st = ST.objects.all()
         patients = Patient.objects.all()
         return render(request, 'staff/sugar_test.html', {'form': form, 'st': st, 'patients': patients})
-
 
 def create_liver_test(request):
     if request.method == 'POST':
@@ -474,6 +455,13 @@ def create_liver_test(request):
                 patient=patient,
             )
             new_lft.save()
+            bills = PatientBills.objects.filter(patient_id=patient_id, is_completed=False).first()
+            if bills.exists():
+                bills.lab_report_bill += 670
+                bills.save()
+            else:
+                PatientBills.objects.create(patient_id=patient_id,lab_report_bill= 670)
+                
             return redirect('test')
         else:
             error_message = 'Please select a patient and fill all required fields.' if not patient_id else 'Please fill all required fields.'
@@ -487,7 +475,7 @@ def create_liver_test(request):
         return render(request, 'staff/liver_test.html', {'form': form, 'lft': lft, 'patients': patients})    
 
 
-#<----------------------------------------------ROOMS----------------------------------------------->
+'''______________________________________ROOMS____________________________________________'''
 
 def staff_rooms(request):
     if request.method == "GET":
@@ -517,7 +505,12 @@ def assign_patient(request,room_id):
         
         updated = Patient.objects.filter(id=patient_id).update(room=room_id)
         room_update = Room.objects.filter(id=room_id).update(is_vacant=False)
-        
+        bills = PatientBills.objects.filter(patient_id=patient_id, is_completed=False).first()
+        if bills.exists():
+            bills.room = room_id
+            bills.save()
+        else:
+            PatientBills.objects.create(patient_id=patient_id,room=room_id)
         if updated and room_update:
             return redirect('staff_rooms')
         
@@ -529,7 +522,7 @@ def assign_patient(request,room_id):
     return render(request, 'staff/assign_patient.html', {'room_id': room_id})
     
 
-#<----------------------------------------------MEDICINE----------------------------------------------->
+'''______________________________________MEDICINE____________________________________________'''
 
 def create_medicine_list(request):
     medicines = Medicine.objects.all()
@@ -554,10 +547,7 @@ def create_medicine_list(request):
                 bill.medicine_bill += float(total_price)
                 bill.save()
             else:
-                PatientBills.objects.create(
-                    patient_id=patient_id,
-                    medicine_bill = float(total_price)
-                )
+                PatientBills.objects.create(patient_id=patient_id,medicine_bill = float(total_price))
             
             return render(request, 'staff/create_medicine_list.html', {
                     'medicines': medicines,
@@ -574,31 +564,31 @@ def create_medicine_list(request):
     
 
 
-#<----------------------------------------------APPOINTMENT----------------------------------------------->
+'''______________________________________APPOINTMENT____________________________________________'''
 
 
-def staff_appointment(request):
-    if request.method == 'POST':
-        form = AppointmentCreationForm(request.POST)
-        if form.is_valid():
-            appointment = form.save(commit=False)
+# def staff_appointment(request):
+#     if request.method == 'POST':
+#         form = AppointmentCreationForm(request.POST)
+#         if form.is_valid():
+#             appointment = form.save(commit=False)
             
-            patient = form.cleaned_data.get('patient')
-            doctor = form.cleaned_data.get('doctor')
-            patient_id = patient.pk
-            doctor_id = doctor.pk
-            appointment.patient_id = patient_id
-            appointment.doctor_id = doctor_id
-            appointment.appointment_id = generate_random_string()
+#             patient = form.cleaned_data.get('patient')
+#             doctor = form.cleaned_data.get('doctor')
+#             patient_id = patient.pk
+#             doctor_id = doctor.pk
+#             appointment.patient_id = patient_id
+#             appointment.doctor_id = doctor_id
+#             appointment.appointment_id = generate_random_string()
             
-            appointment.save()
+#             appointment.save()
             
-            messages.success(request, "Appointment created successfully!")
-            return redirect('staff_home')  
-    else:    
-        form = AppointmentCreationForm()
+#             messages.success(request, "Appointment created successfully!")
+#             return redirect('staff_home')  
+#     else:    
+#         form = AppointmentCreationForm()
     
-    return render(request, 'staff/appointment.html', {'form': form})
+#     return render(request, 'staff/appointment.html', {'form': form})
 
 def select_date(request, doctor_id):
     doctor = get_object_or_404(Doctor, id=doctor_id)
@@ -616,93 +606,71 @@ def select_doctor(request):
     doctor = Doctor.objects.all()
     return render(request, 'staff/select_doctor.html', {'doctor':doctor})
 
+'''______________________________________AVAILABILITY____________________________________________'''
+
 def create_availability(request):
     if request.method == 'POST':
         form = DoctorAvailabilityCreationForm(request.POST)
         print(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('staff_home')
+            return redirect('create_availability')
     else:
         form = DoctorAvailabilityCreationForm()
         
     return render(request, 'staff/create_availability.html', {'form': form})
 
-# def doctor_availability(request, doctor_id):
-#     doctor = get_object_or_404(Doctor, id=doctor_id)
-#     availability = DoctorAvailability.objects.filter(doctor=doctor).values('date', 'timeslot')
-#     if request.method == 'POST':
-#         appointment_date = request.POST.get('appointment_date')
-#         timeslot = request.POST.get('timeslot')
-#         patient_id = request.POST.get('patient_id')
-#         if appointment_date and timeslot and patient_id:
-#             if DoctorAvailability.objects.filter(doctor=doctor, date=appointment_date, timeslot=timeslot).exists():
-#                 appointment = Appointment(
-#                     appointment_id=generate_random_string(),
-#                     patient_id=patient_id,
-#                     doctor=doctor,
-#                     appointment_date=appointment_date,
-#                     timeslot=timeslot,
-#                     status='scheduled',
-#                     reason_for_visit='other'
-#                 )
-#                 appointment.save()
-#                 messages.success(request, "Appointment created successfully!")
-#                 return redirect('staff_home')
-#             else:
-#                 messages.error(request, "The selected time slot is not available.")
-#         else:
-#             messages.error(request, "Please provide all the required details.")
 
-#     return render(request, 'staff/doctor_availability.html', {'doctor': doctor, 'availability': availability})
-
-def doctor_availability(request, doctor_id, date):
+def appointment(request, doctor_id, date):
     if request.method == 'GET':
-        print(doctor_id,date)
+        print(doctor_id, date)
+    
     doctor = get_object_or_404(Doctor, id=doctor_id)
-    availability = DoctorAvailability.objects.filter(doctor=doctor, date=date,is_available=True).values('timeslot')
-
-# $$$$$$$$$$$$$$$$$$$$$$$$$$$ READ BELOW ##########################################
-
-#  DATE OR DOCTOR ID  IS NOT AVAILABLE> NOW REDIRICTING TO STAFF HOME,
-# CHANGE THE LOGIC TO GIVE ERROR MESSAGE IN DOCTOR AVAILABILITY PAGE ONLY.......
-
-    if availability.exists() is False:
-        return redirect('staff_home')
+    availability = DoctorAvailability.objects.filter(doctor=doctor, date=date, is_available=True)
     
-    
+    if not availability.exists():
+        return redirect('select_date')
     
     if request.method == 'POST':
         timeslot = request.POST.get('timeslot')
         patient_id = request.POST.get('patient_id')
+        reason = request.POST.get('reason_for_visit')
+        rfv = 'other'
+        if reason:
+           rfv =reason 
         if timeslot and patient_id:
-            appointment = Appointment(
+            try:
+
+                make_false = availability.get(timeslot=timeslot)
+                make_false.is_available = False
+                make_false.save()  
+
+                appointment = Appointment(
                     appointment_id=generate_random_string(),
                     patient_id=patient_id,
                     doctor=doctor,
                     appointment_date=date,
                     timeslot=timeslot,
-                    status='scheduled',
-                    reason_for_visit='other'
+                    reason_for_visit=rfv
                 )
-            # MAKE FALSE ISAVAILABLE
-            
-            appointment.save()
-            
-        
-            
-            messages.success(request, "Appointment created successfully!")
-            return redirect('staff_home')
-        else:
+                
+                appointment.save()
+                
+                messages.success(request, "Appointment created successfully!")
+                return redirect('staff_home')
+            except DoctorAvailability.DoesNotExist:
                 messages.error(request, "The selected time slot is not available.")
+        else:
+            messages.error(request, "Please provide all the required details.")
     else:
-        messages.error(request, "Please provide all the required details.")
+        messages.error(request, "Invalid request method.")
+    
     return render(request, 'staff/doctor_availability.html', {
         'doctor': doctor,
         'date': date,
         'availability': availability
     })
-#<------------------------------------------INVOICE----------------------------------------------->
+'''______________________________________INVOICE____________________________________________'''
 def invoice_list(request):
     if request.method == 'GET':
         invoices = Invoice.objects.all().order_by('id')
@@ -715,8 +683,8 @@ def invoice_list(request):
         page_number = request.GET.get('page')
         page_obj = paginator.get_page(page_number)
 
-        return render(request, 'staff/invoice_list.html', {'page_obj': page_obj})
-    return render(request, 'staff/invoice_list.html')
+    return render(request, 'staff/invoice_list.html', {'page_obj': page_obj})
+
     
 
 def staff_invoice(request):
@@ -732,21 +700,19 @@ def staff_invoice(request):
                 invoice_id = old_invoice.id
                 return render(request, 'staff/invoice.html', {'msg':msg, 'invoice_id':invoice_id} )
             
+            bills = PatientBills.objects.get(patient_id=patient.id, is_completed=False)
+            if not bills.exists():
+                return render (request,'staff/invoice.html', {'form': form, 'error_msg':'No Bill Exist'})
             if patient.room_id:
                 today = date.today()
                 duration = (today - patient.admission_date).days
                 invoice.room_charges = duration * patient.room.price
             else:
                 invoice.room_charges = 0
-            bills =None
-            try:
-                bills = get_object_or_404(PatientBills, patient_id=patient.id, is_completed=False)
-            except Exception:
-                print('bills not found')
             invoice.total_amount = invoice.room_charges
-            if bills:
-                invoice.bill_id = bills
-                invoice.total_amount += (bills.medicine_bill or 0) + (bills.lab_report_bill or 0)
+            invoice.bill_id = bills
+            invoice.total_amount += (bills.medicine_bill or 0) + (bills.lab_report_bill or 0)
+
             invoice.invoice_no = generate_random_string()
             invoice.date = date.today()
 
@@ -768,7 +734,7 @@ def test(request):
     return render(request, 'staff/tests.html',{'kidney_test':kidney_test})
 
 
-'''<----------------------------------------------PAYMENT----------------------------------------------->'''
+'''______________________________________PAYMENT____________________________________________'''
 
 
 def amount_conformation(request, invoice_id):
@@ -841,6 +807,10 @@ def payment_success(request):
             return redirect('staff_home')
         invoice = get_object_or_404(Invoice, id=invoice_id)
         invoice.status = 'Success'
+        patient=invoice.patient_id
+        patient_bill = PatientBills.objects.get(patient=patient,is_completed=False)
+        patient_bill.is_completed = True
+        patient_bill.save()
         invoice.save()
 
         return render(request, 'staff/payment_success.html', {'invoice': invoice})
@@ -915,7 +885,47 @@ def payment_paypal_success(request):
 def payment_paypal_cancelled(request):
     return render(request, 'staff/payment_paypal_cancelled.html')
 
+'''_______________________________________OTP_SENDING_____________________________________________'''
 
+def send_otp_email(request):
+    if request.method == 'POST':
+        form = OTPForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data.get('email')
+            otp = generate_otp()
+        
+            user_otp = UserOTP(email=email, otp=otp)
+            user_otp.save()
+            subject = 'Your Lab Report'
+            message = f'Please find attached your lab report.'
+            email_from = settings.EMAIL_HOST_USER
+            recipient_list = [email]
+            send_mail(subject, message, email_from, recipient_list)
+            
+            return redirect('validate_otp') 
+    else:
+        form = OTPForm()
+    
+    return render(request, 'staff/send_otp.html', {'form': form})
+
+def validate_otp(request):
+    if request.method == 'POST':
+        form = OTPValidationForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data.get('email')
+            otp = form.cleaned_data.get('otp')
+
+            valid_time = timezone.now() - timedelta(minutes=10) 
+            user_otp = UserOTP.objects.filter(email=email, otp=otp, created_at__gte=valid_time).first()
+            
+            if user_otp:
+                return HttpResponse('OTP is valid')
+            else:
+                return HttpResponse('Invalid OTP or OTP has expired')
+    else:
+        form = OTPValidationForm()
+    
+    return render(request, 'staff/validate_otp.html', {'form': form})
 
 
 

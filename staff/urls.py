@@ -43,7 +43,7 @@ urlpatterns = [
     path('assign_patient/<int:room_id>/', views.assign_patient, name='assign_patient'),
     
     path('create_medicine_list', views.create_medicine_list, name="create_medicine_list"), 
-    path('appointment', views.staff_appointment, name="staff_appointment"),
+    # path('appointment', views.staff_appointment, name="staff_appointment"),
     path('test',views.test, name="test"),
     
     path('send-otp/', views.send_otp_email, name='send_otp'),
@@ -51,6 +51,6 @@ urlpatterns = [
     
     path('create_availability', views.create_availability, name="create_availability"),
     path('select_date/<int:doctor_id>/', views.select_date, name='select_date'),
-    path('doctor_availability/<int:doctor_id>/<str:date>/', views.doctor_availability, name='doctor_availability'),
+    path('appointment/<int:doctor_id>/<str:date>/', views.appointment, name='doctor_availability'),
     path('select_doctor', views.select_doctor,name="select_doctor")
 ]

@@ -54,55 +54,77 @@ class PrescriptionForm(forms.ModelForm):
         fields = ['patient', 'doctor', 'medication', 'dosage', 'frequency', 'duration', 'instructions']
         
 class SugarTestForm(forms.Form):
-    fbs	 = forms.CharField(max_length=50)
-    pbs	 = forms.CharField(max_length=50)
-    rbs	 = forms.CharField(max_length=50)
-    hba1c= forms.CharField(max_length=50)
-    ogtt = forms.CharField(max_length=50)
+    fbs	 = forms.IntegerField(required=True, widget=forms.NumberInput(attrs={'min':'0'}))
+    pbs	 = forms.IntegerField(required=True, widget=forms.NumberInput(attrs={'min':'0'}))
+    rbs	 = forms.IntegerField(required=True, widget=forms.NumberInput(attrs={'min':'0'}))
+    hba1c= forms.IntegerField(required=True, widget=forms.NumberInput(attrs={'min':'0'}))
+    ogtt = forms.IntegerField(required=True, widget=forms.NumberInput(attrs={'min':'0'}))
     class Meta:
-        fields = ['result']
+        fields = ['fbs','pbs', 'rbs', 'hba1c', 'ogtt']
 
 
 class KidneyTestForm(forms.Form):
-    urea = forms.CharField(max_length=10, required=True)
-    creatinine = forms.CharField(max_length=10, required=True)
-    uric_acid = forms.CharField(max_length=10, required=True)
-    calcium_total = forms.CharField(max_length=10, required=True)
-    phosphorus = forms.CharField(max_length=10, required=True)
-    alkaline_phosphatase = forms.CharField(max_length=10, required=True)
-    total_protein = forms.CharField(max_length=10, required=True)
-    albumin = forms.CharField(max_length=10, required=True)
-    sodium = forms.CharField(max_length=10, required=True)
-    potassium = forms.CharField(max_length=10, required=True)
-    chloride = forms.CharField(max_length=10, required=True)
+    urea = forms.IntegerField(required=True, widget=forms.NumberInput(attrs={'min': '0'}))
+    creatinine = forms.IntegerField(required=True, widget=forms.NumberInput(attrs={'min': '0'}))
+    uric_acid = forms.IntegerField(required=True, widget=forms.NumberInput(attrs={'min': '0'}))
+    calcium_total = forms.IntegerField(required=True, widget=forms.NumberInput(attrs={'min': '0'}))
+    phosphorus = forms.IntegerField(required=True, widget=forms.NumberInput(attrs={'min': '0'}))
+    alkaline_phosphatase = forms.IntegerField(required=True, widget=forms.NumberInput(attrs={'min': '0'}))
+    total_protein = forms.IntegerField(required=True, widget=forms.NumberInput(attrs={'min': '0'}))
+    albumin = forms.IntegerField(required=True, widget=forms.NumberInput(attrs={'min': '0'}))
+    sodium = forms.IntegerField(required=True, widget=forms.NumberInput(attrs={'min': '0'}))
+    potassium = forms.IntegerField(required=True, widget=forms.NumberInput(attrs={'min': '0'}))
+    chloride = forms.IntegerField(required=True, widget=forms.NumberInput(attrs={'min': '0'}))
 
     class Meta:
-        fields = ['result']
+        fields = [
+            'urea',
+            'creatinine',
+            'uric_acid',
+            'calcium_total',
+            'phosphorus',
+            'alkaline_phosphatase',
+            'total_protein',
+            'albumin',
+            'sodium',
+            'potassium',
+            'chloride'
+        ]
         
 class CholesterolTestForm(forms.Form):
-    total_cholesterol = forms.CharField(max_length=50)
-    ldl_cholesterol   = forms.CharField(max_length=50)
-    hdl_cholesterol   = forms.CharField(max_length=50)
-    triglycerides     = forms.CharField(max_length=50)
+    total_cholesterol = forms.IntegerField(required=True, widget=forms.NumberInput(attrs={'min':'0'}))
+    ldl_cholesterol   = forms.IntegerField(required=True, widget=forms.NumberInput(attrs={'min':'0'}))
+    hdl_cholesterol   = forms.IntegerField(required=True, widget=forms.NumberInput(attrs={'min':'0'}))
+    triglycerides     = forms.IntegerField(required=True, widget=forms.NumberInput(attrs={'min':'0'}))
 
     class Meta:
-        fields = ['result']
+        fields = ['total_cholesterol', 'ldl_cholesterol','hdl_cholesterol','triglycerides']
         
 class LiverTestForm(forms.Form):
     
-    total_bilirubin        = forms.CharField(max_length=50)
-    direct_bilirubin       = forms.CharField(max_length=50)
-    indirect_bilirubin     = forms.CharField(max_length=50)
-    ast_sgot               = forms.CharField(max_length=50)
-    alt_sgpt               = forms.CharField(max_length=50)
-    alp                    = forms.CharField(max_length=50)
-    total_protein          = forms.CharField(max_length=50)
-    albumin                = forms.CharField(max_length=50)
-    globulin               = forms.CharField(max_length=50)
-    albumin_globulin_ratio = forms.CharField(max_length=50)
+    total_bilirubin        = forms.IntegerField(required=True, widget=forms.NumberInput(attrs={'min':'0'}))
+    direct_bilirubin       = forms.IntegerField(required=True, widget=forms.NumberInput(attrs={'min':'0'}))
+    indirect_bilirubin     = forms.IntegerField(required=True, widget=forms.NumberInput(attrs={'min':'0'}))
+    ast_sgot               = forms.IntegerField(required=True, widget=forms.NumberInput(attrs={'min':'0'}))
+    alt_sgpt               = forms.IntegerField(required=True, widget=forms.NumberInput(attrs={'min':'0'}))
+    alp                    = forms.IntegerField(required=True, widget=forms.NumberInput(attrs={'min':'0'}))
+    total_protein          = forms.IntegerField(required=True, widget=forms.NumberInput(attrs={'min':'0'}))
+    albumin                = forms.IntegerField(required=True, widget=forms.NumberInput(attrs={'min':'0'}))
+    globulin               = forms.IntegerField(required=True, widget=forms.NumberInput(attrs={'min':'0'}))
+    albumin_globulin_ratio = forms.IntegerField(required=True, widget=forms.NumberInput(attrs={'min':'0'}))
 
     class Meta:
-        fields = ['result']
+        fields = [
+            'total_bilirubin',
+            'direct_bilirubin',
+            'indirect_bilirubin',
+            'ast_sgot',
+            'alt_sgpt',
+            'alp',
+            'total_protein',
+            'albumin',
+            'globulin',
+            'albumin_globulin_ratio']
         
         
 class InvoiceCreationForm(forms.ModelForm):
@@ -122,7 +144,6 @@ class RoomAssignForm(forms.ModelForm):
         fields = ['id']    
         
 class MedicineBillCreationForm(forms.ModelForm):
-    # patient_id = forms.IntegerField()
 
     class Meta:
         model = PatientBills

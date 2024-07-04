@@ -35,7 +35,7 @@
                     var formattedDate = $.datepicker.formatDate('yy-mm-dd', new Date(dateText));
                     var doctorId = '{{ doctor.id }}';  // Replace with your actual way of getting doctor id
                     var form = $('#dateForm');
-                    form.attr('action', '/staff/doctor_availability/' + doctorId + '/' + formattedDate + '/');
+                    form.attr('action', '/staff/appointment/' + doctorId + '/' + formattedDate + '/');
                 }
             });
         });

@@ -82,6 +82,11 @@
                 <button type="submit">Create Invoice</button>
             </form>
         {% endif %}
+        
+        {% if error_msg %}
+            {{ error_msg }}
+        {% endif %}
+            
     </div>
 </body>
 </html>

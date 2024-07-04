@@ -6,7 +6,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Doctor Availability for {{ doctor.firstname }} {{ doctor.lastname }} </h1>
+        <h1 style="color: brown;">Doctor Availability for {{ doctor.firstname }} {{ doctor.lastname }} </h1>
         <form method="post" action="{% url 'doctor_availability' doctor.id date %}">
             {% csrf_token %}
             <div class="form-group">

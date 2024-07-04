@@ -1,25 +1,83 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Availability</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            background-color: #0d1117;
+            color: #c9d1d9;
+        }
+        .container {
+            max-width: 800px;
+            padding-top: 2rem;
+        }
+        h1, h2 {
+            color: #c9d1d9;
+            border-bottom: 1px solid #30363d;
+            padding-bottom: 0.3em;
+        }
+        form {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+        }
+        label {
+            color: #c9d1d9;
+        }
+        input[type="text"], input[type="date"], select, textarea {
+            background-color: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            color: #c9d1d9;
+            padding: 5px 12px;
+            font-size: 14px;
+        }
+        input[type="text"]:focus, input[type="date"]:focus, select:focus, textarea:focus {
+            border-color: #58a6ff;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(17,88,199,0.4);
+        }
+        .btn-primary {
+            background-color: #238636;
+            border-color: #238636;
+        }
+        .btn-primary:hover {
+            background-color: #2ea043;
+            border-color: #2ea043;
+        }
+        #doctorAvailability {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 1rem;
+        }
+        #doctorAvailability ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        #doctorAvailability li {
+            margin-bottom: 0.5rem;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <h1>Create Doctor Availability</h1>
+        <h1 class="mb-4">Create Doctor Availability</h1>
         <form method="post" id="availabilityForm">
             {% csrf_token %}
             {{ form.as_p }}
             <button type="submit" class="btn btn-primary">Create Availability</button>
         </form>
-        
-        <h2>Doctor Availability</h2>
-        <div id="doctorAvailability"></div>
-    </div>
-    
+
     <script>
         $(document).ready(function() {
             $('#id_doctor').change(function() {
@@ -45,7 +103,7 @@
         });
     </script>
     
-    <!-- Bootstrap JS -->
+
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 </body>
 </html>
