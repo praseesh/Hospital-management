@@ -556,7 +556,6 @@ def assign_patient(request,room_id):
             PatientBills.objects.create(patient_id=patient_id,room=room)
         if  room_update:
             return redirect('staff_rooms')
-        
         else:
             error_message = "Patient or Room does not exists"
 
