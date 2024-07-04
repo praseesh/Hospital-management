@@ -559,7 +559,6 @@ def assign_patient(request,room_id):
         else:
             error_message = "Patient or Room does not exists"
         return render(request, 'staff/assign_patient.html', {'message': error_message, 'room_id': room_id})
-
     return render(request, 'staff/assign_patient.html', {'room_id': room_id})
     
 
