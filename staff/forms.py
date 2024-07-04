@@ -15,7 +15,7 @@ class OTPForm(forms.Form):
 class CustomStaffCreation(forms.ModelForm):
     class Meta:
         model = Staff
-        fields = ['firstname','lastname','role', 'city', 'joined', 'salary', 'contact', 'password','email']
+        fields = ['firstname','lastname','role', 'city', 'joined', 'contact', 'password','email']
     def save(self, commit=True):
         staff = super().save(commit=False)
         staff.password = make_password(self.cleaned_data['password'])

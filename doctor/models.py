@@ -10,7 +10,6 @@ class Doctor(models.Model):
     lastname = models.CharField(max_length=255, blank=True, null=True)  
     specialty = models.CharField(max_length=255, blank=False, null=False)
     email = models.CharField(max_length=255, blank=False, null=False)
-    availability = models.CharField(max_length=255, blank=True, null=True)  
     contact = models.CharField(max_length=255, blank=True, null=True)  
     password = models.CharField(max_length=255, blank=False, null=False, default=1234)
     is_deleted = models.BooleanField(default=False)

@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -125,10 +126,24 @@
                 padding: 6px 10px;
             }
         }
+        .navbar {
+            padding: 10px 0;
+        }
+        
+        .navbar-brand {
+            padding: 0;
+        }
     </style>
 </head>
 <body>
     <div class="container">
+        <nav class="navbar navbar-expand-lg navbar-dark">
+            <div class="container">
+                <a class="navbar-brand" href="{% url 'staff_home' %}">
+                    <img src="{% static 'images\staff\logo.png' %}" alt="WeCare Logo" width="60" height="48">
+                </a>
+            </div>
+        </nav>
         <header>
             <h1>Doctor List</h1>
             <button><a href="{% url 'create_availability'%}" style="color: white; text-decoration: none;">Create Availability</a></button>
@@ -146,7 +161,6 @@
                     <th>Specialization</th>
                     <th>Contact</th>
                     <th>Email</th>
-                    <th>Availability</th>
                 </tr>
             </thead>
             <tbody>
@@ -156,7 +170,6 @@
                     <td>{{ doctor.specialty }}</td>
                     <td>{{ doctor.email }}</td>
                     <td>{{ doctor.contact }}</td>
-                    <td>{{ doctor.availability }}</td>
                 </tr>
                 {% endfor %}
             </tbody>

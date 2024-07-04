@@ -1,11 +1,85 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Select Date</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css"/>
+    <style>
+        body {
+            background-color: #0d1117;
+            color: #c9d1d9;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+        }
+        .container {
+            background-color: #161b22;
+            border-radius: 6px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid #30363d;
+        }
+        h1 {
+            color: #58a6ff;
+            border-bottom: 1px solid #30363d;
+            padding-bottom: 0.3em;
+            margin-bottom: 20px;
+        }
+        .form-control:disabled, .form-control[readonly] {
+            background-color: #000000;
+            opacity: 100;
+        }
+        .form-control {
+            background-color: #0d1117;
+            border: 1px solid #30363d;
+            color: #c9d1d9;
+        }
+        .form-control:focus {
+            background-color: #0d1117;
+            border-color: #58a6ff;
+            color: #c9d1d9;
+            box-shadow: 0 0 0 3px rgba(17,88,199,0.4);
+        }
+        .btn-primary {
+            background-color: #238636;
+            border-color: #238636;
+        }
+        .btn-primary:hover {
+            background-color: #2ea043;
+            border-color: #2ea043;
+        }
+        /* GitHub-like styling for jQuery UI Datepicker */
+        .ui-datepicker {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            color: #c9d1d9;
+        }
+        .ui-datepicker-header {
+            background-color: #21262d;
+            border-bottom: 1px solid #30363d;
+        }
+        .ui-datepicker-calendar th {
+            background-color: #21262d;
+        }
+        .ui-datepicker-calendar td {
+            background-color: #0d1117;
+        }
+        .ui-datepicker-calendar .ui-state-default {
+            background-color: #0d1117;
+            color: #c9d1d9;
+            border: 1px solid #30363d;
+        }
+        .ui-datepicker-calendar .ui-state-highlight {
+            background-color: #1f6feb;
+            color: #ffffff;
+        }
+        .ui-datepicker-calendar .ui-state-active {
+            background-color: #238636;
+            color: #ffffff;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -26,14 +100,14 @@
             var availableDates = {{ available_dates_json|safe }};
             
             $('#appointment_date').datepicker({
-                dateFormat: 'yy-mm-dd', // Set the date format to match your input
+                dateFormat: 'yy-mm-dd',
                 beforeShowDay: function(date) {
                     var dateString = $.datepicker.formatDate('yy-mm-dd', date);
                     return [availableDates.includes(dateString)];
                 },
                 onSelect: function(dateText) {
                     var formattedDate = $.datepicker.formatDate('yy-mm-dd', new Date(dateText));
-                    var doctorId = '{{ doctor.id }}';  // Replace with your actual way of getting doctor id
+                    var doctorId = '{{ doctor.id }}';
                     var form = $('#dateForm');
                     form.attr('action', '/staff/appointment/' + doctorId + '/' + formattedDate + '/');
                 }

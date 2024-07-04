@@ -24,48 +24,72 @@ from django.utils import timezone
 from datetime import date, timedelta
 from django.core.paginator import Paginator
 from django.views.decorators.cache import cache_control
+from django.views.decorators.cache import never_cache
+from .middleware import NoCacheMiddleware
+from django.utils.decorators import decorator_from_middleware
 
 
+cache_control_no_cache = decorator_from_middleware(NoCacheMiddleware)
+
+# # Apply this decorator to your views
+# from django.shortcuts import render, redirect
+# from .decorators import cache_control_no_cache
 
 """<__________________________________________STAFF______________________________________________>"""
 
+@cache_control_no_cache
 def staff(request):
-    if 'staff_id' in request.session:
-        staff_id = request.session['staff_id']
+    staff_id = request.session.get('staff_id')
+    
+    if not staff_id:
+        return redirect('staff_login')
+    
+    try:
         staff = Staff.objects.get(id=staff_id)
+    except Staff.DoesNotExist:
+        # Handle the case where staff_id is invalid or does not exist
+        return redirect('staff_login')  # or handle appropriately
+    
+    if staff.role_id == 2:
+        actions = StaffAction.objects.all()
+    else:
+        action_ids = StaffActionRoles.objects.filter(role_id=staff.role_id).values_list('action_id', flat=True)
+        actions = StaffAction.objects.filter(id__in=action_ids)
+    
+    if not actions.exists():
+        actions = StaffAction.objects.all()
+    
+    return render(request, 'staff/home.html', {'actions': actions})
+    
         
-        if staff.role_id ==2:
-            actions = StaffAction.objects.all()
-        else:
-            action_ids = StaffActionRoles.objects.filter(role_id=staff.role_id).values_list('action_id', flat=True)
-            actions = StaffAction.objects.filter(id__in=action_ids)
-        if not actions.exists():
-            actions = StaffAction.objects.all()
-        return render(request, 'staff/home.html', {'actions': actions})
+    # return render(request, 'staff/staff_login.html')
+
+@cache_control_no_cache
+def staff_login(request):
+    if 'staff_id' in request.session:
+        return redirect('staff_home')
+    
+    if request.method == "POST":
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        
+        try:
+            staff = Staff.objects.get(email=email)
+        except Staff.DoesNotExist:
+            return render(request, 'staff/staff_login.html', {'msg': 'Invalid Email or Password'})
+        
+        if not check_password(password, staff.password):
+            return render(request, 'staff/staff_login.html', {'msg': 'Invalid Email or Password'})
+        
+        request.session['staff_id'] = staff.id
+        return redirect('staff_home')
     
     return render(request, 'staff/staff_login.html')
 
-
-
-
-def staff_login(request):
-    if request.method =="POST":
-        email = request.POST.get('email')
-        password = request.POST.get('password')
-        try:
-            staff = Staff.objects.get(email=email)
-            if staff is None or staff == '':
-                return render(request, 'staff/staff_login.html', {'msg': 'Invalid Email or Password'})
-            else:
-                if check_password(password, staff.password):
-                    request.session['staff_id'] = staff.id
-                    return redirect('staff_home') 
-                else:
-                    return render(request, 'staff/staff_login.html', {'msg': 'Invalid Email or Password'})
-        except Staff.DoesNotExist:
-            return render(request, 'staff/staff_login.html', {'msg': 'Invalid Email or Password'})
-    return render(request, 'staff/staff_login.html')
-
+def logout(request):
+    if 'staff_id' in request.session:
+        request.session.flush()
+    return redirect('staff_login')
 '''___________________________________STAFF_DOCTOR________________________________________________'''
 
 
@@ -168,7 +192,7 @@ def staff_discharge(request):
         if form.is_valid():
             patient_id = form.cleaned_data.get('id').id
             patient = get_object_or_404(Patient, id=patient_id)
-            if patient.is_discharged is True:
+            if patient.is_discharged:
                 return render(request, 'staff/discharge.html', {
                     'msg': "The requested patient already discharged!", 
                     'form': form
@@ -188,6 +212,7 @@ def staff_discharge(request):
                 room.save()
             patient.room = None
             patient.is_discharged = True
+            patient.checkout_date=date.today()
             patient.save()
             msg = 'Patient Successfully Discharged'
             return render(request, 'staff/discharge.html', {'msg': msg, 'form': form})
@@ -357,7 +382,7 @@ def staff_labreport_create(request):
     return render(request, 'staff/lab_report_create.html', {'form': form})
 
 '''______________________________________TESTS____________________________________________'''
-
+@cache_control_no_cache
 def create_kidney_test(request):
     if request.method == 'POST':
         form = KidneyTestForm(request.POST)
@@ -650,10 +675,10 @@ def select_doctor(request):
 def create_availability(request):
     if request.method == 'POST':
         form = DoctorAvailabilityCreationForm(request.POST)
-        print(request.POST)
+
         if form.is_valid():
             form.save()
-            return redirect('create_availability')
+            return redirect('staff_doctor_list')
     else:
         form = DoctorAvailabilityCreationForm()
         
@@ -742,12 +767,14 @@ def staff_invoice(request):
                 return render(request, 'staff/invoice.html', {'msg':msg, 'invoice_id':invoice_id} )
             
             bills = PatientBills.objects.filter(patient_id=patient_id, is_completed=False).first()
-            print('%%%%%%%%%% bills', bills)
+
             if not bills:
                 return render(request, 'staff/invoice.html', {'form': form, 'error_msg': 'No Bill Exist'})
             if patient.room_id:
                 today = date.today()
-                duration = (today - patient.admission_date).days
+                duration = (today - patient.admission_date).days 
+                if duration == 0:
+                    duration = 1
                 invoice.room_charges = duration * patient.room.price
             else:
                 invoice.room_charges = 0

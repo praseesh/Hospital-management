@@ -62,13 +62,13 @@
         }
         .header {
             background-color: #161b22;
-            padding: 15px 20px;
+            padding: 0px 20px;
             position: fixed;
             width: calc(100% - 200px);
             top: 0;
             left: 200px;
             z-index: 1000;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
             transition: left 0.3s ease-in-out, width 0.3s ease-in-out;
         }
         .header h1 {
@@ -136,7 +136,13 @@
     <div class="main-content">
         <div class="header">
             <button class="menu-toggle" id="menu-toggle">☰</button>
-            <h1>Staff Dashboard</h1>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="mb-4">Staff Dashboard</h1>
+                <form action="{% url 'staff_logout' %}" method="post">
+                    {% csrf_token %}
+                    <button class="btn btn-danger">LogOut</button>
+                </form>
+            </div>
         </div>
         <div class="container content-wrapper">
             <div class="row">

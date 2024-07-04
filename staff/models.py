@@ -30,7 +30,6 @@ class Staff(models.Model):
     role = models.ForeignKey(Roles, on_delete=models.CASCADE, default=1)
     city = models.CharField(max_length=50, blank=False, null=False, default='')
     joined = models.DateField(blank=True, null=True)
-    salary = models.IntegerField()
     contact = models.CharField(max_length=100, blank=True, null=True)
     email = models.CharField(max_length=255, blank=False, null=True, unique=True)
     password = models.CharField(max_length=255, blank=False, null=False, default='')
