@@ -75,32 +75,30 @@
                 <table class="table table-dark table-striped table-hover">
                     <thead>
                         <tr>
-                            <th>ID</th>
+                            <th>Patient Name</th>
+                            <th>Doctor Name</th>
                             <th>Medication</th>
                             <th>Dosage</th>
                             <th>Frequency</th>
                             <th>Duration</th>
                             <th>Instructions</th>
-                            <th>Created By</th>
                             <th>Date Created</th>
-                            <th>Patient Name</th>
-                            <th>Doctor Name</th>
+
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for prescription in prescriptions %}
                             <tr>
-                                <td>{{ prescription.id }}</td>
+                                <td>{{ prescription.patient.firstname|add:" "|add:prescription.patient.lastname }}</td>
+                                <td>{{ prescription.doctor.firstname|add:" "|add:prescription.doctor.lastname }}</td>
                                 <td>{{ prescription.medication }}</td>
                                 <td>{{ prescription.dosage }}</td>
                                 <td>{{ prescription.frequency }}</td>
                                 <td>{{ prescription.duration }}</td>
                                 <td>{{ prescription.instructions }}</td>
-                                <td>{{ prescription.created_by }}</td>
                                 <td>{{ prescription.date_created }}</td>
-                                <td>{{ prescription.patient.firstname|add:" "|add:prescription.patient.lastname }}</td>
-                                <td>{{ prescription.doctor.firstname|add:" "|add:prescription.doctor.lastname }}</td>
+                                
                                 <td>
                                     {% if prescription.id %}
                                         <a href="{% url 'delete_prescription' prescription.id %}" class="btn btn-danger btn-sm delete-btn" data-id="{{ prescription.id }}">Delete</a>

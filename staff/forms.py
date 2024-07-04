@@ -138,16 +138,28 @@ class CreateRoomForm(forms.ModelForm):
         model = Room
         fields = ['room_number','room_type','price' ]
         
-class RoomAssignForm(forms.ModelForm):
-     class Meta:
+class DischargeForm(forms.ModelForm):
+    id = forms.ModelChoiceField(
+        queryset=Patient.objects.filter(is_discharged=False),
+        to_field_name="id",
+        label="Patient",
+        empty_label="Select a patient"
+    )
+
+    class Meta:
         model = Patient
-        fields = ['id']    
+        fields = ['id']
         
 class MedicineBillCreationForm(forms.ModelForm):
 
     class Meta:
         model = PatientBills
         fields = ['patient']
+        
+class RoomAssignForm(forms.ModelForm):
+    class Meta:
+        model = Patient
+        fields = ['id'] 
         
 class AppointmentCreationForm(forms.ModelForm):
     class Meta:

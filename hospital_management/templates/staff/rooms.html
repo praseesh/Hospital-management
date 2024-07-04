@@ -8,51 +8,61 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-            background-color: #1e1e1e;
+            background-color: #0d1117;
             color: #c9d1d9;
-            font-family: Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
             margin: 0;
             padding: 0;
         }
         .container-fluid {
-            background-color: #2d2d2d;
-            border-radius: 10px;
+            background-color: #161b22;
+            border-radius: 6px;
             padding: 20px;
             margin-top: 20px;
         }
         h1 {
-            color: #58a6ff;
+            color: #c9d1d9;
+            border-bottom: 1px solid #30363d;
+            padding-bottom: 0.3em;
         }
         .form-control {
             background-color: #0d1117;
             color: #c9d1d9;
             border: 1px solid #30363d;
         }
-        .btn-success, .btn-primary, .btn-outline-success {
+        .form-control:focus {
+            background-color: #0d1117;
+            color: #c9d1d9;
+            border-color: #58a6ff;
+            box-shadow: 0 0 0 3px rgba(17,88,199,0.4);
+        }
+        .btn {
             color: #ffffff;
+            border: 1px solid rgba(240,246,252,0.1);
         }
         .btn-success {
-            background-color: #2ea043;
-            border-color: #2ea043;
+            background-color: #238636;
+            border-color: #238636;
         }
         .btn-success:hover {
-            background-color: #27963c;
-            border-color: #27963c;
-        }
-        .btn-primary {
-            background-color: #0969da;
-            border-color: #0969da;
-        }
-        .btn-primary:hover {
-            background-color: #065bbd;
-            border-color: #065bbd;
-        }
-        .btn-outline-success {
-            border-color: #2ea043;
-        }
-        .btn-outline-success:hover {
             background-color: #2ea043;
             border-color: #2ea043;
+        }
+        .btn-primary {
+            background-color: #238636;
+            border-color: #238636;
+        }
+        .btn-primary:hover {
+            background-color: #2ea043;
+            border-color: #2ea043;
+        }
+        .btn-outline-success {
+            color: #238636;
+            border-color: #238636;
+        }
+        .btn-outline-success:hover {
+            background-color: #238636;
+            border-color: #238636;
             color: #ffffff;
         }
         .table {
@@ -95,8 +105,7 @@
                             <td>{{ room.price }}</td>
                             {% if room.is_vacant %}
                                 <td>
-                                    <form action="{% url 'assign_patient' room.id %}" method="post">
-                                        {% csrf_token %}
+                                    <form action="{% url 'assign_patient' room.id %}" method="get">
                                         <button class="btn btn-outline-success" type="submit">Assign To Patient</button>
                                     </form>
                                 </td>

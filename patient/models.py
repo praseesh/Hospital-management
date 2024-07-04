@@ -50,6 +50,7 @@ class Patient(models.Model):
     address = models.CharField(max_length=255, blank=True, null=True)
     room = models.ForeignKey(Room, on_delete=models.SET_NULL, null=True, blank=True)
     admission_date = models.DateField(blank=True, null=True)
+    is_discharged = models.BooleanField(default=False)
     checkout_date = models.DateField(blank=True, null=True, default=None)
 
     class Meta:

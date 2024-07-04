@@ -9,7 +9,7 @@ from django.contrib import messages
 from doctor.models import Doctor
 from .models import LabReport, StaffAction, Staff, StaffActionRoles, Invoice, Prescription, ST, SugarTest, CholesterolTest, CT, LiverFunctionTest, LFT, KidneyFunctionTest, KFT, Medicine, PatientBills
 from django.contrib.auth.hashers import check_password
-from .forms import AppointmentCreationForm, DoctorAvailabilityCreationForm, LabReportCreation, InvoiceCreationForm, MedicineBillCreationForm, OTPForm, PrescriptionForm, SugarTestForm, CholesterolTestForm, KidneyTestForm, LiverTestForm, CreateRoomForm
+from .forms import AppointmentCreationForm, DischargeForm, DoctorAvailabilityCreationForm, LabReportCreation, InvoiceCreationForm, MedicineBillCreationForm, OTPForm, PrescriptionForm, SugarTestForm, CholesterolTestForm, KidneyTestForm, LiverTestForm, CreateRoomForm
 from patient.forms import CustomPatientCreationForm, CustomPatientModification, InvoiceForm
 from patient.models import Appointment, DoctorAvailability, Patient, Room
 from .helper import generate_random_string, generate_otp
@@ -23,6 +23,7 @@ from .models import UserOTP
 from django.utils import timezone
 from datetime import date, timedelta
 from django.core.paginator import Paginator
+from django.views.decorators.cache import cache_control
 
 
 
@@ -43,6 +44,8 @@ def staff(request):
         return render(request, 'staff/home.html', {'actions': actions})
     
     return render(request, 'staff/staff_login.html')
+
+
 
 
 def staff_login(request):
@@ -90,7 +93,7 @@ def staff_patient_create(request):
     return render(request,'staff/patient_create.html', {'form':form})
 
 def staff_patient_list(request):
-    patient = Patient.objects.all()
+    patient = Patient.objects.filter(is_discharged=False)
     patient_name = request.GET.get('patient_name')
     if patient_name != '' and patient_name is not None:
         patient = patient.filter(firstname__icontains = patient_name)
@@ -119,7 +122,11 @@ def staff_patient_edit(request, patient_id):
     
     return render(request, 'staff/patient_edit.html', {'form': form})
 
-
+def is_discharged(patient_id=None):
+    patient = Patient.objects.get(id=patient_id,is_discharged=True)
+    if patient:
+        return True
+    return False
 '''______________________________________PRESCRIPTION____________________________________________'''
 
 def staff_prescription_create(request):
@@ -156,7 +163,39 @@ def delete_prescription(request, prescription_id):
 '''______________________________________DISCHARGE____________________________________________'''
 
 def staff_discharge(request):
-    return render(request, 'staff/discharge.html')
+    if request.method == 'POST':
+        form = DischargeForm(request.POST)
+        if form.is_valid():
+            patient_id = form.cleaned_data.get('id').id
+            patient = get_object_or_404(Patient, id=patient_id)
+            if patient.is_discharged is True:
+                return render(request, 'staff/discharge.html', {
+                    'msg': "The requested patient already discharged!", 
+                    'form': form
+                    })
+            patient = Patient.objects.get(id=patient_id)
+            if not patient:
+                msg = "The requested patient does not exist!"
+                return render(request, 'staff/discharge.html', {'msg': msg, 'form': form})
+
+            bills = PatientBills.objects.filter(patient=patient, is_completed=False).first()
+            if bills:
+                msg = "The Patient Bill is NOT PAID!!"
+                return render(request, 'staff/discharge.html', {'msg': msg, 'form': form})
+            room = patient.room
+            if room:
+                room.is_vacant = True
+                room.save()
+            patient.room = None
+            patient.is_discharged = True
+            patient.save()
+            msg = 'Patient Successfully Discharged'
+            return render(request, 'staff/discharge.html', {'msg': msg, 'form': form})
+    else:
+        form = DischargeForm()
+
+    return render(request, 'staff/discharge.html', {'form': form})
+
 
 
 
@@ -175,6 +214,7 @@ def staff_lab_report(request, liver_test_id=None, kidney_test_id=None, sugar_tes
     return render(request, 'staff/lab_report.html',{'form':form})
 
 '''_______________________________________LAB_REPORT_PDF________________________________________________'''
+
 
 def generate_pdf_lab_report(request, report_id):
     lab_report = get_object_or_404(LabReport, id=report_id)
@@ -322,7 +362,7 @@ def create_kidney_test(request):
     if request.method == 'POST':
         form = KidneyTestForm(request.POST)
         patient_id = request.POST.get('patient')
-        print('############',request.POST)
+
         if form.is_valid():
             patient = get_object_or_404(Patient, id=patient_id)
             urea_value = form.cleaned_data.get('urea')
@@ -344,7 +384,7 @@ def create_kidney_test(request):
             )
             new_kidney_test.save()
             bills = PatientBills.objects.filter(patient_id=patient_id, is_completed=False).first()
-            if bills.exists():
+            if bills:
                 bills.lab_report_bill += 935
                 bills.save()
             else:
@@ -380,7 +420,7 @@ def create_cholesterol_test(request):
             )
             new_cholesterol_test.save()
             bills = PatientBills.objects.filter(patient_id=patient_id, is_completed=False).first()
-            if bills.exists():
+            if bills:
                 bills.lab_report_bill += 450
                 bills.save()
             else:
@@ -416,7 +456,7 @@ def create_sugar_test(request):
             )
             new_sugar_test.save()
             bills = PatientBills.objects.filter(patient_id=patient_id, is_completed=False).first()
-            if bills.exists():
+            if bills:
                 bills.lab_report_bill += 175
                 bills.save()
             else:
@@ -456,7 +496,7 @@ def create_liver_test(request):
             )
             new_lft.save()
             bills = PatientBills.objects.filter(patient_id=patient_id, is_completed=False).first()
-            if bills.exists():
+            if bills:
                 bills.lab_report_bill += 670
                 bills.save()
             else:
@@ -483,7 +523,7 @@ def staff_rooms(request):
         rooms = Room.objects.filter(room_number__icontains=room_no) if room_no else Room.objects.all()
         context = {'rooms': rooms, 'room_no': room_no}
         return render(request, 'staff/rooms.html', context)
-
+@cache_control(no_store=True)
 def create_room(request):
     if request.method == 'POST':
         form = CreateRoomForm(request.POST)
@@ -494,7 +534,7 @@ def create_room(request):
         form = CreateRoomForm()
     return render(request, 'staff/create_rooms.html', {'form': form})
 
-
+@cache_control(no_store=True)
 def assign_patient(request,room_id):
     room = get_object_or_404(Room, id=room_id)
     if request.method=="POST":
@@ -503,15 +543,17 @@ def assign_patient(request,room_id):
             error_message = "This room is already occupied."
             return render(request, 'staff/assign_patient.html', {'message': error_message, 'room_id': room_id})
         
-        updated = Patient.objects.filter(id=patient_id).update(room=room_id)
+        patient = Patient.objects.get(id=patient_id)
+        patient.room=room
+        patient.save()
         room_update = Room.objects.filter(id=room_id).update(is_vacant=False)
         bills = PatientBills.objects.filter(patient_id=patient_id, is_completed=False).first()
-        if bills.exists():
-            bills.room = room_id
+        if bills:
+            bills.room = room
             bills.save()
         else:
-            PatientBills.objects.create(patient_id=patient_id,room=room_id)
-        if updated and room_update:
+            PatientBills.objects.create(patient_id=patient_id,room=room)
+        if  room_update:
             return redirect('staff_rooms')
         
         else:
@@ -628,8 +670,9 @@ def appointment(request, doctor_id, date):
     doctor = get_object_or_404(Doctor, id=doctor_id)
     availability = DoctorAvailability.objects.filter(doctor=doctor, date=date, is_available=True)
     
-    if not availability.exists():
-        return redirect('select_date')
+    # if not availability.exists():
+
+    #     return render(request, 'staff/select_doctor.html')
     
     if request.method == 'POST':
         timeslot = request.POST.get('timeslot')
@@ -693,16 +736,18 @@ def staff_invoice(request):
         if form.is_valid():
             invoice = form.save(commit=False)  
             patient = invoice.patient_id
-        
+            patient_id = patient.id
+            print('@@@@@@@@@@@@@@@@@@ patient_id',patient_id)
             old_invoice = Invoice.objects.filter(patient_id=invoice.patient_id, status='pending').first()
             if old_invoice:
                 msg = 'Invoice already Created'
                 invoice_id = old_invoice.id
                 return render(request, 'staff/invoice.html', {'msg':msg, 'invoice_id':invoice_id} )
             
-            bills = PatientBills.objects.get(patient_id=patient.id, is_completed=False)
-            if not bills.exists():
-                return render (request,'staff/invoice.html', {'form': form, 'error_msg':'No Bill Exist'})
+            bills = PatientBills.objects.filter(patient_id=patient_id, is_completed=False).first()
+            print('%%%%%%%%%% bills', bills)
+            if not bills:
+                return render(request, 'staff/invoice.html', {'form': form, 'error_msg': 'No Bill Exist'})
             if patient.room_id:
                 today = date.today()
                 duration = (today - patient.admission_date).days
@@ -710,6 +755,7 @@ def staff_invoice(request):
             else:
                 invoice.room_charges = 0
             invoice.total_amount = invoice.room_charges
+            
             invoice.bill_id = bills
             invoice.total_amount += (bills.medicine_bill or 0) + (bills.lab_report_bill or 0)
 
@@ -787,7 +833,6 @@ def create_order(request, invoice_id):
 @csrf_exempt
 def payment_success(request):
     if request.method == 'POST':
-
         razorpay_payment_id = request.POST.get('razorpay_payment_id')
         razorpay_order_id = request.POST.get('razorpay_order_id')
         razorpay_signature = request.POST.get('razorpay_signature')

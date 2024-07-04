@@ -6,9 +6,6 @@ from django.conf import settings
 
 
 
-import random
-import string
-
 def generate_otp(length=6):
     digits = string.digits
     otp = ''.join(random.choices(digits, k=length))
@@ -26,9 +23,6 @@ def send_otp_email(email, otp):
     except Exception as e:
         print(e)
         return False
-    
-
-
 
 def generate_random_string(length=10):
     letters_and_digits = string.ascii_letters + string.digits
