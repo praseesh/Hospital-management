@@ -43,7 +43,6 @@ def staff(request):
     
     if not staff_id:
         return redirect('staff_login')
-    
     try:
         staff = Staff.objects.get(id=staff_id)
     except Staff.DoesNotExist:
