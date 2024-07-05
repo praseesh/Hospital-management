@@ -28,7 +28,6 @@ from django.views.decorators.cache import never_cache
 from .middleware import NoCacheMiddleware
 from django.utils.decorators import decorator_from_middleware
 
-
 cache_control_no_cache = decorator_from_middleware(NoCacheMiddleware)
 
 # # Apply this decorator to your views
