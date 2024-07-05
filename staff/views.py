@@ -78,6 +78,7 @@ def staff_login(request):
         except Staff.DoesNotExist:
             return render(request, 'staff/staff_login.html', {'msg': 'Invalid Email or Password'})
         
+
         if not check_password(password, staff.password):
             return render(request, 'staff/staff_login.html', {'msg': 'Invalid Email or Password'})
         
