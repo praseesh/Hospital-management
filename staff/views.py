@@ -29,7 +29,6 @@ from .middleware import NoCacheMiddleware
 from django.utils.decorators import decorator_from_middleware
 
 cache_control_no_cache = decorator_from_middleware(NoCacheMiddleware)
-
 # # Apply this decorator to your views
 # from django.shortcuts import render, redirect
 # from .decorators import cache_control_no_cache
