@@ -30,7 +30,7 @@ def admin_login(request):
                 return render(request,'hospital_admins/login.html',{'msg':'Invalid email or password'})
             if check_password(password,admin.password):
                 request.session['admin_email']= email
-                request.session.set_expiry(300)
+                request.session.set_expiry(3000)
                 return redirect('admin_home')
             return render(request,'hospital_admins/login.html',{'msg':'Invalid email or password'})
         except Exception as e:
@@ -39,10 +39,9 @@ def admin_login(request):
     
 def home(request):
     if 'admin_email' in request.session:
-        if request.method == 'GET':
-            return render(request,'hospital_admins/home.html')
-            
         return redirect('admin_home')
+    if request.method == 'GET':
+        return render(request,'hospital_admins/home.html')
     return redirect('login')
 
 def logout(request):

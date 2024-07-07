@@ -6,7 +6,7 @@ from .models import Patient
 class CustomPatientModification(forms.ModelForm):
     class Meta:
         model = Patient
-        fields = ['firstname', 'lastname', 'mobile', 'email', 'dob', 'gender', 'address', 'admission_date', 'checkout_date']
+        fields = ['firstname', 'lastname', 'mobile', 'email', 'gender', 'address', 'admission_date']
         # fields = '__all__'
 GENDER_CHOICES = [
     ('M', 'Male'),
