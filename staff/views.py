@@ -28,7 +28,6 @@ from django.views.decorators.cache import never_cache
 from .middleware import NoCacheMiddleware
 from django.utils.decorators import decorator_from_middleware
 
-
 cache_control_no_cache = decorator_from_middleware(NoCacheMiddleware)
 
 
@@ -40,7 +39,6 @@ def staff(request):
     
     if not staff_id:
         return redirect('staff_login')
-    
     try:
         staff = Staff.objects.get(id=staff_id)
     except Staff.DoesNotExist:
@@ -73,6 +71,7 @@ def staff_login(request):
         except Staff.DoesNotExist:
             return render(request, 'staff/staff_login.html', {'msg': 'Invalid Email or Password'})
         
+
         if not check_password(password, staff.password):
             return render(request, 'staff/staff_login.html', {'msg': 'Invalid Email or Password'})
         
