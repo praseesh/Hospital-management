@@ -3,7 +3,7 @@ import json
 import os
 from django.conf import settings
 from django.core.mail import EmailMessage, send_mail
-from django.http import HttpResponse
+from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from doctor.models import Doctor
@@ -13,7 +13,7 @@ from .forms import AppointmentCreationForm, DischargeForm, DoctorAvailabilityCre
 from patient.forms import CustomPatientCreationForm, CustomPatientModification, InvoiceForm
 from patient.models import Appointment, DoctorAvailability, Patient, Room
 from .helper import generate_random_string, generate_otp
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 import razorpay
 from django.views.decorators.csrf import csrf_exempt
 from .paypal_config import *
@@ -27,9 +27,8 @@ from django.views.decorators.cache import cache_control
 from django.views.decorators.cache import never_cache
 from .middleware import NoCacheMiddleware
 from django.utils.decorators import decorator_from_middleware
-
+from django.views.generic import ListView,CreateView
 cache_control_no_cache = decorator_from_middleware(NoCacheMiddleware)
-
 
 """<__________________________________________STAFF______________________________________________>"""
 
@@ -89,7 +88,7 @@ def logout(request):
 
 def staff_doctor_list(request):
     if 'staff_id' not in request.session:
-        return redirect('staff_login')
+        return redirect('staff_login') 
     doctors = Doctor.objects.all()
     doc_name = request.GET.get('doc_name')
     if doc_name:
@@ -100,19 +99,55 @@ def staff_doctor_list(request):
     page_obj = paginator.get_page(page_number)
     return render(request, 'staff/doctor_list.html', {'doctors':doctors, 'page_obj':page_obj})
 
+
+# class StaffDoctorListView(ListView):
+#     model = Doctor
+#     template_name = 'staff/doctor_list.html'
+#     context_object_name = 'doctors'
+#     paginate_by = 10
+
+#     def get_queryset(self):
+#         queryset = super().get_queryset()
+#         doc_name = self.request.GET.get('doc_name')
+#         if doc_name:
+#             queryset = queryset.filter(firstname__icontains=doc_name)
+#         return queryset
+
+#     def dispatch(self, request, *args, **kwargs):
+#         if 'staff_id' not in request.session:
+#             return redirect('staff_login')
+#         return super().dispatch(request, *args, **kwargs)
+
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         paginator = Paginator(self.get_queryset(), self.paginate_by)
+#         page_number = self.request.GET.get('page')
+#         context['page_obj'] = paginator.get_page(page_number)
+#         return context
+
 '''___________________________________STAFF_PATIENT________________________________________________'''
 
-def staff_patient_create(request):
-    if 'staff_id' not in request.session:
-        return redirect('staff_login')
-    if request.method =='POST':
-        form = CustomPatientCreationForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('staff_patient_list')
-    else:
-        form = CustomPatientCreationForm()
-    return render(request,'staff/patient_create.html', {'form':form})
+# def staff_patient_create(request):
+#     if 'staff_id' not in request.session:
+#         return redirect('staff_login')
+#     if request.method =='POST':
+#         form = CustomPatientCreationForm(request.POST)
+#         if form.is_valid():
+#             form.save()
+#             return redirect('staff_patient_list')
+#     else:
+#         form = CustomPatientCreationForm()
+#     return render(request,'staff/patient_create.html', {'form':form})
+
+class StaffPatientCreateView(CreateView):
+    model = Patient
+    form_class = CustomPatientCreationForm
+    template_name = 'staff/patient_create.html'
+    success_url = reverse_lazy('staff_patient_list')
+    def dispatch(self, request, *args, **kwargs):
+        if 'staff_id' not in request.session:
+            return redirect('staff_login')
+        return super().dispatch(request, *args, **kwargs)
 
 def staff_patient_list(request):
     if 'staff_id' not in request.session:
@@ -768,13 +803,13 @@ def invoice_list(request):
     
 
 def staff_invoice(request):
+    tax_rate = 0.05    # 5%
     if request.method == 'POST':
         form = InvoiceForm(request.POST)
         if form.is_valid():
             invoice = form.save(commit=False)  
             patient = invoice.patient_id
             patient_id = patient.id
-            print('@@@@@@@@@@@@@@@@@@ patient_id',patient_id)
             old_invoice = Invoice.objects.filter(patient_id=invoice.patient_id, status='pending').first()
             if old_invoice:
                 msg = 'Invoice already Created'
@@ -798,6 +833,8 @@ def staff_invoice(request):
             invoice.bill_id = bills
             invoice.total_amount += (bills.medicine_bill or 0) + (bills.lab_report_bill or 0)
 
+            tax = invoice.total_amount + tax_rate
+            invoice.total_amount += tax
             invoice.invoice_no = generate_random_string()
             invoice.date = date.today()
 

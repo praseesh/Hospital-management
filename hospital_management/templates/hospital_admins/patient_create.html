@@ -89,7 +89,7 @@
     </style>
 </head>
 <body>
-    <h1>Create Patient</h1>
+    <h1>Add Patient</h1>
     <form action="{% url 'patient_create' %}" method="post">
         {% csrf_token %}
         {{ form.as_p }}
