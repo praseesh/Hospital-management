@@ -9,12 +9,12 @@ from django.contrib import messages
 from doctor.models import Doctor
 from .models import LabReport, StaffAction, Staff, StaffActionRoles, Invoice, Prescription, ST, SugarTest, CholesterolTest, CT, LiverFunctionTest, LFT, KidneyFunctionTest, KFT, Medicine, PatientBills
 from django.contrib.auth.hashers import check_password
-from .forms import AppointmentCreationForm, DischargeForm, DoctorAvailabilityCreationForm, LabReportCreation, InvoiceCreationForm, MedicineBillCreationForm, OTPForm, PrescriptionForm, SugarTestForm, CholesterolTestForm, KidneyTestForm, LiverTestForm, CreateRoomForm
+from .forms import AppointmentCreationForm, DischargeForm, DoctorAvailabilityCreationForm, LabReportCreation, InvoiceCreationForm, MedicineBillCreationForm, OTPForm, PrescriptionForm, StaffModification, SugarTestForm, CholesterolTestForm, KidneyTestForm, LiverTestForm, CreateRoomForm
 from patient.forms import CustomPatientCreationForm, CustomPatientModification, InvoiceForm
 from patient.models import Appointment, DoctorAvailability, Patient, Room
 from .helper import generate_random_string, generate_otp
 from django.urls import reverse, reverse_lazy
-import razorpay
+import razorpay 
 from django.views.decorators.csrf import csrf_exempt
 from .paypal_config import *
 from reportlab.pdfgen import canvas
@@ -41,9 +41,7 @@ def staff(request):
     try:
         staff = Staff.objects.get(id=staff_id)
     except Staff.DoesNotExist:
-
         return redirect('staff_login')  
-    
     if staff.role_id == 2:
         actions = StaffAction.objects.all()
     else:
@@ -53,10 +51,10 @@ def staff(request):
     if not actions.exists():
         actions = StaffAction.objects.all()
     
-    return render(request, 'staff/home.html', {'actions': actions})
+    return render(request, 'staff/home.html', {'actions': actions,'staff': staff})
 
 
-@cache_control(no_cache=True, must_revalidate=True)
+@cache_control_no_cache
 def staff_login(request):
     if 'staff_id' in request.session:
         return redirect('staff_home')
@@ -79,6 +77,17 @@ def staff_login(request):
     
     return render(request, 'staff/staff_login.html')
 
+def staff_details_edit(request, staff_id):
+    staff = get_object_or_404(Staff, id=staff_id)
+    if request.method == "POST":
+        form = StaffModification(request.POST, instance=staff)
+        if form.is_valid():
+            form.save()
+            return redirect('staff_home') 
+    else:
+        form = StaffModification(instance=staff)
+    return render(request, 'hospital_admins/staff_edit.html', {'form': form})
+
 def logout(request):
     if 'staff_id' in request.session:
         request.session.flush()
@@ -98,32 +107,6 @@ def staff_doctor_list(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     return render(request, 'staff/doctor_list.html', {'doctors':doctors, 'page_obj':page_obj})
-
-
-# class StaffDoctorListView(ListView):
-#     model = Doctor
-#     template_name = 'staff/doctor_list.html'
-#     context_object_name = 'doctors'
-#     paginate_by = 10
-
-#     def get_queryset(self):
-#         queryset = super().get_queryset()
-#         doc_name = self.request.GET.get('doc_name')
-#         if doc_name:
-#             queryset = queryset.filter(firstname__icontains=doc_name)
-#         return queryset
-
-#     def dispatch(self, request, *args, **kwargs):
-#         if 'staff_id' not in request.session:
-#             return redirect('staff_login')
-#         return super().dispatch(request, *args, **kwargs)
-
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         paginator = Paginator(self.get_queryset(), self.paginate_by)
-#         page_number = self.request.GET.get('page')
-#         context['page_obj'] = paginator.get_page(page_number)
-#         return context
 
 '''___________________________________STAFF_PATIENT________________________________________________'''
 
@@ -190,6 +173,7 @@ def is_discharged(patient_id=None):
     if patient:
         return True
     return False
+
 '''______________________________________PRESCRIPTION____________________________________________'''
 
 def staff_prescription_create(request):
@@ -264,36 +248,6 @@ def staff_discharge(request):
 
 '''_______________________________________LAB_REPORT_PDF________________________________________________'''
 
-
-def generate_pdf_lab_report(request, report_id):
-    if 'staff_id' not in request.session:
-        return redirect('staff_login')
-    lab_report = get_object_or_404(LabReport, id=report_id)
-    
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="lab_report_{report_id}.pdf"'
-
-    p = canvas.Canvas(response)
-
-    p.drawString(100, 800, f"Lab Report ID: {lab_report.id}")
-    p.drawString(100, 780, f"Patient: {lab_report.patient}")
-    p.drawString(100, 760, f"Doctor: {lab_report.doctor}")
-    p.drawString(100, 740, f"Result: {lab_report.result}")
-    p.drawString(100, 720, f"Amount: {lab_report.amount}")
-    
-    if lab_report.sugar_test:
-        p.drawString(100, 700, f"Sugar Test: {lab_report.sugar_test}")
-    if lab_report.liver_test:
-        p.drawString(100, 680, f"Liver Function Test: {lab_report.liver_test}")
-    if lab_report.cholesterol_test:
-        p.drawString(100, 660, f"Cholesterol Test: {lab_report.cholesterol_test}")
-    if lab_report.kidney_test:
-        p.drawString(100, 640, f"Kidney Function Test: {lab_report.kidney_test}")
-
-    p.showPage()
-    p.save()
-    
-    return response
 
 def save_pdf_lab_report(lab_report):
     
@@ -785,7 +739,9 @@ def select_doctor(request):
         
     doctor = Doctor.objects.all()
     return render(request, 'staff/select_doctor.html', {'doctor':doctor})
+
 '''______________________________________INVOICE____________________________________________'''
+
 def invoice_list(request):
     if request.method == 'GET':
         invoices = Invoice.objects.all().order_by('id')
@@ -1049,7 +1005,35 @@ def validate_otp(request):
 
 
 
+# def generate_pdf_lab_report(request, report_id):
+#     if 'staff_id' not in request.session:
+#         return redirect('staff_login')
+#     lab_report = get_object_or_404(LabReport, id=report_id)
+    
+#     response = HttpResponse(content_type='application/pdf')
+#     response['Content-Disposition'] = f'attachment; filename="lab_report_{report_id}.pdf"'
 
+#     p = canvas.Canvas(response)
+
+#     p.drawString(100, 800, f"Lab Report ID: {lab_report.id}")
+#     p.drawString(100, 780, f"Patient: {lab_report.patient}")
+#     p.drawString(100, 760, f"Doctor: {lab_report.doctor}")
+#     p.drawString(100, 740, f"Result: {lab_report.result}")
+#     p.drawString(100, 720, f"Amount: {lab_report.amount}")
+    
+#     if lab_report.sugar_test:
+#         p.drawString(100, 700, f"Sugar Test: {lab_report.sugar_test}")
+#     if lab_report.liver_test:
+#         p.drawString(100, 680, f"Liver Function Test: {lab_report.liver_test}")
+#     if lab_report.cholesterol_test:
+#         p.drawString(100, 660, f"Cholesterol Test: {lab_report.cholesterol_test}")
+#     if lab_report.kidney_test:
+#         p.drawString(100, 640, f"Kidney Function Test: {lab_report.kidney_test}")
+
+#     p.showPage()
+#     p.save()
+    
+#     return response 
 
 
 

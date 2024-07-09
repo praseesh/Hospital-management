@@ -31,6 +31,7 @@
         .card-title, .card-text {
             color: #c9d1d9;
         }
+        
         .sidebar {
             position: fixed;
             top: 0;
@@ -128,16 +129,24 @@
 </head>
 <body>
     <div class="sidebar" id="sidebar">
-        <a href="{% url 'staff_home' %}" class="active">Dashboard</a>
-        {% for action in actions %}
-            <a href="{% url action.url_name %}">{{ action.name }}</a>
-        {% endfor %}
+        <div class="sidebar-header">
+            <a href="{% url 'staff_details_edit' staff.id %}" class="staff-name">
+                <h4>{{ staff.firstname }} {{ staff.lastname }}</h4>
+            </a>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="{% url 'staff_home' %}" class="active">Dashboard</a>
+            {% for action in actions %}
+                <a href="{% url action.url_name %}">{{ action.name }}</a>
+            {% endfor %}
+        </nav>
     </div>
     <div class="main-content">
         <div class="header">
             <button class="menu-toggle" id="menu-toggle">☰</button>
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h1 class="mb-4">Staff Dashboard</h1>
+                
                 <form action="{% url 'staff_logout' %}" method="post">
                     {% csrf_token %}
                     <button class="btn btn-danger">LogOut</button>

@@ -27,7 +27,12 @@ class CustomStaffCreation(forms.ModelForm):
 class CustomStaffModification(forms.ModelForm):
     class Meta:
         model = Staff
-        fields = ['firstname', 'lastname','role', 'contact','email'] 
+        fields = ['firstname', 'lastname','role', 'contact','email']
+        
+class StaffModification(forms.ModelForm):
+    class Meta:
+        model = Staff
+        fields = ['firstname', 'lastname', 'contact','email']
         
 class LabReportCreation(forms.ModelForm):
     class Meta:
