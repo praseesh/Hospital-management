@@ -89,6 +89,7 @@
             font-size: 24px;
             cursor: pointer;
         }
+        
         @media (max-width: 768px) {
             .sidebar {
                 transform: translateX(-100%);
@@ -149,7 +150,10 @@
                 
                 <form action="{% url 'staff_logout' %}" method="post">
                     {% csrf_token %}
-                    <button class="btn btn-danger">LogOut</button>
+                    {% comment %} <button class="btn btn-danger">LogOut</button> {% endcomment %}
+                    <button type="submit" class="btn btn-outline-secondary">
+                        <i class="bi bi-box-arrow-in-left"></i> LogOut
+                    </button>
                 </form>
             </div>
         </div>

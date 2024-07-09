@@ -698,6 +698,7 @@ def appointment(request, doctor_id, date):
     if request.method == 'POST':
         timeslot = request.POST.get('timeslot')
         patient_id = request.POST.get('patient_id')
+        patients = Patient.objects.all()
         reason = request.POST.get('reason_for_visit')
         rfv = 'other'
         if reason:
@@ -732,7 +733,8 @@ def appointment(request, doctor_id, date):
     return render(request, 'staff/doctor_availability.html', {
         'doctor': doctor,
         'date': date,
-        'availability': availability
+        'availability': availability,
+        'patients':patients
     })
     
 def select_date(request, doctor_id):
