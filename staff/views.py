@@ -563,30 +563,41 @@ def create_room(request):
     return render(request, 'staff/create_rooms.html', {'form': form})
 
 @cache_control(no_store=True)
-def assign_patient(request,room_id):
+def assign_patient(request, room_id):
     room = get_object_or_404(Room, id=room_id)
-    if request.method=="POST":
+    
+    if request.method == "POST":
         patient_id = request.POST.get('patient_id')
+        try:
+            patient = Patient.objects.get(id=patient_id)
+        except Patient.DoesNotExist:
+            error_message = "Patient does not exist."
+            return render(request, 'staff/assign_patient.html', {'message': error_message, 'room_id': room_id})
+
         if not room.is_vacant:
             error_message = "This room is already occupied."
             return render(request, 'staff/assign_patient.html', {'message': error_message, 'room_id': room_id})
-        
-        patient = Patient.objects.get(id=patient_id)
-        patient.room=room
+
+        patient.room = room
         patient.save()
         room_update = Room.objects.filter(id=room_id).update(is_vacant=False)
+
         bills = PatientBills.objects.filter(patient_id=patient_id, is_completed=False).first()
         if bills:
             bills.room = room
             bills.save()
         else:
-            PatientBills.objects.create(patient_id=patient_id,room=room)
-        if  room_update:
+            PatientBills.objects.create(patient_id=patient_id, room=room)
+
+        if room_update:
             return redirect('staff_rooms')
         else:
-            error_message = "Patient or Room does not exists"
-        return render(request, 'staff/assign_patient.html', {'message': error_message, 'room_id': room_id})
-    return render(request, 'staff/assign_patient.html', {'room_id': room_id})
+            error_message = "Error updating room status."
+            return render(request, 'staff/assign_patient.html', {'message': error_message, 'room_id': room_id})
+
+    else:
+        patients = Patient.objects.all()  # Add this line to fetch all patients for the dropdown
+        return render(request, 'staff/assign_patient.html', {'room_id': room_id, 'patients': patients})
     
 '''______________________________________MEDICINE____________________________________________'''
 
