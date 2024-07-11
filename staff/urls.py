@@ -47,7 +47,6 @@ urlpatterns = [
     path('assign_patient/<int:room_id>/', views.assign_patient, name='assign_patient'),
     
     path('create_medicine_list', views.create_medicine_list, name="create_medicine_list"), 
-    # path('appointment', views.staff_appointment, name="staff_appointment"),
     path('test',views.test, name="test"),
     
     path('send-otp/', views.send_otp_email, name='send_otp'),

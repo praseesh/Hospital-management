@@ -1,20 +1,80 @@
-{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link href="{% static 'css/staff/login.css' %}" rel="stylesheet">
+    <title>Hospital Staff Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #0d1117;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        input {
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .home-button {
+            background-color: #2ecc71;
+            margin-top: 1rem;
+        }
+        .home-button:hover {
+            background-color: #27ae60;
+        }
+        @media (max-width: 480px) {
+            .container {
+                padding: 1rem;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>Welcome to Login Page</h1>
-    <form action="{% url 'staff_login' %}" method="post">
-        {% csrf_token %}
-        <input type="email" placeholder="Email Address" name="email" required>
-        <input type="password" placeholder="Password" name="password" required>
-        <button>Login</button>
-    </form>
-    <button class="button1" onclick="location.href='{% url 'home' %}'">Back to Home</button>
+    <div class="container">
+        <h1>Hospital Staff Login</h1>
+        <form action="{% url 'staff_login' %}" method="post">
+            {% csrf_token %}
+            <input type="email" placeholder="Email Address" name="email" required>
+            <input type="password" placeholder="Password" name="password" required>
+            <button type="submit">Login</button>
+        </form>
+        <button class="home-button" onclick="location.href='{% url 'home' %}'">Back to Home</button>
+    </div>
 </body>
 </html>
