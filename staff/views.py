@@ -28,6 +28,7 @@ from django.views.decorators.cache import never_cache
 from .middleware import NoCacheMiddleware
 from django.utils.decorators import decorator_from_middleware
 from django.views.generic import ListView,CreateView
+
 cache_control_no_cache = decorator_from_middleware(NoCacheMiddleware)
 
 """<__________________________________________STAFF______________________________________________>"""
@@ -690,10 +691,6 @@ def appointment(request, doctor_id, date):
     
     doctor = get_object_or_404(Doctor, id=doctor_id)
     availability = DoctorAvailability.objects.filter(doctor=doctor, date=date, is_available=True)
-    
-    # if not availability.exists():
-
-    #     return render(request, 'staff/select_doctor.html')
     
     if request.method == 'POST':
         timeslot = request.POST.get('timeslot')

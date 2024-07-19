@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Availability</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --container-bg: #161b22;
+            --text-color: #c9d1d9;
+            --border-color: #30363d;
+            --header-color: #58a6ff;
+            --input-bg: #21262d;
+            --button-bg: #238636;
+            --button-hover: #2ea043;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: var(--container-bg);
+            border-radius: 6px;
+            padding: 30px;
+            margin-top: 20px;
+            border: 1px solid var(--border-color);
+            max-width: 600px;
+        }
+
+        h1 {
+            color: var(--header-color);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5em;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .form-control, select {
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            border-radius: 6px;
+            padding: 8px 12px;
+            width: 100%;
+            font-size: 14px;
+        }
+
+        .form-control:focus, select:focus {
+            background-color: var(--input-bg);
+            border-color: var(--header-color);
+            color: var(--text-color);
+            box-shadow: 0 0 0 3px rgba(17,88,199,0.4);
+            outline: none;
+        }
+
+        .btn-primary {
+            background-color: var(--button-bg);
+            border-color: var(--button-bg);
+            color: #ffffff;
+            font-weight: 600;
+            padding: 8px 16px;
+            font-size: 14px;
+            border-radius: 6px;
+            transition: background-color 0.2s;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--button-hover);
+            border-color: var(--button-hover);
+        }
+
+        @media (max-width: 576px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Doctor Availability for {{ doctor.firstname }} {{ doctor.lastname }}</h1>
+        <form method="post" action="{% url 'doctor_availability' doctor.id date %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="timeslot">Select Time Slot:</label>
+                <select class="form-control" id="timeslot" name="timeslot" required>
+                    <option value="">Select a time slot</option>
+                    {% for slot in availability %}
+                        <option value="{{ slot.timeslot }}">Time Slot: {{ slot.timeslot }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="patient">Select Patient:</label>
+                <select class="form-control" id="patient" name="patient_id" required>
+                    <option value="">-- Select a patient --</option>
+                    {% for patient in patients %}
+                        <option value="{{ patient.id }}">{{ patient.firstname }} {{ patient.lastname }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Create Appointment</button>
+        </form>
+    </div>
+</body>
+</html>

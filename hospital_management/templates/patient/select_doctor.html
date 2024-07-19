@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctors Directory</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            background-color: #0d1117;
+            color: #c9d1d9;
+            margin: 0;
+            padding: 20px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 16px;
+            transition: box-shadow 0.3s ease;
+        }
+        .card:hover {
+            box-shadow: 0 8px 24px rgba(140,149,159,0.2);
+        }
+        .card a {
+            color: #58a6ff;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 18px;
+        }
+        .card p {
+            color: #8b949e;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Select a Doctor for Check Availability</h1>
+    <div class="grid">
+        
+        {% for doctor in doctor %}
+        <div class="card">
+            <a href="{% url 'select_date' doctor.pk %}">{{ doctor.firstname }} {{ doctor.lastname }}</a>
+            <p>{{ doctor.specialty }}</p>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>
