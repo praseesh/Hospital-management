@@ -59,20 +59,21 @@
     <div class="container mt-5">
         <div class="row">
             <div class="col-md-6 mb-4">
+                
+                {% if messages %}
+                <h5>{{ messages }}</h5>
+                {% endif %}
+                    
                 <div class="card">
                     <div class="card-body">
                         <h2 class="card-title">Existing Patient</h2>
-                        <form>
+                        <form method="post" action="{% url 'patient_selection' %}">
+                            {% csrf_token %}
                             <div class="form-group">
-                                <label for="patient">Select your name:</label>
-                                <select class="form-control" id="patient" name="patient_id" required>
-                                    <option value="">-- Select a patient --</option>
-                                    {% for patient in patients %}
-                                        <option value="{{ patient.id }}">{{ patient.firstname }} {{ patient.lastname }}</option>
-                                    {% endfor %}
-                                </select>
+                                <label for="patient_email">Select your Email:</label>
+                                <input type="email" name="patient_email" id="patient_email" placeholder="Email Address" class="form-control">
                             </div>
-                            <button type="submit" class="btn btn-primary mt-auto">Select Doctor</button>
+                            <button type="submit" class="btn btn-primary mt-auto">Submit</button>
                         </form>
                     </div>
                 </div>

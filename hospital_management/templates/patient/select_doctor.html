@@ -45,7 +45,7 @@
         
         {% for doctor in doctor %}
         <div class="card">
-            <a href="{% url 'select_date' doctor.pk %}">{{ doctor.firstname }} {{ doctor.lastname }}</a>
+            <a href="{% url 'select_date' patient_id doctor.pk %}">{{ doctor.firstname }} {{ doctor.lastname }}</a>
             <p>{{ doctor.specialty }}</p>
         </div>
         {% endfor %}

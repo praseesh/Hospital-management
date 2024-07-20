@@ -1,3 +1,4 @@
+from django.utils import timezone
 import json
 from django.shortcuts import get_object_or_404, render,redirect
 from django.utils.decorators import decorator_from_middleware
@@ -14,14 +15,17 @@ def home(request):
     return render(request, 'patient/home.html')
 
 def patient_selection(request):
-    patients = Patient.objects.all()
-    patient_name = request.GET.get('patient_name')
-    if patient_name != '' and patient_name is not None:
-        patient = patient.filter(firstname__icontains = patient_name)
-
-def patient_registration(request):
-    patients = Patient.objects.all()
-    return render (request, 'patient/registration.html',{'patients':patients})
+    if request.method == "POST":
+        email = request.POST.get('patient_email')
+        if email:
+            try:
+                patient = Patient.objects.get(email=email)
+                return redirect('select_doctor', patient_id=patient.id)
+            except Patient.DoesNotExist:
+                return render (request, 'patient/patient_selection.html',{'messages':'Patient not found'})
+        else:
+            return render (request, 'patient/patient_selection.html',{'messages':'Email not found'})
+    return render (request, 'patient/patient_selection.html')
     
 
 def patient_create(request):
@@ -34,22 +38,26 @@ def patient_create(request):
         form = CustomPatientCreationForm()
     return render(request,'patient/patient_create.html', {'form':form})
 
-def select_doctor(request):
+def select_doctor(request,patient_id): 
     doctor = Doctor.objects.all()
-    return render(request, 'staff/select_doctor.html', {'doctor':doctor})
+    print("Doctor$$$$$$$$: ",doctor)
+    return render(request, 'patient/select_doctor.html', {'doctor':doctor, 'patient_id':patient_id})
         
-def select_date(request, doctor_id):
+def select_date(request, patient_id, doctor_id):
     doctor = get_object_or_404(Doctor, id=doctor_id)
-    availability = DoctorAvailability.objects.filter(doctor=doctor).values('date', 'timeslot')
-
+    today = timezone.now().date()
+    availability = DoctorAvailability.objects.filter(doctor=doctor, date__gte=today).values('date', 'timeslot')
+    
     available_dates = list(availability.values_list('date', flat=True).distinct())
     available_dates_json = json.dumps([str(date) for date in available_dates])
-    return render(request, 'staff/select_date.html', {'doctor': doctor, 'available_dates_json': available_dates_json})
-
-def appointment(request, doctor_id, date):
-    if request.method == 'GET':
-        print(doctor_id, date)
     
+    return render(request, 'staff/select_date.html', {
+        'doctor': doctor,
+        'available_dates_json': available_dates_json,
+        'patient_id': patient_id
+    })
+    
+def appointment(request, doctor_id, date,patient_id):    
     doctor = get_object_or_404(Doctor, id=doctor_id)
     availability = DoctorAvailability.objects.filter(doctor=doctor, date=date, is_available=True)
     
