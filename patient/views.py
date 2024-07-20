@@ -22,25 +22,26 @@ def patient_selection(request):
                 patient = Patient.objects.get(email=email)
                 return redirect('select_doctor', patient_id=patient.id)
             except Patient.DoesNotExist:
-                return render (request, 'patient/patient_selection.html',{'messages':'Patient not found'})
+                messages.error(request, 'Patient not found')
+                return render(request, 'patient/patient_selection.html')
         else:
-            return render (request, 'patient/patient_selection.html',{'messages':'Email not found'})
-    return render (request, 'patient/patient_selection.html')
-    
+            messages.error(request, 'Email not provided')
+            return render(request, 'patient/patient_selection.html')
+    return render(request, 'patient/patient_selection.html')
 
 def patient_create(request):
-    if request.method =='POST':
+    if request.method == 'POST':
         form = CustomPatientCreationForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect('staff_patient_list')
+            patient = form.save()
+            return redirect('select_doctor', patient_id=patient.id)
     else:
         form = CustomPatientCreationForm()
-    return render(request,'patient/patient_create.html', {'form':form})
+    return render(request, 'patient/patient_create.html', {'form': form})
+
 
 def select_doctor(request,patient_id): 
     doctor = Doctor.objects.all()
-    print("Doctor$$$$$$$$: ",doctor)
     return render(request, 'patient/select_doctor.html', {'doctor':doctor, 'patient_id':patient_id})
         
 def select_date(request, patient_id, doctor_id):
@@ -51,7 +52,7 @@ def select_date(request, patient_id, doctor_id):
     available_dates = list(availability.values_list('date', flat=True).distinct())
     available_dates_json = json.dumps([str(date) for date in available_dates])
     
-    return render(request, 'staff/select_date.html', {
+    return render(request, 'patient/select_date.html', {
         'doctor': doctor,
         'available_dates_json': available_dates_json,
         'patient_id': patient_id
@@ -63,19 +64,15 @@ def appointment(request, doctor_id, date,patient_id):
     
     if request.method == 'POST':
         timeslot = request.POST.get('timeslot')
-        patient_id = request.POST.get('patient_id')
-        patients = Patient.objects.all()
         reason = request.POST.get('reason_for_visit')
         rfv = 'other'
         if reason:
            rfv =reason 
         if timeslot and patient_id:
             try:
-
                 make_false = availability.get(timeslot=timeslot)
                 make_false.is_available = False
                 make_false.save()  
-
                 appointment = Appointment(
                     appointment_id=generate_random_string(),
                     patient_id=patient_id,
@@ -84,21 +81,17 @@ def appointment(request, doctor_id, date,patient_id):
                     timeslot=timeslot,
                     reason_for_visit=rfv
                 )
-                
                 appointment.save()
-                
                 messages.success(request, "Appointment created successfully!")
                 return redirect('home')
             except DoctorAvailability.DoesNotExist:
                 messages.error(request, "The selected time slot is not available.")
         else:
             messages.error(request, "Please provide all the required details.")
-    else:
-        messages.error(request, "Invalid request method.")
-    
-    return render(request, 'staff/doctor_availability.html', {
+   
+    return render(request, 'patient/doctor_availability.html', {
         'doctor': doctor,
         'date': date,
         'availability': availability,
-        'patients':patients
+        'patient_id':patient_id
     })

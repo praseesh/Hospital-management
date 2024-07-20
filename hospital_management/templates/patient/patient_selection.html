@@ -54,16 +54,53 @@
             margin-top: 15rem !important;
         }
     </style>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Toastr CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+
+<!-- Toastr JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<script>
+    toastr.options = {
+        "closeButton": true,
+        "debug": false,
+        "newestOnTop": false,
+        "progressBar": true,
+        "positionClass": "toast-top-right",
+        "preventDuplicates": false,
+        "onclick": null,
+        "showDuration": "300",
+        "hideDuration": "1000",
+        "timeOut": "5000",
+        "extendedTimeOut": "1000",
+        "showEasing": "swing",
+        "hideEasing": "linear",
+        "showMethod": "fadeIn",
+        "hideMethod": "fadeOut"
+    }
+</script>
 </head>
 <body>
     <div class="container mt-5">
+        {% if messages %}
+<script>
+    {% for message in messages %}
+        {% if message.tags == 'success' %}
+            toastr.success('{{ message }}')
+        {% elif message.tags == 'info' %}
+            toastr.info('{{ message }}')
+        {% elif message.tags == 'warning' %}
+            toastr.warning('{{ message }}')
+        {% elif message.tags == 'error' %}
+            toastr.error('{{ message }}')
+        {% endif %}
+    {% endfor %}
+</script>
+{% endif %}
         <div class="row">
             <div class="col-md-6 mb-4">
-                
-                {% if messages %}
-                <h5>{{ messages }}</h5>
-                {% endif %}
-                    
                 <div class="card">
                     <div class="card-body">
                         <h2 class="card-title">Existing Patient</h2>
@@ -89,7 +126,6 @@
             </div>
         </div>
     </div>
-
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
