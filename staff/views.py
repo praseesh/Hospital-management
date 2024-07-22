@@ -730,7 +730,7 @@ def appointment(request, doctor_id, date):
                 
                 appointment.save()
                 
-                messages.success(request, "Appointment created successfully!")
+                messages.success(request, "Your Appointment created successfully!")
                 return redirect('staff_home')
             except DoctorAvailability.DoesNotExist:
                 messages.error(request, "The selected time slot is not available.")
