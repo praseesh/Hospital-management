@@ -56,6 +56,13 @@ def logout(request):
 def doctor_create(request):
     if request.method == 'POST':
         form = DoctorCreationForm(request.POST)
+        
+        #email extract
+        #check that email existing on staff 
+        # get staff by email
+        # if staff object not none then give error message
+        # if that give error message like can't use this email
+        
         if form.is_valid():
             form.save()
             return redirect('doctor_list')

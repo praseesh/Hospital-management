@@ -198,3 +198,33 @@ class DoctorAvailabilityCreationForm(forms.ModelForm):
         if commit:
             instance.save()
         return instance
+    
+    
+    
+class DoctorAvailabilityCreationForm2(forms.ModelForm):
+    class Meta:
+        model = DoctorAvailability
+        fields = ['date', 'timeslot']
+        widgets = {
+            'date': forms.DateInput(attrs={'type': 'date'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['timeslot'].choices = Appointment.TIMESLOT_LIST
+
+    def clean_timeslot(self):
+        timeslot_key = self.cleaned_data['timeslot']
+        timeslot_dict = dict(Appointment.TIMESLOT_LIST)
+        timeslot_key=timeslot_key
+        if timeslot_key in timeslot_dict.keys():
+            return timeslot_dict[timeslot_key]
+        else:
+            raise forms.ValidationError("Invalid timeslot selection.")
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        instance.timeslot = self.cleaned_data['timeslot']
+        if commit:
+            instance.save()
+        return instance
