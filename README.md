@@ -38,3 +38,4 @@ The Hospital Management System is a comprehensive web-based application designed
 - **Backend**: Python, Django
 - **Frontend**: HTML, CSS, JavaScript
 - **Database**: PostgreSQL
+- **Payment Gateway** : Paypal, Razorpay
