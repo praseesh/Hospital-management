@@ -61,33 +61,26 @@ def staff_login(request):
         return redirect('staff_home')
     if 'doctor_id' in request.session:
         return redirect('doctor_home')
-    
     if request.method == "POST":
         email = request.POST.get('email')
         password = request.POST.get('password')
-        print('########',email, password)
-        
         try:
             staff = Staff.objects.get(email=email)
             if check_password(password, staff.password):
                 request.session['staff_id'] = staff.id
                 return redirect('staff_home')
             else:
-                return render(request, 'staff/staff_login.html', {'msg': 'Invalid Staff Email or Password'})
+                messages.error(request, 'Invalid Staff Email or Password')
         except Staff.DoesNotExist:
             try:
                 doctor = Doctor.objects.get(email=email)
-                print ("@@@@@@",doctor)
-                print( "^^^^^^^^^^^^^^^^",password,doctor.password)
                 if check_password(password, doctor.password):
-                    print('$$$$$')
                     request.session['doctor_id'] = doctor.id
                     return redirect('doctor_home')
                 else:
-                    return render(request, 'staff/staff_login.html', {'msg': 'Invalid Doctor Email or Password'})
+                    messages.error(request, 'Invalid Doctor Email or Password')
             except Doctor.DoesNotExist:
-                return render(request, 'staff/staff_login.html', {'msg': 'Invalid Email or Password'})
-                
+                messages.error(request, 'Invalid Email or Password') 
     return render(request, 'staff/staff_login.html')
 
 def staff_details_edit(request, staff_id):

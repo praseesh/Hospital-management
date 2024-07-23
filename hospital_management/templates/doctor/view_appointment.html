@@ -6,57 +6,103 @@
     <title>Appointments</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <style>
+        :root {
+            --bg-color: #0d1117;
+            --text-color: #c9d1d9;
+            --header-bg: #161b22;
+            --table-border: #30363d;
+            --table-header: #238636;
+            --table-hover: #161b22;
+        }
         body {
-            background-color: #f8f9fa;
-            color: #343a40;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
         }
         .container {
             margin-top: 20px;
         }
         .table {
-            background-color: #ffffff;
+            background-color: var(--header-bg);
             border-radius: 6px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            color: var(--text-color);
         }
         .table th, .table td {
-            text-align: center;
+            text-align: left;
             vertical-align: middle;
+            border-color: var(--table-border);
         }
         .table thead th {
-            background-color: #007bff;
+            background-color: var(--table-header);
             color: #ffffff;
+            border-color: var(--table-border);
+        }
+            
+        h1 {
+            color: var(--text-color);
+        }
+        @media (max-width: 768px) {
+            .table-responsive {
+                border: none;
+            }
+            .table thead {
+                display: none;
+            }
+            .table, .table tbody, .table tr, .table td {
+                display: block;
+                width: 100%;
+            }
+            .table tr {
+                margin-bottom: 15px;
+            }
+            .table td {
+                text-align: right;
+                padding-left: 50%;
+                position: relative;
+            }
+            .table td::before {
+                content: attr(data-label);
+                position: absolute;
+                left: 6px;
+                width: 45%;
+                padding-right: 10px;
+                white-space: nowrap;
+                text-align: left;
+                font-weight: bold;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1 class="text-center">Appointments</h1>
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Appointment ID</th>
-                    <th>Patient Name</th>
-                    <th>Doctor Name</th>
-                    <th>Appointment Date</th>
-                    <th>Appointment Time</th>
-                    <th>Reason for visit</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for appointment in appointments %}
-                <tr>
-                    <td>{{ appointment.appointment_id }}</td>
-                    <td>{{ appointment.patient.firstname }} {{ appointment.patient.lastname }}</td>
-                    <td>{{ appointment.doctor.firstname }} {{ appointment.doctor.lastname }}</td>
-                    <td>{{ date }}</td>
-                    <td> {{ appointment.timeslot }} </td>
-                    <td> {{ appointment.reason_for_visit }} </td>
-
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <h1 class="text-center mb-4">Appointments</h1>
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th>Appointment ID</th>
+                        <th>Patient Name</th>
+                        <th>Doctor Name</th>
+                        <th>Appointment Date</th>
+                        <th>Appointment Time</th>
+                        <th>Reason for visit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for appointment in appointments %}
+                    <tr>
+                        <td data-label="Appointment ID">{{ appointment.appointment_id }}</td>
+                        <td data-label="Patient Name">{{ appointment.patient.firstname }} {{ appointment.patient.lastname }}</td>
+                        <td data-label="Doctor Name">{{ appointment.doctor.firstname }} {{ appointment.doctor.lastname }}</td>
+                        <td data-label="Appointment Date">{{ date }}</td>
+                        <td data-label="Appointment Time">{{ appointment.timeslot }}</td>
+                        <td data-label="Reason for visit">{{ appointment.reason_for_visit }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 </body>
 </html>
