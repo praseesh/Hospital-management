@@ -33,6 +33,19 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
         }
     </style>
+    <script>
+        function DisableBackButton() {
+            window.history.forward();
+        }
+        window.onload = function() {
+            DisableBackButton();
+            window.onpageshow = function(evt) {
+                if (evt.persisted) {
+                    DisableBackButton();
+                }
+            }
+        }
+    </script>
 </head>
 <body>
     <div class="container">

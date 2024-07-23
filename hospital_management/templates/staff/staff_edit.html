@@ -88,7 +88,21 @@
             display: block;
             margin-bottom: 5px;
         }
+        
     </style>
+    <script>
+        function DisableBackButton() {
+            window.history.forward();
+        }
+        window.onload = function() {
+            DisableBackButton();
+            window.onpageshow = function(evt) {
+                if (evt.persisted) {
+                    DisableBackButton();
+                }
+            }
+        }
+    </script>
 </head>
 <body>
     <h1>Edit {{ form.instance.firstname }} {{ form.instance.lastname }}</h1>

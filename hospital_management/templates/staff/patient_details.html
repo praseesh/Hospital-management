@@ -121,6 +121,17 @@
                 window.location.href = "{% url 'staff_patient_delete' patient_id=patient.id %}";
             }
         }
+        function DisableBackButton() {
+            window.history.forward();
+        }
+        window.onload = function() {
+            DisableBackButton();
+            window.onpageshow = function(evt) {
+                if (evt.persisted) {
+                    DisableBackButton();
+                }
+            }
+        }
     </script>
 </body>
 </html>

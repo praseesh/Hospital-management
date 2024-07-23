@@ -95,6 +95,19 @@
             }
         }
     </style>
+    <script>
+        function DisableBackButton() {
+            window.history.forward();
+        }
+        window.onload = function() {
+            DisableBackButton();
+            window.onpageshow = function(evt) {
+                if (evt.persisted) {
+                    DisableBackButton();
+                }
+            }
+        }
+    </script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <!-- Toastr CSS -->
@@ -154,5 +167,6 @@
         {% endfor %}
     </script>
     {% endif %}
+    
 </body>
 </html>
