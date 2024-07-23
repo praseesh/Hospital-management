@@ -11,8 +11,8 @@ from patient.forms import CustomPatientModification,CustomPatientCreationForm
 
 
 def admin_login(request):
-    if 'admin_email' in request.session:
-        return redirect('admin_home')
+    if 'admin_email' not in request.session:
+        return redirect('login')
         
     if request.method == 'POST':
         email = request.POST.get('email')
@@ -38,8 +38,8 @@ def admin_login(request):
     return render(request,'hospital_admins/login.html')
     
 def home(request):
-    if 'admin_email' in request.session:
-        return redirect('admin_home')
+    if 'admin_email' not in request.session:
+        return redirect('login')
     if request.method == 'GET':
         return render(request,'hospital_admins/home.html')
     return redirect('login')
