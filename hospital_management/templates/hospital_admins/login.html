@@ -64,6 +64,19 @@
             }
         }
     </style>
+    <script>
+        function DisableBackButton() {
+            window.history.forward();
+        }
+        window.onload = function() {
+            DisableBackButton();
+            window.onpageshow = function(evt) {
+                if (evt.persisted) {
+                    DisableBackButton();
+                }
+            }
+        }
+    </script>
 </head>
 <body>
     <div class="container d-flex justify-content-center align-items-center min-vh-100">

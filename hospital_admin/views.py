@@ -11,47 +11,42 @@ from patient.forms import CustomPatientModification,CustomPatientCreationForm
 
 
 def admin_login(request):
-    if 'admin_email' not in request.session:
-        return redirect('login')
-        
+    if 'admin_email' in request.session:
+        return redirect('admin_home') 
+
     if request.method == 'POST':
         email = request.POST.get('email')
         password = request.POST.get('password')
-        # name = 'Praseesh'
-        # admin = Admin(
-        #     name=name,
-        #     email=email,
-        #     password= make_password(password)
-        # )
-        # admin.save()
         try:
             admin = Admin.objects.get(email=email)
-            if admin is None or admin is '':
-                return render(request,'hospital_admins/login.html',{'msg':'Invalid email or password'})
-            if check_password(password,admin.password):
-                request.session['admin_email']= email
+            if check_password(password, admin.password):
+                request.session['admin_email'] = email
                 request.session.set_expiry(3000)
-                return redirect('admin_home')
-            return render(request,'hospital_admins/login.html',{'msg':'Invalid email or password'})
+                return redirect('admin_home') 
+            else:
+                return render(request, 'hospital_admins/login.html', {'msg': 'Invalid email or password'})
+        except Admin.DoesNotExist:
+            return render(request, 'hospital_admins/login.html', {'msg': 'Invalid email or password'})
         except Exception as e:
-            return render(request,'hospital_admins/login.html',{'msg':e})
-    return render(request,'hospital_admins/login.html')
+            return render(request, 'hospital_admins/login.html', {'msg': str(e)})
+    return render(request, 'hospital_admins/login.html')
+
     
 def home(request):
     if 'admin_email' not in request.session:
         return redirect('login')
+
     if request.method == 'GET':
-        return render(request,'hospital_admins/home.html')
+        return render(request, 'hospital_admins/home.html')
+    
     return redirect('login')
 
 def logout(request):
-    if request.method == 'POST':
-        if 'admin_email' in request.session:
-            request.session.flush()
-            return redirect('login')
+    if 'admin_email' in request.session:
+        request.session.flush()
     return redirect('login')
 
-#  <---------------------------------------------DOCTOR SECTION---------------------------------------------->
+"""#  <----------------------------------D O C T O R   S E C T I O N--------------------------------------->"""
 
 def doctor_create(request):
     if request.method == 'POST':

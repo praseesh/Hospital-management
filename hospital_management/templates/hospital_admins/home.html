@@ -71,6 +71,19 @@
             background-color: var(--bg-color);
         }
     </style>
+    <script>
+        function DisableBackButton() {
+            window.history.forward();
+        }
+        window.onload = function() {
+            DisableBackButton();
+            window.onpageshow = function(evt) {
+                if (evt.persisted) {
+                    DisableBackButton();
+                }
+            }
+        }
+    </script>
 </head>
 <body>
     <div class="sidebar">
