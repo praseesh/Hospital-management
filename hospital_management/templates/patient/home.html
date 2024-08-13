@@ -3,193 +3,305 @@
 <html lang="en-US" dir="ltr">
   <head>
     <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>WeCare | Innovative Healthcare Solutions</title>
+    <title>WeCare | Your Health, Our Priority</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/patient/img/WeCareLogo.png' %}">
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Animate.css for animations -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <!-- Custom CSS -->
     <style>
       :root {
-        --primary-color: #00c2ff;
-        --secondary-color: #ff00a8;
-        --text-color: #333;
-        --bg-color: #f0f4f8;
+        --bg-color: #0d1117;
+        --text-color: #c9d1d9;
+        --link-color: #58a6ff;
+        --border-color: #30363d;
+        --button-bg: #238636;
+        --button-text: #ffffff;
+        --accent-color: #bf91f3;
       }
       body {
-        font-family: 'Montserrat', sans-serif;
         background-color: var(--bg-color);
         color: var(--text-color);
+        font-family: 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+        line-height: 1.6;
       }
       .navbar {
-        background-color: rgba(255,255,255,0.95);
-        backdrop-filter: blur(10px);
+        background-color: rgba(13, 17, 23, 0.8) !important;
+        {% comment %} backdrop-filter: blur(10px); {% endcomment %}
+        transition: all 0.3s ease;
       }
-      .navbar-brand {
-        font-weight: 700;
-        color: var(--primary-color) !important;
+      .navbar-brand img {
+        transition: all 0.3s ease;
       }
-      .nav-link {
-        font-weight: 600;
-        color: var(--text-color) !important;
+      .navbar-brand img:hover {
+        transform: scale(1.1);
+      }
+      .navbar-light .navbar-nav .nav-link {
+        color: var(--text-color);
         transition: color 0.3s ease;
       }
-      .nav-link:hover {
-        color: var(--primary-color) !important;
+      .navbar-light .navbar-nav .nav-link:hover {
+        color: var(--accent-color);
       }
-      .hero-section {
-        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        position: relative;
+      .btn {
+        transition: all 0.3s ease;
+      }
+      .btn-outline-primary {
+        color: var(--link-color);
+        border-color: var(--link-color);
+      }
+      .btn-outline-primary:hover {
+        background-color: var(--link-color);
+        color: var(--bg-color);
+      }
+      .btn-primary {
+        background-color: var(--button-bg);
+        border-color: var(--button-bg);
+        color: var(--button-text);
+      }
+      .btn-primary:hover {
+        background-color: #2ea043;
+        border-color: #2ea043;
+      }
+      h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5, h6, .h6 {
+        color: #e6edf3;
+      }
+      a {
+        color: var(--link-color);
+        transition: color 0.3s ease;
+      }
+      a:hover {
+        color: var(--accent-color);
+      }
+      .hero-image {
+        width: 100%;
+        max-width: 500px;
+        aspect-ratio: 1;
+        border-radius: 50%;
         overflow: hidden;
+        margin: 0 auto;
+        box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+        transition: all 0.5s ease;
       }
-      .hero-content {
-        position: relative;
-        z-index: 2;
+      .hero-image:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 40px rgba(91, 166, 255, 0.4);
       }
-      .hero-bg {
-        position: absolute;
-        top: 0;
-        left: 0;
+      .hero-image img {
         width: 100%;
         height: 100%;
-        background-image: url('https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
-        background-size: cover;
-        background-position: center;
-        opacity: 0.1;
+        object-fit: cover;
+        transition: all 0.5s ease;
       }
-      .hero-title {
-        font-size: 4rem;
-        font-weight: 700;
-        color: white;
-        margin-bottom: 1rem;
+      .hero-image:hover img {
+        transform: scale(1.1);
       }
-      .hero-subtitle {
-        font-size: 1.5rem;
-        color: rgba(255,255,255,0.8);
-        margin-bottom: 2rem;
-      }
-      .btn-custom {
-        background-color: white;
-        color: var(--primary-color);
-        border: none;
-        padding: 12px 30px;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        border-radius: 50px;
-      }
-      .btn-custom:hover {
-        background-color: var(--secondary-color);
-        color: white;
-        transform: translateY(-3px);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-      }
-      .feature-card {
-        background-color: white;
-        border-radius: 20px;
-        padding: 30px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        transition: all 0.3s ease;
+      .hero-content {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
         height: 100%;
       }
-      .feature-card:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-      }
       .feature-icon {
-        font-size: 3rem;
-        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        margin-bottom: 20px;
+        font-size: 2rem;
+        color: var(--accent-color);
+        margin-bottom: 1rem;
       }
-      .section-title {
-        font-size: 2.5rem;
-        font-weight: 700;
-        margin-bottom: 3rem;
-        text-align: center;
-        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
+      body {
+        padding-top: 80px; /* Adjust this value based on your navbar height */
       }
+      .hero-section {
+        min-height: calc(100vh - 80px); /* Subtract the navbar height */
+        display: flex;
+        align-items: center;
+      }
+      .card {
+        background-color: var(--bg-color);
+        border: 1px solid var(--border-color);
+      }
+    
+      .card-body {
+        color: #e6edf3; /* Light color for better contrast against dark background */
+      }
+    
+      .card-title {
+        color: var(--accent-color); /* Use accent color for titles */
+      }
+    
+      .card-text {
+        color: #8b949e; /* Darker shade for the description text */
+      }
+    
+      .feature-icon {
+        font-size: 2rem;
+        color: var(--accent-color);
+        margin-bottom: 1rem;
+      }
+      @media (max-width: 991.98px) {
+        body {
+          padding-top: 60px; /* Slightly smaller padding for mobile */
+        }
+    
+        .hero-section {
+          min-height: calc(100vh - 60px);
+        }
+    
+        .hero-content, .hero-image {
+          text-align: center;
+          margin-bottom: 2rem;
+        }
+      }
+    
+      @media (max-width: 767.98px) {
+        .hero-section {
+          padding-top: 2rem; /* Additional top padding for very small screens */
+        }
+      }    
+      
     </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Toastr CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <!-- Toastr JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script>
+        toastr.options = {
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": false,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        }
+    </script>
   </head>
   <body>
-    <nav class="navbar navbar-expand-lg fixed-top">
-      <div class="container">
-        <a class="navbar-brand" href="#">WeCare</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav ms-auto">
-            <li class="nav-item">
-              <a class="nav-link" href="#home">Home</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#services">Services</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'staff_login' %}">Staff Login</a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
-
-    <section class="hero-section" id="home">
-      <div class="hero-bg"></div>
-      <div class="container hero-content">
-        <div class="row align-items-center">
-          <div class="col-lg-8 col-md-10 mx-auto text-center">
-            <h1 class="hero-title">Revolutionary Healthcare at Your Fingertips</h1>
-            <p class="hero-subtitle">Experience the future of medicine with our cutting-edge services and expert care.</p>
-            <a href="{% url 'patient_selection' %}" class="btn btn-custom btn-lg">Start Your Journey to Better Health</a>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="py-5" id="services">
-      <div class="container">
-        <h2 class="section-title">Our Innovative Services</h2>
-        <div class="row">
-          <div class="col-md-4 mb-4">
-            <div class="feature-card">
-              <i class="fas fa-user-md feature-icon"></i>
-              <h3>AI-Powered Diagnostics</h3>
-              <p>Leverage the power of artificial intelligence for faster, more accurate diagnoses and personalized treatment plans.</p>
+    <main class="main" id="top">
+        <nav class="navbar navbar-expand-lg navbar-light fixed-top py-3">
+            <div class="container">
+                <a class="navbar-brand" href="#">
+                  <img src="{% static 'images/patient/img/WeCareLogo.png' %}" width="60" height="60" alt="logo" class="d-inline-block align-top" />
+                  <span class="ms-2 fw-bold text-white">WeCare</span>
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                  <ul class="navbar-nav ms-auto">
+                    {% comment %} <li class="nav-item">
+                      <a class="nav-link" href="#home">Home</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="#services">Services</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="#about">About Us</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="#contact">Contact</a>
+                    </li> {% endcomment %}
+                  </ul>
+                  <a class="btn btn-lg btn-outline-primary fw-bold rounded-pill ms-3" href="{% url 'staff_login' %}">Staff Login</a>
+                </div>
             </div>
-          </div>
-          <div class="col-md-4 mb-4">
-            <div class="feature-card">
-              <i class="fas fa-heartbeat feature-icon"></i>
-              <h3>24/7 Remote Monitoring</h3>
-              <p>Stay connected with our medical team around the clock through advanced wearable technology and real-time data analysis.</p>
+        </nav>
+      <section class="py-5" id="home">
+        <div class="container">
+          <div class="row min-vh-100 align-items-center">
+            <div class="col-lg-6 order-lg-1 hero-content animate__animated animate__fadeInLeft">
+              <h1 class="display-4 fw-bold mb-4">We're determined for your better life.</h1>
+              <p class="lead mb-4">Experience 24/7 care – online or in-person. Our caring specialist doctors are here to provide the treatment you need, when you need it.</p>
+              <a class="btn btn-lg btn-primary rounded-pill animate__animated animate__pulse animate__infinite" href="{% url 'patient_selection' %}" role="button">
+                <i class="fas fa-calendar-check me-2"></i>Make an Appointment
+              </a>
             </div>
-          </div>
-          <div class="col-md-4 mb-4">
-            <div class="feature-card">
-              <i class="fas fa-laptop-medical feature-icon"></i>
-              <h3>Virtual Reality Therapy</h3>
-              <p>Experience groundbreaking treatments using immersive VR technology, revolutionizing mental health care and pain management.</p>
+            <div class="col-lg-6 order-lg-2 animate__animated animate__fadeInRight">
+              <div class="hero-image">
+                <img src="{% static 'images/patient/img/bg-modified.png' %}" alt="hero-header" />
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </section>
-
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+      </section>
+      
+      <section class="py-5 bg-color" id="services">
+        <div class="container">
+          <h2 class="text-center mb-5">Our Services</h2>
+          <div class="row">
+            <div class="col-md-4 mb-4">
+              <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                  <i class="fas fa-user-md feature-icon"></i>
+                  <h5 class="card-title">Expert Consultations</h5>
+                  <p class="card-text">Get professional advice from our team of specialists.</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 mb-4">
+              <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                  <i class="fas fa-heartbeat feature-icon"></i>
+                  <h5 class="card-title">24/7 Emergency Care</h5>
+                  <p class="card-text">Round-the-clock emergency services for your peace of mind.</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 mb-4">
+              <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                  <i class="fas fa-laptop-medical feature-icon"></i>
+                  <h5 class="card-title">Telemedicine</h5>
+                  <p class="card-text">Convenient online consultations from the comfort of your home.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+    {% if messages %}
     <script>
-      $(window).scroll(function() {
-        if ($(this).scrollTop() > 50) {
-          $('.navbar').addClass('scrolled');
-        } else {
-          $('.navbar').removeClass('scrolled');
-        }
-      });
+        {% for message in messages %}
+            {% if message.tags == 'success' %}
+                toastr.success('{{ message }}')
+            {% elif message.tags == 'info' %}
+                toastr.info('{{ message }}')
+            {% elif message.tags == 'warning' %}
+                toastr.warning('{{ message }}')
+            {% elif message.tags == 'error' %}
+                toastr.error('{{ message }}')
+            {% endif %}
+        {% endfor %}
     </script>
+    {% endif %}
+    <script>
+      function DisableBackButton() {
+          window.history.forward();
+      }
+      window.onload = function() {
+          DisableBackButton();
+          window.onpageshow = function(evt) {
+              if (evt.persisted) {
+                  DisableBackButton();
+              }
+          }
+      }
+    </script>
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>
