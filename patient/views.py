@@ -10,7 +10,7 @@ from staff.middleware import NoCacheMiddleware
 cache_control_no_cache = decorator_from_middleware(NoCacheMiddleware)
 from doctor.models import Doctor
 
-@cache_control_no_cache
+# @cache_control_no_cache
 def home(request):
     return render(request, 'patient/home.html')
 
