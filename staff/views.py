@@ -199,8 +199,6 @@ def delete_prescription(request, prescription_id):
     prescription.delete()
     return redirect('staff_prescription')
     
-
-
 '''______________________________________DISCHARGE____________________________________________'''
 
 def staff_discharge(request):
