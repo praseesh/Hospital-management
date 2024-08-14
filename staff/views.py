@@ -100,7 +100,6 @@ def logout(request):
     return redirect('staff_login')
 '''___________________________________STAFF_DOCTOR________________________________________________'''
 
-
 def staff_doctor_list(request):
     if 'staff_id' not in request.session:
         return redirect('staff_login') 
@@ -116,17 +115,6 @@ def staff_doctor_list(request):
 
 '''___________________________________STAFF_PATIENT________________________________________________'''
 
-# def staff_patient_create(request):
-#     if 'staff_id' not in request.session:
-#         return redirect('staff_login')
-#     if request.method =='POST':
-#         form = CustomPatientCreationForm(request.POST)
-#         if form.is_valid():
-#             form.save()
-#             return redirect('staff_patient_list')
-#     else:
-#         form = CustomPatientCreationForm()
-#     return render(request,'staff/patient_create.html', {'form':form})
 
 class StaffPatientCreateView(CreateView):
     model = Patient
