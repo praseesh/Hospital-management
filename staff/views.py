@@ -14,10 +14,10 @@ from patient.forms import CustomPatientCreationForm, CustomPatientModification, 
 from patient.models import Appointment, DoctorAvailability, Patient, Room
 from .helper import generate_random_string, generate_otp
 from django.urls import reverse, reverse_lazy
-import razorpay 
+import razorpay  # type: ignore
 from django.views.decorators.csrf import csrf_exempt
 from .paypal_config import *
-from reportlab.pdfgen import canvas
+from reportlab.pdfgen import canvas # type: ignore
 from .forms import OTPValidationForm
 from .models import UserOTP
 from django.utils import timezone
@@ -287,20 +287,17 @@ def send_lab_report_email(patient_email, pdf_path):
     except Exception as e:
         print(f"Error attaching file: {e}")
         return
-
     try:
         email.send()
         print("Email sent successfully.")
     except Exception as e:
         print(f"Error sending email: {e}")
-        
 
 def staff_labreport_create(request):
     if 'staff_id' not in request.session:
         return redirect('staff_login')
     if request.method == 'POST':
         form = LabReportCreation(request.POST)
-        
         if form.is_valid():
             patient = form.cleaned_data.get('patient')
             patient_id = patient.id
@@ -317,17 +314,14 @@ def staff_labreport_create(request):
             if st is not None:
                 lab_report.sugar_test = st
                 amount += st.price
-            
             lt = LiverFunctionTest.objects.filter(patient=patient_id, is_completed=False).first()
             if lt is not None:
                 lab_report.liver_test = lt
                 amount += lt.price
-            
             ct = CholesterolTest.objects.filter(patient=patient_id, is_completed=False).first()
             if ct is not None:
                 lab_report.cholesterol_test = ct
                 amount += ct.price
-            
             kt = KidneyFunctionTest.objects.filter(patient=patient_id, is_completed=False).first()
             if kt is not None:
                 lab_report.kidney_test = kt
@@ -338,7 +332,6 @@ def staff_labreport_create(request):
 
             try:
                 BASE_DIR = settings.BASE_DIR
-                
                 pdf_filename = f'lab_report_{lab_report.id}.pdf'
                 pdf_path = os.path.join(BASE_DIR, 'docs', pdf_filename)
                 print('@@@@@@@@@@@@@@@',pdf_path)
