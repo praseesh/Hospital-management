@@ -38,6 +38,7 @@ urlpatterns = [
     path('prescription/delete/<int:prescription_id>/', views.delete_prescription, name='delete_prescription'),
     path('prescription_create', views.staff_prescription_create, name="staff_prescription_create"),
     path('staff_prescription_list', views.staff_prescription, name="staff_prescription_list"),
+    path('staff_appointment', views.staff_appointment,name="staff_appointment"),
     
     path('discharge', views.staff_discharge, name="staff_discharge"),
     
