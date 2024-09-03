@@ -629,28 +629,28 @@ def create_medicine_list(request):
 '''______________________________________APPOINTMENT____________________________________________'''
 
 
-# def staff_appointment(request):
-#     if request.method == 'POST':
-#         form = AppointmentCreationForm(request.POST)
-#         if form.is_valid():
-#             appointment = form.save(commit=False)
+def staff_appointment(request):
+    if request.method == 'POST':
+        form = AppointmentCreationForm(request.POST)
+        if form.is_valid():
+            appointment = form.save(commit=False)
             
-#             patient = form.cleaned_data.get('patient')
-#             doctor = form.cleaned_data.get('doctor')
-#             patient_id = patient.pk
-#             doctor_id = doctor.pk
-#             appointment.patient_id = patient_id
-#             appointment.doctor_id = doctor_id
-#             appointment.appointment_id = generate_random_string()
+            patient = form.cleaned_data.get('patient')
+            doctor = form.cleaned_data.get('doctor')
+            patient_id = patient.pk
+            doctor_id = doctor.pk
+            appointment.patient_id = patient_id
+            appointment.doctor_id = doctor_id
+            appointment.appointment_id = generate_random_string()
             
-#             appointment.save()
+            appointment.save()
             
-#             messages.success(request, "Appointment created successfully!")
-#             return redirect('staff_home')  
-#     else:    
-#         form = AppointmentCreationForm()
+            messages.success(request, "Appointment created successfully!")
+            return redirect('staff_home')  
+    else:    
+        form = AppointmentCreationForm()
     
-#     return render(request, 'staff/appointment.html', {'form': form})
+    return render(request, 'staff/appointment.html', {'form': form})
 
 
 
