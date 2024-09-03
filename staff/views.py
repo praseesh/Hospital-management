@@ -650,7 +650,7 @@ def staff_appointment(request):
     else:    
         form = AppointmentCreationForm()
     
-    return render(request, 'staff/appointment.html', {'form': form})
+    return render(request, 'staff/appointment1.html', {'form': form})
 
 
 
