@@ -11,7 +11,6 @@ class LoginViewTest(TestCase):
             'email': 'prasee@gmail.com',
             'password': '1234'
         })
-
         print('Response status code:', response.status_code)
         print('Response content:', response.content.decode())  
         print('Session:', self.client.session.items())  
