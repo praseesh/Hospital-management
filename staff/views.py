@@ -14,10 +14,10 @@ from patient.forms import CustomPatientCreationForm, CustomPatientModification, 
 from patient.models import Appointment, DoctorAvailability, Patient, Room
 from .helper import generate_random_string, generate_otp
 from django.urls import reverse, reverse_lazy
-import razorpay  # type: ignore
+import razorpay  
 from django.views.decorators.csrf import csrf_exempt
 from .paypal_config import *
-from reportlab.pdfgen import canvas # type: ignore
+from reportlab.pdfgen import canvas 
 from .forms import OTPValidationForm
 from .models import UserOTP
 from django.utils import timezone

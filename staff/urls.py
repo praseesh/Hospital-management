@@ -10,8 +10,7 @@ urlpatterns = [
     path('doctors/', views.staff_doctor_list, name='staff_doctor_list'),
     path('patient', views.staff_patient_list, name='staff_patient_list'),
     path('patient/<int:patient_id>', views.staff_patient_details, name='staff_patient_details'),
-    # path('patient/create', views.staff_patient_create, name='staff_patient_create'),
-     path('staff/patient/create/', StaffPatientCreateView.as_view(), name='staff_patient_create'),
+    path('staff/patient/create/', StaffPatientCreateView.as_view(), name='staff_patient_create'),
     path('patient/edit/<int:patient_id>', views.staff_patient_edit, name='staff_patient_edit'),
     path('patient/delete/<int:patient_id>', views.staff_patient_delete, name='staff_patient_delete'),
     
