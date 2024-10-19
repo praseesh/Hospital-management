@@ -753,7 +753,7 @@ def invoice_list(request):
     
 
 def staff_invoice(request):
-    tax_rate = 0.05    # 5%
+    tax_rate = 0.05    
     if request.method == 'POST':
         form = InvoiceForm(request.POST)
         if form.is_valid():
@@ -853,7 +853,6 @@ def create_order(request, invoice_id):
         'razorpay_key': settings.RAZORPAY_KEY_ID,
         'invoice': invoice
     }
-    
     return render(request,'staff/razorpay.html', context)
 
 @csrf_exempt
@@ -869,7 +868,6 @@ def payment_success(request):
             'razorpay_payment_id': razorpay_payment_id,
             'razorpay_signature': razorpay_signature
         }
-
         try:
             razorpay_client.utility.verify_payment_signature(payment_details_dict)
         except razorpay.errors.SignatureVerificationError:
